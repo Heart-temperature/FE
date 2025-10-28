@@ -5,7 +5,6 @@ import DashboardRefactoredPage from './pages/DashboardRefactored';
 import UserAddPage from './pages/UserAdd';
 import UserDetailPage from './pages/UserDetail';
 import UserAppPage from './pages/UserApp';
-import UserAppRefactoredPage from './pages/UserAppRefactored';
 import NotFoundPage from './pages/NotFoundPage';
 
 // 라우트 경로 상수 정의
@@ -13,7 +12,6 @@ export const ROUTES = {
     // 메인 페이지
     HOME: '/',
     DASHBOARD: '/dashboard',
-    DASHBOARD_REFACTORED: '/dashboard-refactored',
 
     // 사용자 관련
     USER_DETAIL: '/user/:id',
@@ -21,7 +19,6 @@ export const ROUTES = {
 
     // 사용자 앱
     USER_APP: '/app',
-    USER_APP_REFACTORED: '/app-refactored',
 
     // 404
     NOT_FOUND: '*',
@@ -51,10 +48,6 @@ export const ROUTE_META = {
         title: '독거노인 관리 시스템',
         description: '관리자 대시보드',
     },
-    [ROUTES.DASHBOARD_REFACTORED]: {
-        title: '독거노인 관리 시스템 (리팩토링)',
-        description: '리팩토링된 관리자 대시보드',
-    },
     [ROUTES.USER_ADD]: {
         title: '사용자 추가',
         description: '새 사용자 등록',
@@ -66,10 +59,6 @@ export const ROUTE_META = {
     [ROUTES.USER_APP]: {
         title: 'AI 상담사',
         description: '사용자 앱',
-    },
-    [ROUTES.USER_APP_REFACTORED]: {
-        title: 'AI 상담사 (리팩토링)',
-        description: '리팩토링된 사용자 앱',
     },
     [ROUTES.NOT_FOUND]: {
         title: '페이지를 찾을 수 없습니다',
@@ -95,11 +84,6 @@ export const router = createBrowserRouter([
                 handle: ROUTE_META[ROUTES.DASHBOARD],
             },
             {
-                path: ROUTES.DASHBOARD_REFACTORED,
-                element: <DashboardRefactoredPage />,
-                handle: ROUTE_META[ROUTES.DASHBOARD_REFACTORED],
-            },
-            {
                 path: ROUTES.USER_ADD,
                 element: <UserAddPage />,
                 handle: ROUTE_META[ROUTES.USER_ADD],
@@ -113,11 +97,6 @@ export const router = createBrowserRouter([
                 path: ROUTES.USER_APP,
                 element: <UserAppPage />,
                 handle: ROUTE_META[ROUTES.USER_APP],
-            },
-            {
-                path: ROUTES.USER_APP_REFACTORED,
-                element: <UserAppRefactoredPage />,
-                handle: ROUTE_META[ROUTES.USER_APP_REFACTORED],
             },
             {
                 // 404 Not Found (일치하는 경로가 없을 때)

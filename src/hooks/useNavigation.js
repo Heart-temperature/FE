@@ -12,10 +12,8 @@ export const useNavigation = () => {
   // 기본 네비게이션 함수들
   const goToHome = () => navigate(ROUTES.HOME);
   const goToDashboard = () => navigate(ROUTES.DASHBOARD);
-  const goToDashboardRefactored = () => navigate(ROUTES.DASHBOARD_REFACTORED);
   const goToUserAdd = () => navigate(ROUTES.USER_ADD);
   const goToUserApp = () => navigate(ROUTES.USER_APP);
-  const goToUserAppRefactored = () => navigate(ROUTES.USER_APP_REFACTORED);
   
   // 사용자 상세 페이지로 이동
   const goToUserDetail = (userId) => navigate(getUserDetailRoute(userId));
