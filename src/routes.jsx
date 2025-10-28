@@ -1,10 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import DashboardPage from './pages/Dashboard';
-import DashboardRefactoredPage from './pages/DashboardRefactored';
-import UserAddPage from './pages/UserAdd';
-import UserDetailPage from './pages/UserDetail';
-import UserAppPage from './pages/UserApp';
+import DashboardPage from './pages/DashboardPage';
+import UserAddPage from './pages/UserAddPage';
+import UserDetailPage from './pages/UserDetailPage';
+import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // 라우트 경로 상수 정의
