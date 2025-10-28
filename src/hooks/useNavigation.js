@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ROUTES, getUserDetailRoute } from '../router/routes';
+import { ROUTES, getUserDetailRoute } from '../routes';
 
 /**
  * 네비게이션 관련 커스텀 훅
