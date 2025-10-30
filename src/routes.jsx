@@ -5,12 +5,16 @@ import UserAddPage from './pages/UserAddPage';
 import UserDetailPage from './pages/UserDetailPage';
 import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
+import UserLoginPage from './pages/UserLoginPage';
+import FirstLoginPage from './pages/FirstLoginPage';
 
 // 라우트 경로 상수 정의
 export const ROUTES = {
     // 메인 페이지
     HOME: '/',
     DASHBOARD: '/dashboard',
+    LOGIN: '/login',
+    FIRST_LOGIN: '/first-login',
 
     // 사용자 관련
     USER_DETAIL: '/user/:id',
@@ -40,23 +44,31 @@ export const getUserDetailRoute = (userId) => getRoute('USER_DETAIL', { id: user
 // 라우트별 메타데이터
 export const ROUTE_META = {
     [ROUTES.HOME]: {
-        title: '독거노인 관리 시스템',
-        description: '메인 대시보드',
-    },
-    [ROUTES.DASHBOARD]: {
-        title: '독거노인 관리 시스템',
+        title: '독거노인 관리 - 다정이',
         description: '관리자 대시보드',
     },
+    [ROUTES.DASHBOARD]: {
+        title: '독거노인 관리 - 다정이',
+        description: '관리자 대시보드',
+    },
+    [ROUTES.LOGIN]: {
+        title: '로그인 - 다정이',
+        description: '사용자 로그인',
+    },
+    [ROUTES.FIRST_LOGIN]: {
+        title: '초기 비밀번호 변경 - 다정이',
+        description: '최초 로그인 시 비밀번호 변경',
+    },
     [ROUTES.USER_ADD]: {
-        title: '사용자 추가',
+        title: '사용자 추가 - 다정이이',
         description: '새 사용자 등록',
     },
     [ROUTES.USER_DETAIL]: {
-        title: '사용자 상세',
+        title: '사용자 상세 - 다정이이',
         description: '사용자 상세 정보',
     },
     [ROUTES.USER_APP]: {
-        title: 'AI 상담사',
+        title: '다정이',
         description: '사용자 앱',
     },
     [ROUTES.NOT_FOUND]: {
@@ -81,6 +93,16 @@ export const router = createBrowserRouter([
                 path: ROUTES.DASHBOARD,
                 element: <DashboardPage />,
                 handle: ROUTE_META[ROUTES.DASHBOARD],
+            },
+            {
+                path: ROUTES.LOGIN,
+                element: <UserLoginPage />,
+                handle: ROUTE_META[ROUTES.LOGIN],
+            },
+            {
+                path: ROUTES.FIRST_LOGIN,
+                element: <FirstLoginPage />,
+                handle: ROUTE_META[ROUTES.FIRST_LOGIN],
             },
             {
                 path: ROUTES.USER_ADD,
