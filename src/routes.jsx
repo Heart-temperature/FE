@@ -5,8 +5,9 @@ import UserAddPage from './pages/UserAddPage';
 import UserDetailPage from './pages/UserDetailPage';
 import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
-import UserLoginPage from './pages/UserLoginPage';
-import FirstLoginPage from './pages/FirstLoginPage';
+import UserLoginPage from './pages/app/UserLoginPage';
+import FirstLoginPage from './pages/app/FirstLoginPage';
+import MainPage from './pages/app/MainPage';
 
 // 라우트 경로 상수 정의
 export const ROUTES = {
@@ -22,6 +23,8 @@ export const ROUTES = {
 
     // 사용자 앱
     USER_APP: '/app',
+    USER_APP_LOGIN: '/app/login',
+    USER_APP_HOME: '/app/home',
 
     // 404
     NOT_FOUND: '*',
@@ -71,6 +74,14 @@ export const ROUTE_META = {
         title: '다정이',
         description: '사용자 앱',
     },
+    [ROUTES.USER_APP_LOGIN]: {
+        title: '로그인 - 다정이',
+        description: '사용자 앱 로그인',
+    },
+    [ROUTES.USER_APP_HOME]: {
+        title: '다정이',
+        description: '사용자 앱 홈 화면',
+    },
     [ROUTES.NOT_FOUND]: {
         title: '페이지를 찾을 수 없습니다',
         description: '404 페이지',
@@ -118,6 +129,16 @@ export const router = createBrowserRouter([
                 path: ROUTES.USER_APP,
                 element: <UserAppPage />,
                 handle: ROUTE_META[ROUTES.USER_APP],
+            },
+            {
+                path: ROUTES.USER_APP_LOGIN,
+                element: <UserLoginPage />,
+                handle: ROUTE_META[ROUTES.USER_APP_LOGIN],
+            },
+            {
+                path: ROUTES.USER_APP_HOME,
+                element: <MainPage />,
+                handle: ROUTE_META[ROUTES.USER_APP_HOME],
             },
             {
                 // 404 Not Found (일치하는 경로가 없을 때)

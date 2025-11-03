@@ -1,12 +1,14 @@
 import React from 'react';
 import { Box, Button, Flex, FormControl, FormLabel, Input, Text, Image } from '@chakra-ui/react';
+import Icon from '../../assets/dajung-icon.png';
+import Title from '../../assets/dajung-title.png'; 
 
 export default function UserLoginPage() {
     return (
         <Flex direction="column" align="center" justify="center" minH="100vh" bg="#FBF8F3">
             <Flex direction="column" align="center" w="100%">
-                <Image src="/dajung-icon.png" w="150px" />
-                <Image src="/dajung-title.png" w="180px" />
+                <Image src={Icon} w="150px" />
+                <Image src={Title} w="180px" />
             </Flex>
 
             <Text fontSize="20px" color="#2c1026" mb={7}>
