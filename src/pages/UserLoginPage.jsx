@@ -3,18 +3,17 @@ import { Box, Button, Flex, FormControl, FormLabel, Input, Text, Image } from '@
 
 export default function UserLoginPage() {
     return (
-        <Flex direction="column" align="center" justify="center" minH="100vh" bg="#EAF4FF">
-            
-            <Image src="../../public/dajung-icon.png" alt="dajung-icon" />
-            <Image src="../../public/dajung_blue-removebg.png" alt="dajung-blue" />
+        <Flex direction="column" align="center" justify="center" minH="100vh" bg="#FBF8F3">
+            <Image src="/dajung-icon.png" alt="dajung-icon" />
+            <Image src="/dajung-title.png" alt="dajung-title" />
 
-            <Text fontSize="20px" color="#003A96" mb={10}>
-                편하게 접속하세요
+            <Text fontSize="20px" color="#2c1026" mb={10}>
+                편안한 일상친구
             </Text>
 
-            <Box bg="white" borderRadius="20px" p={10} w="500px" boxShadow="lg">
+            <Box bg="white" borderColor="#E5DED5" borderWidth="1px" borderRadius="20px" p={10} w="500px" boxShadow="lg">
                 <FormControl mb={6}>
-                    <FormLabel fontSize="20px" color="#003A96" fontWeight="bold">
+                    <FormLabel fontSize="20px" color="#2c1026" fontWeight="bold">
                         아이디
                     </FormLabel>
                     <Input
@@ -22,13 +21,18 @@ export default function UserLoginPage() {
                         borderRadius="15px"
                         height="55px"
                         fontSize="16px"
-                        borderColor="#A8C7FF"
-                        _focus={{ borderColor: '#0057FF' }}
+                        borderColor="#BEB8AD"
+                        _focus={{
+                            borderColor: '#2c1026',
+                            borderWidth: '2px',
+                            boxShadow: 'none',
+                        }}
+                        _hover={{ borderColor: '#2c1026' }}
                     />
                 </FormControl>
 
                 <FormControl mb={10}>
-                    <FormLabel fontSize="20px" color="#003A96" fontWeight="bold">
+                    <FormLabel fontSize="20px" color="#2c1026" fontWeight="bold">
                         비밀번호
                     </FormLabel>
                     <Input
@@ -37,30 +41,35 @@ export default function UserLoginPage() {
                         borderRadius="15px"
                         height="55px"
                         fontSize="16px"
-                        borderColor="#A8C7FF"
-                        _focus={{ borderColor: '#0057FF' }}
+                        borderColor="#BEB8AD"
+                        _focus={{
+                            borderColor: '#2c1026',
+                            borderWidth: '2px',
+                            boxShadow: 'none',
+                        }}
+                        _hover={{ borderColor: '#2c1026' }}
                     />
                 </FormControl>
 
                 <Button
-                    bg="#0057FF"
+                    bg="#2c1026"
                     color="white"
                     w="100%"
                     height="65px"
                     fontSize="24px"
                     fontWeight="bold"
                     borderRadius="20px"
-                    _hover={{ bg: '#0046cc' }}
+                    _hover={{ bg: '#3A5A40' }}
                 >
                     로그인
                 </Button>
             </Box>
 
-            <Box mt={8} bg="#D7E7FF" p={6} borderRadius="15px" textAlign="center" w="500px">
-                <Text fontSize="18px" color="#003A96">
+            <Box mt={8} bg="#C7D2C0" p={6} borderRadius="15px" textAlign="center" w="500px">
+                <Text fontSize="18px" color="#2c1026">
                     문제가 있으신가요?
                 </Text>
-                <Text fontSize="18px" fontWeight="bold" color="#003A96">
+                <Text fontSize="18px" fontWeight="bold" color="#2c1026">
                     고객 지원팀: 1234-5678
                 </Text>
             </Box>

@@ -8,7 +8,7 @@ import { router } from './routes.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider>
             <RouterProvider router={router} />
         </ChakraProvider>
     </React.StrictMode>
