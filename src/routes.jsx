@@ -60,11 +60,11 @@ export const ROUTE_META = {
         description: '최초 로그인 시 비밀번호 변경',
     },
     [ROUTES.USER_ADD]: {
-        title: '사용자 추가 - 다정이이',
+        title: '사용자 추가 - 다정이',
         description: '새 사용자 등록',
     },
     [ROUTES.USER_DETAIL]: {
-        title: '사용자 상세 - 다정이이',
+        title: '사용자 상세 - 다정이',
         description: '사용자 상세 정보',
     },
     [ROUTES.USER_APP]: {

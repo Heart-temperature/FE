@@ -1,124 +1,69 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    Box,
-    Button,
-    Heading,
-    Text,
-    VStack,
-    HStack,
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    Input,
-    Card,
-    CardBody,
-    CardHeader,
-    Container,
-    useToast,
-    useColorModeValue,
-} from '@chakra-ui/react';
+import React from 'react';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Text, Image } from '@chakra-ui/react';
 
-export default function UserLogin() {
-    const [userId, setUserId] = useState('');
-    const [password, setPassword] = useState('');
-    const [touched, setTouched] = useState(false);
-    const [touchedPw, setTouchedPw] = useState(false);
-    const navigate = useNavigate();
-    const toast = useToast();
-
-    const bgColor = useColorModeValue('gray.50', 'gray.900');
-    const cardBg = useColorModeValue('white', 'gray.800');
-
-    const isInvalidId = touched && !userId.trim();
-    const isInvalidPw = touchedPw && !password.trim();
-
-    const handleSubmit = (e) => {
-        e?.preventDefault?.();
-        setTouched(true);
-
-        if (!userId.trim() || !password.trim()) {
-            toast({
-                title: '아이디와 비밀번호를 입력해주세요',
-                status: 'warning',
-                duration: 2000,
-                isClosable: true,
-            });
-            return;
-        }
-
-        // 실제 로그인 로직이 있다면 여기에 연동
-        toast({
-            title: '로그인 성공',
-            description: `${userId}님 환영합니다!`,
-            status: 'success',
-            duration: 1500,
-            isClosable: true,
-        });
-
-        // 기본 이동 경로 (대시보드)
-        navigate('/dashboard');
-    };
-
+export default function UserLoginPage() {
     return (
-        <Box minH="100vh" bg={bgColor} display="flex" alignItems="center">
-            <Container maxW="md">
-                <Card bg={cardBg} boxShadow="lg">
-                    <CardHeader>
-                        <VStack align="start" spacing={1}>
-                            <Heading size="lg">로그인</Heading>
-                            <Text color="gray.500" fontSize="sm">
-                                아이디를 입력하고 로그인하세요.
-                            </Text>
-                        </VStack>
-                    </CardHeader>
-                    <CardBody>
-                        <form onSubmit={handleSubmit}>
-                            <VStack spacing={5} align="stretch">
-                                <FormControl isRequired isInvalid={isInvalidId}>
-                                    <FormLabel>아이디</FormLabel>
-                                    <Input
-                                        placeholder="예: u1, u2 …"
-                                        value={userId}
-                                        onChange={(e) => setUserId(e.target.value)}
-                                        onBlur={() => setTouched(true)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleSubmit(e);
-                                        }}
-                                    />
-                                    <FormErrorMessage>아이디를 입력해주세요.</FormErrorMessage>
-                                </FormControl>
+        <Flex direction="column" align="center" justify="center" minH="100vh" bg="#EAF4FF">
+            
+            <Image src="../../public/dajung-icon.png" alt="dajung-icon" />
+            <Image src="../../public/dajung_blue-removebg.png" alt="dajung-blue" />
 
-                                <FormControl isRequired isInvalid={isInvalidPw}>
-                                    <FormLabel>비밀번호</FormLabel>
-                                    <Input
-                                        type="password"
-                                        placeholder="비밀번호를 입력하세요"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        onBlur={() => setTouchedPw(true)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleSubmit(e);
-                                        }}
-                                    />
-                                    <FormErrorMessage>비밀번호를 입력해주세요.</FormErrorMessage>
-                                </FormControl>
+            <Text fontSize="20px" color="#003A96" mb={10}>
+                편하게 접속하세요
+            </Text>
 
-                                <HStack justify="flex-end">
-                                    <Button
-                                        colorScheme="blue"
-                                        type="submit"
-                                        onClick={handleSubmit}
-                                        isDisabled={!userId.trim() || !password.trim()}
-                                    >
-                                        로그인
-                                    </Button>
-                                </HStack>
-                            </VStack>
-                        </form>
-                    </CardBody>
-                </Card>
-            </Container>
-        </Box>
+            <Box bg="white" borderRadius="20px" p={10} w="500px" boxShadow="lg">
+                <FormControl mb={6}>
+                    <FormLabel fontSize="20px" color="#003A96" fontWeight="bold">
+                        아이디
+                    </FormLabel>
+                    <Input
+                        placeholder="아이디 입력"
+                        borderRadius="15px"
+                        height="55px"
+                        fontSize="16px"
+                        borderColor="#A8C7FF"
+                        _focus={{ borderColor: '#0057FF' }}
+                    />
+                </FormControl>
+
+                <FormControl mb={10}>
+                    <FormLabel fontSize="20px" color="#003A96" fontWeight="bold">
+                        비밀번호
+                    </FormLabel>
+                    <Input
+                        type="password"
+                        placeholder="4자리 입력"
+                        borderRadius="15px"
+                        height="55px"
+                        fontSize="16px"
+                        borderColor="#A8C7FF"
+                        _focus={{ borderColor: '#0057FF' }}
+                    />
+                </FormControl>
+
+                <Button
+                    bg="#0057FF"
+                    color="white"
+                    w="100%"
+                    height="65px"
+                    fontSize="24px"
+                    fontWeight="bold"
+                    borderRadius="20px"
+                    _hover={{ bg: '#0046cc' }}
+                >
+                    로그인
+                </Button>
+            </Box>
+
+            <Box mt={8} bg="#D7E7FF" p={6} borderRadius="15px" textAlign="center" w="500px">
+                <Text fontSize="18px" color="#003A96">
+                    문제가 있으신가요?
+                </Text>
+                <Text fontSize="18px" fontWeight="bold" color="#003A96">
+                    고객 지원팀: 1234-5678
+                </Text>
+            </Box>
+        </Flex>
     );
 }
