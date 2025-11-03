@@ -4,9 +4,10 @@ import { Box, Button, Flex, FormControl, FormLabel, Input, Text, Image } from '@
 export default function UserLoginPage() {
     return (
         <Flex direction="column" align="center" justify="center" minH="100vh" bg="#FBF8F3">
-            <Image src="/dajung-icon.png" alt="dajung-icon" />
-            <Image src="/dajung-title.png" alt="dajung-title" />
-
+            <Flex direction="column" align="center" w="100%">
+                <Image src="/dajung-icon.png" w="150px" />
+                <Image src="/dajung-title.png" w="180px" />
+            </Flex>
             <Text fontSize="20px" color="#2c1026" mb={10}>
                 편안한 일상친구
             </Text>
