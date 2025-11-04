@@ -6,7 +6,7 @@ import UserDetailPage from './pages/UserDetailPage';
 import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
-import FirstLoginPage from './pages/app/FirstLoginPage';
+import FirstLoginPage from './pages/app/HighContrastLoginPage';
 import MainPage from './pages/app/MainPage';
 
 // 라우트 경로 상수 정의
