@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Button,
@@ -19,37 +19,49 @@ import { ViewIcon, ViewOffIcon, MinusIcon, AddIcon } from '@chakra-ui/icons';
 export default function UserLoginPage() {
     const fontSizeLevels = ['작게', '보통', '크게', '매우 크게'];
     const fontSizes = ['md', 'lg', 'xl', '2xl']; // Chakra UI size
-    const [show, setShow] = React.useState(false);
-    const [fontSizeLevel, setFontSizeLevel] = React.useState(1); // 기본값: 보통
+    const uiScale = [
+        { inputH: 38, label: 20, inputText: 18, BoxW: '80%', imageW: 140, BoxP: 7 },
+        { inputH: 45, label: 22, inputText: 20, BoxW: '84%', imageW: 150, BoxP: 6 },
+        { inputH: 53, label: 24, inputText: 22, BoxW: '88%', imageW: 160, BoxP: 5 },
+        { inputH: 61, label: 26, inputText: 24, BoxW: '92%', imageW: 170, BoxP: 4 },
+    ];
+
+    const [show, setShow] = useState(false);
+    const [fontSizeLevel, setFontSizeLevel] = useState(1); // 기본값: 보통
+    const [isHighContrast, setIsHighContrast] = useState(false);
 
     const handleShowToggle = () => setShow(!show);
 
     const handleIncrease = () => setFontSizeLevel((prev) => Math.min(prev + 1, 3));
     const handleDecrease = () => setFontSizeLevel((prev) => Math.max(prev - 1, 0));
+    const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
+
+    
 
     const fs = fontSizes[fontSizeLevel];
 
     return (
         <Flex direction="column" align="center" justify="center" minH="100vh" bg="#FBF8F3" px={{ base: 4, md: 0 }}>
             {/* 로고 */}
-            <Flex direction="column" align="center" w="100%" mb={6}>
+            <Flex direction="column" align="center" w="100%" mb={4}>
                 <Image src={Icon} w={{ base: '100px', md: '150px' }} />
-                <Image src={Title} w={{ base: '140px', md: '180px' }} mt={2} />
+                <Image src={Title} w={{ base: uiScale[fontSizeLevel].imageW, md: '180px' }} mt={2} />
             </Flex>
 
             {/* 슬로건 */}
-            <Text fontSize={fs} color="#2c1026" mb={7}>
+            <Text fontSize={fs} color="#2c1026" mb={4}>
                 편안한 일상친구
             </Text>
 
             {/* 로그인 박스 */}
             <Box
-                bg="white"
+                bg="white" // bg={isHighContrast ? 'white' , 'black'}
                 borderColor="#E5DED5"
                 borderWidth="1px"
                 borderRadius="20px"
-                p={{ base: 6, md: 10 }}
-                w={{ base: '90%', md: '500px' }}
+                p={{ base: uiScale[fontSizeLevel].BoxP, md: 10 }}
+                w={{ base: uiScale[fontSizeLevel].BoxW, md: '500px' }}
+                maxW="min(90%, 450px)"
                 boxShadow="lg"
             >
                 {/* 아이디 */}
@@ -60,7 +72,7 @@ export default function UserLoginPage() {
                     <Input
                         placeholder="아이디 입력"
                         borderRadius="15px"
-                        height={{ base: '48px', md: '55px' }}
+                        height={{ base: uiScale[fontSizeLevel].inputH, md: '55px' }}
                         fontSize={fs}
                         borderColor="#BEB8AD"
                         _focus={{ borderColor: '#2c1026', borderWidth: '2px', boxShadow: 'none' }}
@@ -78,7 +90,7 @@ export default function UserLoginPage() {
                             type={show ? 'text' : 'password'}
                             placeholder="비밀번호 입력"
                             borderRadius="15px"
-                            height={{ base: '48px', md: '55px' }}
+                            height={{ base: uiScale[fontSizeLevel].inputH, md: '55px' }}
                             fontSize={fs}
                             borderColor="#BEB8AD"
                             _focus={{ borderColor: '#2c1026', borderWidth: '2px', boxShadow: 'none' }}
@@ -100,7 +112,7 @@ export default function UserLoginPage() {
                     bg="#3A5A40"
                     color="white"
                     w="100%"
-                    height={{ base: '50px', md: '65px' }}
+                    height={{ base: uiScale[fontSizeLevel].inputH, md: '65px' }}
                     fontSize={fs}
                     fontWeight="bold"
                     borderRadius="20px"
@@ -157,7 +169,7 @@ export default function UserLoginPage() {
                     bg="black"
                     color="white"
                     _hover={{ bg: '#292929' }}
-                    _active={{ bg: '#444444'}}
+                    _active={{ bg: '#444444' }}
                     fontWeight="bold"
                     px={6}
                     py={6}
