@@ -37,10 +37,6 @@ export default function UserLoginPage() {
     const handleIncrease = () => setFontSizeLevel((prev) => Math.min(prev + 1, 3));
     const handleDecrease = () => setFontSizeLevel((prev) => Math.max(prev - 1, 0));
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
-    const submitLogin = () =>
-        function () {
-            console.log(isHighContrast);
-        };
 
     const fs = fontSizes[fontSizeLevel];
 
@@ -55,16 +51,16 @@ export default function UserLoginPage() {
         >
             {/* 로고 */}
             <Flex direction="column" align="center" w="100%" mb={8}>
-                <Image src={Icon} h={{ base: uiScale[fontSizeLevel].imageH, md: '150px' }} />
+                <Image src={Icon} h={{ base: uiScale[fontSizeLevel].imageH }} />
                 <Image
                     src={isHighContrast ? HighContrastTitle : Title}
-                    h={{ base: uiScale[fontSizeLevel].imageH, md: '180px' }}
+                    h={{ base: uiScale[fontSizeLevel].imageH }}
                     mt={2}
                 />
             </Flex>
 
             {/* 슬로건 */}
-            <Text fontSize={fs} color={isHighContrast ? 'white' : '#2c1026'} mb={uiScale[fontSizeLevel].mb}>
+            <Text fontSize={fs} color={isHighContrast ? 'white' : '#2c1026'} fontWeight={isHighContrast ? "bold" : "normal"} mb={uiScale[fontSizeLevel].mb}>
                 편안한 일상친구
             </Text>
 
@@ -74,9 +70,9 @@ export default function UserLoginPage() {
                 borderColor="#E5DED5"
                 borderWidth="1px"
                 borderRadius="20px"
-                px={{ base: uiScale[fontSizeLevel].BoxPx, md: 10 }}
+                px={{ base: uiScale[fontSizeLevel].BoxPx }}
                 py={8}
-                w={{ base: uiScale[fontSizeLevel].BoxW, md: '500px' }}
+                w={{ base: uiScale[fontSizeLevel].BoxW }}
                 maxW="min(90%, 450px)"
                 boxShadow="lg"
                 align="center"
@@ -92,9 +88,9 @@ export default function UserLoginPage() {
                             onChange={(e) => setId(e.target.value)}
                             placeholder="아이디 입력"
                             borderRadius="15px"
-                            height={{ base: uiScale[fontSizeLevel].inputH, md: '55px' }}
+                            height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
-                            bg={isHighContrast ? 'white' : ''}
+                            color={isHighContrast ? 'white' : '#2c1026'}
                             borderColor="#BEB8AD"
                             _focus={
                                 isHighContrast
@@ -116,7 +112,7 @@ export default function UserLoginPage() {
                                     height={uiScale[fontSizeLevel].inputH}
                                     variant="unstyled"
                                     onClick={() => setId('')}
-                                    icon={<CloseIcon />}
+                                    icon={<CloseIcon color={isHighContrast ? 'white' : '#2c1026'} />}
                                     aria-label="아이디 입력 초기화"
                                 />
                             </InputRightElement>
@@ -134,9 +130,9 @@ export default function UserLoginPage() {
                             type={show ? 'text' : 'password'}
                             placeholder="비밀번호 입력"
                             borderRadius="15px"
-                            height={{ base: uiScale[fontSizeLevel].inputH, md: '55px' }}
+                            height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
-                            bg={isHighContrast ? 'white' : ''}
+                            color={isHighContrast ? 'white' : '#2c1026'}
                             borderColor="#BEB8AD"
                             _focus={
                                 isHighContrast
@@ -157,7 +153,13 @@ export default function UserLoginPage() {
                                 height={uiScale[fontSizeLevel].inputH}
                                 variant="unstyled"
                                 onClick={handleShowToggle}
-                                icon={show ? <ViewOffIcon /> : <ViewIcon />}
+                                icon={
+                                    show ? (
+                                        <ViewOffIcon color={isHighContrast ? 'white' : '#2c1026'} />
+                                    ) : (
+                                        <ViewIcon color={isHighContrast ? 'white' : '#2c1026'} />
+                                    )
+                                }
                                 aria-label="비밀번호 보기 토글"
                             />
                         </InputRightElement>
@@ -169,13 +171,12 @@ export default function UserLoginPage() {
                     bg={isHighContrast ? 'yellow' : '#3A5A40'}
                     color={isHighContrast ? 'black' : 'white'}
                     w="80%"
-                    height={{ base: uiScale[fontSizeLevel].inputH, md: '65px' }}
+                    height={{ base: uiScale[fontSizeLevel].inputH }}
                     fontSize={fs}
                     fontWeight="bold"
                     borderRadius="20px"
                     _hover={isHighContrast ? { bg: 'white' } : { bg: '#4C7152' }}
                     mb={uiScale[fontSizeLevel].mb}
-                    onClick={submitLogin}
                 >
                     로그인
                 </Button>
@@ -200,7 +201,7 @@ export default function UserLoginPage() {
                     bg={isHighContrast ? 'white' : '#3A5A40'}
                     color={isHighContrast ? 'black' : 'white'}
                     _hover={isHighContrast ? { bg: 'yellow' } : { bg: '#4C7152' }}
-                    h={{ base: uiScale[fontSizeLevel].inputH, md: '65px' }}
+                    h={{ base: uiScale[fontSizeLevel].inputH }}
                     rounded="full"
                     onClick={handleDecrease}
                     isDisabled={fontSizeLevel === 0}
@@ -223,7 +224,7 @@ export default function UserLoginPage() {
                     bg={isHighContrast ? 'white' : '#3A5A40'}
                     color={isHighContrast ? 'black' : 'white'}
                     _hover={isHighContrast ? { bg: 'yellow' } : { bg: '#4C7152' }}
-                    h={{ base: uiScale[fontSizeLevel].inputH, md: '65px' }}
+                    h={{ base: uiScale[fontSizeLevel].inputH }}
                     rounded="full"
                     onClick={handleIncrease}
                     isDisabled={fontSizeLevel === 3}
