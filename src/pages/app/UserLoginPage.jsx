@@ -1,82 +1,287 @@
-import React from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Input, Text, Image } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Input,
+    InputGroup,
+    InputRightElement,
+    Text,
+    Image,
+    IconButton,
+} from '@chakra-ui/react';
 import Icon from '../../assets/dajung-icon.png';
-import Title from '../../assets/dajung-title.png'; 
+import Title from '../../assets/dajung-title.png';
+import HighContrastTitle from '../../assets/dajung-white.png';
+import { ViewIcon, ViewOffIcon, MinusIcon, AddIcon, CloseIcon } from '@chakra-ui/icons';
 
 export default function UserLoginPage() {
+    const fontSizeLevels = ['작게', '보통', '크게', '매우 크게'];
+    const fontSizes = ['1.1rem', '1.4rem', '1.7rem', '2.2rem']; // Chakra UI size
+    const uiScale = [
+        { inputH: '3.3rem', mb: '8', BoxW: '80%', imageH: '5rem', BoxPx: 7 },
+        { inputH: '4.2rem', mb: '10', BoxW: '84%', imageH: '6rem', BoxPx: 7 },
+        { inputH: '5.1rem', mb: '12', BoxW: '88%', imageH: '7rem', BoxPx: 7 },
+        { inputH: '6.6rem', mb: '14', BoxW: '92%', imageH: '8rem', BoxPx: 7 },
+    ];
+
+    const [id, setId] = useState('');
+    const [show, setShow] = useState(false);
+    const [fontSizeLevel, setFontSizeLevel] = useState(1); // 기본값: 보통
+    const [isHighContrast, setIsHighContrast] = useState(false);
+
+    const handleShowToggle = () => setShow(!show);
+
+    const handleIncrease = () => setFontSizeLevel((prev) => Math.min(prev + 1, 3));
+    const handleDecrease = () => setFontSizeLevel((prev) => Math.max(prev - 1, 0));
+    const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
+
+    const fs = fontSizes[fontSizeLevel];
+
     return (
-        <Flex direction="column" align="center" justify="center" minH="100vh" bg="#FBF8F3">
-            <Flex direction="column" align="center" w="100%">
-                <Image src={Icon} w="150px" />
-                <Image src={Title} w="180px" />
+        <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            minH="100vh"
+            bg={isHighContrast ? 'black' : '#FBF8F3'}
+            px={{ base: 4 }}
+        >
+            {/* 로고 */}
+            <Flex direction="column" align="center" w="100%" mb={8}>
+                <Image src={Icon} h={{ base: uiScale[fontSizeLevel].imageH }} />
+                <Image
+                    src={isHighContrast ? HighContrastTitle : Title}
+                    h={{ base: uiScale[fontSizeLevel].imageH }}
+                    mt={2}
+                />
             </Flex>
 
-            <Text fontSize="20px" color="#2c1026" mb={7}>
+            {/* 슬로건 */}
+            <Text
+                fontSize={fs}
+                color={isHighContrast ? 'white' : '#2c1026'}
+                fontWeight={isHighContrast ? 'bold' : 'normal'}
+                mb={uiScale[fontSizeLevel].mb}
+            >
                 편안한 일상친구
             </Text>
 
-            <Box bg="white" borderColor="#E5DED5" borderWidth="1px" borderRadius="20px" p={10} w="500px" boxShadow="lg">
-                <FormControl mb={6}>
-                    <FormLabel fontSize="20px" color="#2c1026" fontWeight="bold">
+            {/* 로그인 박스 */}
+            <Box
+                bg={isHighContrast ? 'black' : 'white'}
+                border="2px solid"
+                borderColor={isHighContrast ? 'white' : '#BEB8AD'}
+                borderRadius="20px"
+                px={{ base: uiScale[fontSizeLevel].BoxPx }}
+                py={uiScale[fontSizeLevel].mb}
+                w={{ base: uiScale[fontSizeLevel].BoxW }}
+                maxW="min(90%, 450px)"
+                boxShadow="lg"
+                align="center"
+            >
+                {/* 아이디 */}
+                <FormControl mb={uiScale[fontSizeLevel].mb}>
+                    <FormLabel fontSize={fs} color={isHighContrast ? 'white' : '#2c1026'} fontWeight="bold">
                         아이디
                     </FormLabel>
-                    <Input
-                        placeholder="아이디 입력"
-                        borderRadius="15px"
-                        height="55px"
-                        fontSize="16px"
-                        borderColor="#BEB8AD"
-                        _focus={{
-                            borderColor: '#2c1026',
-                            borderWidth: '2px',
-                            boxShadow: 'none',
-                        }}
-                        _hover={{ borderColor: '#2c1026' }}
-                    />
+                    <InputGroup>
+                        <Input
+                            value={id}
+                            onChange={(e) => setId(e.target.value)}
+                            placeholder="아이디 입력"
+                            borderRadius="15px"
+                            height={{ base: uiScale[fontSizeLevel].inputH }}
+                            fontSize={fs}
+                            color={isHighContrast ? 'white' : '#2c1026'}
+                            border="2px solid"
+                            borderColor={isHighContrast ? 'white' : '#BEB8AD'}
+                            _focusVisible={
+                                isHighContrast
+                                    ? {
+                                          borderColor: 'yellow',
+                                          borderWidth: '2px',
+                                          boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: 'black',
+                                          ring: '2px',
+                                          ringColor: 'white',
+                                      }
+                                    : {
+                                          borderColor: '#2c1026',
+                                          borderWidth: '2px',
+                                          boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: '#FBF8F3',
+                                          ring: '2px',
+                                          ringColor: '#BEB8AD',
+                                      }
+                            }
+                        />
+                        {id && (
+                            <InputRightElement top="50%" transform="translateY(-50%)" pr={1}>
+                                <IconButton
+                                    height={uiScale[fontSizeLevel].inputH}
+                                    variant="unstyled"
+                                    onClick={() => setId('')}
+                                    icon={<CloseIcon color={isHighContrast ? 'white' : '#2c1026'} />}
+                                    aria-label="아이디 입력 초기화"
+                                />
+                            </InputRightElement>
+                        )}
+                    </InputGroup>
                 </FormControl>
 
-                <FormControl mb={10}>
-                    <FormLabel fontSize="20px" color="#2c1026" fontWeight="bold">
+                {/* 비밀번호 */}
+                <FormControl mb={uiScale[fontSizeLevel].mb * 2}>
+                    <FormLabel fontSize={fs} color={isHighContrast ? 'white' : '#2c1026'} fontWeight="bold">
                         비밀번호
                     </FormLabel>
-                    <Input
-                        type="password"
-                        placeholder="4자리 입력"
-                        borderRadius="15px"
-                        height="55px"
-                        fontSize="16px"
-                        borderColor="#BEB8AD"
-                        _focus={{
-                            borderColor: '#2c1026',
-                            borderWidth: '2px',
-                            boxShadow: 'none',
-                        }}
-                        _hover={{ borderColor: '#2c1026' }}
-                    />
+                    <InputGroup>
+                        <Input
+                            type={show ? 'text' : 'password'}
+                            placeholder="비밀번호 입력"
+                            borderRadius="15px"
+                            height={{ base: uiScale[fontSizeLevel].inputH }}
+                            fontSize={fs}
+                            color={isHighContrast ? 'white' : '#2c1026'}
+                            border="2px solid"
+                            borderColor={isHighContrast ? 'white' : '#BEB8AD'}
+                            _focus={
+                                isHighContrast
+                                    ? {
+                                          borderColor: 'yellow',
+                                          borderWidth: '3px',
+                                          boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: 'black',
+                                          ring: '2px',
+                                          ringColor: 'white',
+                                      }
+                                    : {
+                                          borderColor: '#2c1026',
+                                          borderWidth: '2px',
+                                          boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: '#FBF8F3',
+                                          ring: '2px',
+                                          ringColor: '#BEB8AD',
+                                      }
+                            }
+                        />
+                        <InputRightElement top="50%" transform="translateY(-50%)" pr={1}>
+                            <IconButton
+                                height={uiScale[fontSizeLevel].inputH}
+                                variant="unstyled"
+                                onClick={handleShowToggle}
+                                icon={
+                                    show ? (
+                                        <ViewOffIcon color={isHighContrast ? 'white' : '#2c1026'} />
+                                    ) : (
+                                        <ViewIcon color={isHighContrast ? 'white' : '#2c1026'} />
+                                    )
+                                }
+                                aria-label="비밀번호 보기 토글"
+                            />
+                        </InputRightElement>
+                    </InputGroup>
                 </FormControl>
 
+                {/* 로그인 버튼 */}
                 <Button
-                    bg="#2c1026"
-                    color="white"
-                    w="100%"
-                    height="65px"
-                    fontSize="24px"
+                    bg={isHighContrast ? 'yellow' : '#3A5A40'}
+                    color={isHighContrast ? 'black' : 'white'}
+                    w="80%"
+                    height={{ base: uiScale[fontSizeLevel].inputH }}
+                    fontSize={fs}
                     fontWeight="bold"
-                    borderRadius="20px"
-                    _hover={{ bg: '#3A5A40' }}
+                    borderRadius="1.25rem"
+                    ringOffset="2px"
+                    ringOffsetColor={isHighContrast ? 'black' : '#FBF8F3'}
+                    ring="2px"
+                    ringColor={isHighContrast ? 'white' : '#BEB8AD'}
+                    _hover={isHighContrast ? { bg: 'white' } : { bg: '#4C7152' }}
+                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#2E4634' }}
+                    mb={uiScale[fontSizeLevel].mb / 2}
                 >
                     로그인
                 </Button>
             </Box>
 
-            <Box mt={8} bg="#C7D2C0" p={6} borderRadius="15px" textAlign="center" w="500px">
-                <Text fontSize="18px" color="#2c1026">
-                    문제가 있으신가요?
+            {/* 설정 박스 */}
+            <Flex
+                direction="row"
+                wrap="nowrap"
+                align="center"
+                justify="center"
+                gap={3}
+                py={uiScale[fontSizeLevel].mb}
+                px={4}
+                w="100%"
+                mx="auto"
+            >
+                {/* - 글자 줄이기 */}
+                <IconButton
+                    aria-label="Decrease font size"
+                    icon={<MinusIcon />}
+                    bg={isHighContrast ? 'transparent' : '#3A5A40'}
+                    color="white"
+                    border="2px solid white"
+                    _hover={isHighContrast ? { bg: 'yellow', color: 'black' } : { bg: '#4C7152' }}
+                    h={{ base: uiScale[fontSizeLevel].inputH }}
+                    rounded="full"
+                    onClick={handleDecrease}
+                    isDisabled={fontSizeLevel === 0}
+                />
+
+                <Text
+                    fontSize={fs}
+                    fontWeight="bold"
+                    color={isHighContrast ? 'white' : '#2c1026'}
+                    minW="60px"
+                    textAlign="center"
+                >
+                    {fontSizeLevels[fontSizeLevel]}
                 </Text>
-                <Text fontSize="18px" fontWeight="bold" color="#2c1026">
-                    고객 지원팀: 1234-5678
-                </Text>
-            </Box>
+
+                {/* + 글자 키우기 */}
+                <IconButton
+                    aria-label="Increase font size"
+                    icon={<AddIcon />}
+                    bg={isHighContrast ? 'transparent' : '#3A5A40'}
+                    color="white"
+                    border="2px solid white"
+                    _hover={isHighContrast ? { bg: 'yellow', color: 'black' } : { bg: '#4C7152' }}
+                    h={{ base: uiScale[fontSizeLevel].inputH }}
+                    rounded="full"
+                    onClick={handleIncrease}
+                    isDisabled={fontSizeLevel === 3}
+                />
+
+                {/* 고대비 모드 버튼 */}
+                <Button
+                    bg={isHighContrast ? 'yellow' : 'black'}
+                    color={isHighContrast ? 'black' : 'white'}
+                    ringOffset="2px"
+                    ringOffsetColor={isHighContrast ? 'black' : '#FBF8F3'}
+                    ring="2px"
+                    ringColor={isHighContrast ? 'white' : '#BEB8AD'}
+                    fontWeight="bold"
+                    px={4}
+                    height={{ base: 'auto', md: '65px' }}
+                    minH={uiScale[fontSizeLevel].inputH}
+                    fontSize={fs}
+                    borderRadius="1.25rem"
+                    whiteSpace="normal"
+                    _hover={isHighContrast ? { bg: 'white' } : { bg: '#292929' }}
+                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#444444' }}
+                    onClick={toggleHighContrast}
+                >
+                    {isHighContrast ? '고대비 끄기' : '고대비 켜기'}
+                </Button>
+            </Flex>
         </Flex>
     );
 }
