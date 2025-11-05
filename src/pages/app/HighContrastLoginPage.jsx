@@ -102,6 +102,7 @@ export default function HighContrastLoginPage() {
                     </InputGroup>
                 </FormControl>
 
+                {/* 로그인 버튼 */}
                 <Button
                     bg="yellow"
                     color="black"
@@ -135,7 +136,7 @@ export default function HighContrastLoginPage() {
                     icon={<MinusIcon />}
                     bg="white"
                     color="black"
-                    _hover={{ bg: 'yellow', color: 'black' }}
+                    _hover={{ bg: 'yellow' }}
                     size="lg"
                     rounded="full"
                 />
