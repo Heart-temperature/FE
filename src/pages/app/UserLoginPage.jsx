@@ -47,7 +47,7 @@ export default function UserLoginPage() {
             justify="center"
             minH="100vh"
             bg={isHighContrast ? 'black' : '#FBF8F3'}
-            px={{ base: 4, md: 0 }}
+            px={{ base: 4 }}
         >
             {/* 로고 */}
             <Flex direction="column" align="center" w="100%" mb={8}>
@@ -76,7 +76,7 @@ export default function UserLoginPage() {
                 borderColor={isHighContrast ? 'white' : '#BEB8AD'}
                 borderRadius="20px"
                 px={{ base: uiScale[fontSizeLevel].BoxPx }}
-                py={8}
+                py={uiScale[fontSizeLevel].mb}
                 w={{ base: uiScale[fontSizeLevel].BoxW }}
                 maxW="min(90%, 450px)"
                 boxShadow="lg"
@@ -198,9 +198,13 @@ export default function UserLoginPage() {
                     fontSize={fs}
                     fontWeight="bold"
                     borderRadius="1.25rem"
+                    ringOffset="2px"
+                    ringOffsetColor={isHighContrast ? 'black' : '#FBF8F3'}
+                    ring="2px"
+                    ringColor={isHighContrast ? 'white' : '#BEB8AD'}
                     _hover={isHighContrast ? { bg: 'white' } : { bg: '#4C7152' }}
                     _active={isHighContrast ? { bg: '#444444' } : { bg: '#2E4634' }}
-                    mb={uiScale[fontSizeLevel].mb}
+                    mb={uiScale[fontSizeLevel].mb / 2}
                 >
                     로그인
                 </Button>
@@ -212,7 +216,7 @@ export default function UserLoginPage() {
                 wrap="nowrap"
                 align="center"
                 justify="center"
-                gap={2}
+                gap={3}
                 py={uiScale[fontSizeLevel].mb}
                 px={4}
                 w="100%"
@@ -260,8 +264,10 @@ export default function UserLoginPage() {
                 <Button
                     bg={isHighContrast ? 'yellow' : 'black'}
                     color={isHighContrast ? 'black' : 'white'}
-                    _hover={isHighContrast ? { bg: 'white' } : { bg: '#292929' }}
-                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#444444' }}
+                    ringOffset="2px"
+                    ringOffsetColor={isHighContrast ? 'black' : '#FBF8F3'}
+                    ring="2px"
+                    ringColor={isHighContrast ? 'white' : '#BEB8AD'}
                     fontWeight="bold"
                     px={4}
                     height={{ base: 'auto', md: '65px' }}
@@ -269,6 +275,8 @@ export default function UserLoginPage() {
                     fontSize={fs}
                     borderRadius="1.25rem"
                     whiteSpace="normal"
+                    _hover={isHighContrast ? { bg: 'white' } : { bg: '#292929' }}
+                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#444444' }}
                     onClick={toggleHighContrast}
                 >
                     {isHighContrast ? '고대비 끄기' : '고대비 켜기'}
