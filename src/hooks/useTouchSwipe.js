@@ -41,3 +41,4 @@ export const useTouchSwipe = (onSwipeLeft, onSwipeRight, minSwipeDistance = 50) 
     onTouchEnd: handleTouchEnd
   };
 };
+

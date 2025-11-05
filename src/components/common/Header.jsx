@@ -1,4 +1,4 @@
-import { Flex, HStack, VStack, Text, Button, IconButton, Avatar, useColorModeValue } from '@chakra-ui/react';
+import { Flex, HStack, VStack, Text, Button, IconButton, useColorModeValue } from '@chakra-ui/react';
 import { ArrowBackIcon, TimeIcon } from '@chakra-ui/icons';
 import { useClock } from '../../hooks/useClock';
 
@@ -79,20 +79,8 @@ export const Header = ({
           </HStack>
         )}
         
-        {user && (
-          <HStack spacing={2} bg="blue.50" px={3} py={2} borderRadius="md">
-            <Avatar size="sm" name={user.name} bg="blue.500" />
-            <VStack align="start" spacing={0}>
-              <Text fontSize="sm" fontWeight="500" color="gray.800">
-                {user.name}
-              </Text>
-              <Text fontSize="xs" color="gray.500">
-                {user.role}
-              </Text>
-            </VStack>
-          </HStack>
-        )}
       </HStack>
     </Flex>
   );
 };
+

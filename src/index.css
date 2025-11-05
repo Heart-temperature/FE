@@ -313,3 +313,41 @@ button, .chakra-button {
 .simple-animation:hover {
   transform: scale(1.05) !important;
 }
+
+/* 웹앱용 시스템 폰트 사이즈 반영 */
+.user-app-container {
+  /* CSS 변수를 사용하여 시스템 폰트 사이즈 반영 */
+  font-size: calc(16px * var(--system-font-scale, 1));
+}
+
+.user-app-container * {
+  /* 모든 자식 요소도 rem 단위 사용 권장 */
+  box-sizing: border-box;
+}
+
+/* Chakra UI 컴포넌트에 폰트 스케일 적용 */
+.user-app-container .chakra-text,
+.user-app-container .chakra-heading,
+.user-app-container .chakra-button,
+.user-app-container .chakra-input,
+.user-app-container .chakra-form-label {
+  font-size: calc(1em * var(--system-font-scale, 1)) !important;
+}
+
+/* 텍스트 크기 조정 (스케일에 맞춰 조정) */
+.user-app-container [class*="chakra-text"] {
+  font-size: calc(1em * var(--system-font-scale, 1)) !important;
+}
+
+/* 버튼 텍스트 크기 조정 */
+.user-app-container .chakra-button {
+  font-size: calc(1em * var(--system-font-scale, 1)) !important;
+  min-height: calc(56px * var(--system-font-scale, 1)) !important;
+}
+
+/* 입력 필드 텍스트 크기 조정 */
+.user-app-container .chakra-input,
+.user-app-container .chakra-textarea {
+  font-size: calc(1em * var(--system-font-scale, 1)) !important;
+  height: calc(var(--input-height, 55px) * var(--system-font-scale, 1)) !important;
+}

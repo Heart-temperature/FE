@@ -11,6 +11,7 @@ import {
   HStack,
   Text,
   Textarea,
+  Box,
   Avatar,
   useToast
 } from '@chakra-ui/react';
@@ -107,3 +108,4 @@ export const MemoModal = ({
     </Modal>
   );
 };
+

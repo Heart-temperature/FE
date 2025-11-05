@@ -54,3 +54,4 @@ export const formatDateForChart = (dateString) => {
   if (!dateString) return '';
   return dateString.split('-').slice(1).join('/');
 };
+

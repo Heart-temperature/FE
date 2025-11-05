@@ -1,12 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import DashboardPage from './pages/DashboardPage';
-import UserAddPage from './pages/UserAddPage';
-import UserDetailPage from './pages/UserDetailPage';
+import DashboardPage from './pages/web/DashboardPage';
+import UserAddPage from './pages/web/UserAddPage';
+import UserDetailPage from './pages/web/UserDetailPage';
 import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
-import FirstLoginPage from './pages/app/HighContrastLoginPage';
 import MainPage from './pages/app/MainPage';
 
 // 라우트 경로 상수 정의
@@ -15,7 +14,6 @@ export const ROUTES = {
     HOME: '/',
     DASHBOARD: '/dashboard',
     LOGIN: '/login',
-    FIRST_LOGIN: '/first-login',
 
     // 사용자 관련
     USER_DETAIL: '/user/:id',
@@ -109,11 +107,6 @@ export const router = createBrowserRouter([
                 path: ROUTES.LOGIN,
                 element: <UserLoginPage />,
                 handle: ROUTE_META[ROUTES.LOGIN],
-            },
-            {
-                path: ROUTES.FIRST_LOGIN,
-                element: <FirstLoginPage />,
-                handle: ROUTE_META[ROUTES.FIRST_LOGIN],
             },
             {
                 path: ROUTES.USER_ADD,

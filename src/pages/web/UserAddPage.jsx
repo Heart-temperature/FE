@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNavigation } from '../hooks';
+import { useNavigation } from '../../hooks';
 import {
     Box,
     Button,
@@ -22,8 +22,6 @@ import {
     Divider,
     Flex,
     IconButton,
-    Avatar,
-    Center,
     useColorModeValue
 } from '@chakra-ui/react';
 import { ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
@@ -42,8 +40,8 @@ export default function UserAdd() {
         gender: '',
         address: '',
         phone: '',
+        password: '',
         emergencyContact: '',
-        profileImage: null,
         notes: ''
     });
 
@@ -109,6 +107,12 @@ export default function UserAdd() {
             newErrors.phone = '연락처를 입력해주세요';
         } else if (!/^010-\d{4}-\d{4}$/.test(formData.phone)) {
             newErrors.phone = '올바른 연락처 형식이 아닙니다 (010-0000-0000)';
+        }
+
+        if (!formData.password.trim()) {
+            newErrors.password = '비밀번호를 입력해주세요';
+        } else if (!/^\d{4}$/.test(formData.password.trim())) {
+            newErrors.password = '비밀번호는 숫자 4자리여야 합니다';
         }
 
         if (formData.emergencyContact && !/^010-\d{4}-\d{4}$/.test(formData.emergencyContact)) {
@@ -203,25 +207,6 @@ export default function UserAdd() {
                     <CardBody>
                         <form onSubmit={handleSubmit}>
                             <VStack spacing={6} align="stretch">
-                                {/* 프로필 사진 영역 */}
-                                <FormControl>
-                                    <FormLabel>프로필 사진 (선택)</FormLabel>
-                                    <Center>
-                                        <VStack spacing={3}>
-                                            <Avatar 
-                                                size="2xl" 
-                                                name={formData.name || '사용자'} 
-                                                bg="blue.500"
-                                            />
-                                            <Button size="sm" variant="outline">
-                                                사진 업로드
-                                            </Button>
-                                        </VStack>
-                                    </Center>
-                                </FormControl>
-
-                                <Divider />
-
                                 {/* 필수 정보 */}
                                 <VStack spacing={4} align="stretch">
                                     <Heading size="md" color="gray.700">
@@ -293,6 +278,18 @@ export default function UserAdd() {
                                             onChange={(e) => handleInputChange('phone', e.target.value)}
                                         />
                                         <FormErrorMessage>{errors.phone}</FormErrorMessage>
+                                    </FormControl>
+
+                                    <FormControl isRequired isInvalid={errors.password}>
+                                        <FormLabel>비밀번호 (숫자 4자리)</FormLabel>
+                                        <Input
+                                            type="password"
+                                            placeholder="1234"
+                                            value={formData.password}
+                                            onChange={(e) => handleInputChange('password', e.target.value)}
+                                            maxLength="4"
+                                        />
+                                        <FormErrorMessage>{errors.password}</FormErrorMessage>
                                     </FormControl>
                                 </VStack>
 

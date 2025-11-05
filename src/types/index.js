@@ -47,3 +47,4 @@ export const FilterType = {
   emotion: 'all' | 'urgent' | 'caution' | 'normal',
   search: 'string'
 };
+

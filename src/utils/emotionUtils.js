@@ -41,3 +41,4 @@ export const getEmotionScoreText = (score) => {
   if (score === 3) return '정상';
   return '알 수 없음';
 };
+
