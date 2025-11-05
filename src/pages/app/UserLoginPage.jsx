@@ -60,7 +60,12 @@ export default function UserLoginPage() {
             </Flex>
 
             {/* 슬로건 */}
-            <Text fontSize={fs} color={isHighContrast ? 'white' : '#2c1026'} fontWeight={isHighContrast ? "bold" : "normal"} mb={uiScale[fontSizeLevel].mb}>
+            <Text
+                fontSize={fs}
+                color={isHighContrast ? 'white' : '#2c1026'}
+                fontWeight={isHighContrast ? 'bold' : 'normal'}
+                mb={uiScale[fontSizeLevel].mb}
+            >
                 편안한 일상친구
             </Text>
 
@@ -198,9 +203,10 @@ export default function UserLoginPage() {
                 <IconButton
                     aria-label="Decrease font size"
                     icon={<MinusIcon />}
-                    bg={isHighContrast ? 'white' : '#3A5A40'}
-                    color={isHighContrast ? 'black' : 'white'}
-                    _hover={isHighContrast ? { bg: 'yellow' } : { bg: '#4C7152' }}
+                    bg={isHighContrast ? 'transparent' : '#3A5A40'}
+                    color="white"
+                    border="2px solid white"
+                    _hover={isHighContrast ? { bg: 'yellow', color: 'black' } : { bg: '#4C7152' }}
                     h={{ base: uiScale[fontSizeLevel].inputH }}
                     rounded="full"
                     onClick={handleDecrease}
@@ -221,9 +227,10 @@ export default function UserLoginPage() {
                 <IconButton
                     aria-label="Increase font size"
                     icon={<AddIcon />}
-                    bg={isHighContrast ? 'white' : '#3A5A40'}
-                    color={isHighContrast ? 'black' : 'white'}
-                    _hover={isHighContrast ? { bg: 'yellow' } : { bg: '#4C7152' }}
+                    bg={isHighContrast ? 'transparent' : '#3A5A40'}
+                    color="white"
+                    border="2px solid white"
+                    _hover={isHighContrast ? { bg: 'yellow', color: 'black' } : { bg: '#4C7152' }}
                     h={{ base: uiScale[fontSizeLevel].inputH }}
                     rounded="full"
                     onClick={handleIncrease}
