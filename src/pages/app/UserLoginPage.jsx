@@ -72,8 +72,8 @@ export default function UserLoginPage() {
             {/* 로그인 박스 */}
             <Box
                 bg={isHighContrast ? 'black' : 'white'}
-                borderColor="#E5DED5"
-                borderWidth="1px"
+                border="2px solid"
+                borderColor={isHighContrast ? 'white' : '#BEB8AD'}
                 borderRadius="20px"
                 px={{ base: uiScale[fontSizeLevel].BoxPx }}
                 py={8}
@@ -96,7 +96,8 @@ export default function UserLoginPage() {
                             height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
                             color={isHighContrast ? 'white' : '#2c1026'}
-                            borderColor="#BEB8AD"
+                            border="2px solid"
+                            borderColor={isHighContrast ? 'white' : '#BEB8AD'}
                             _focus={
                                 isHighContrast
                                     ? {
@@ -138,7 +139,8 @@ export default function UserLoginPage() {
                             height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
                             color={isHighContrast ? 'white' : '#2c1026'}
-                            borderColor="#BEB8AD"
+                            border="2px solid"
+                            borderColor={isHighContrast ? 'white' : '#BEB8AD'}
                             _focus={
                                 isHighContrast
                                     ? {
@@ -179,8 +181,9 @@ export default function UserLoginPage() {
                     height={{ base: uiScale[fontSizeLevel].inputH }}
                     fontSize={fs}
                     fontWeight="bold"
-                    borderRadius="20px"
+                    borderRadius="1.25rem"
                     _hover={isHighContrast ? { bg: 'white' } : { bg: '#4C7152' }}
+                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#2E4634' }}
                     mb={uiScale[fontSizeLevel].mb}
                 >
                     로그인
@@ -239,16 +242,16 @@ export default function UserLoginPage() {
 
                 {/* 고대비 모드 버튼 */}
                 <Button
-                    bg={isHighContrast ? '#3A5A40' : 'black'}
-                    color="white"
-                    _hover={isHighContrast ? { bg: '#4C7152' } : { bg: '#292929' }}
-                    _active={isHighContrast ? { bg: '#2E4634' } : { bg: '#444444' }}
+                    bg={isHighContrast ? 'yellow' : 'black'}
+                    color={isHighContrast ? 'black' : 'white'}
+                    _hover={isHighContrast ? { bg: 'white' } : { bg: '#292929' }}
+                    _active={isHighContrast ? { bg: '#444444' } : { bg: '#444444' }}
                     fontWeight="bold"
                     px={4}
                     height={{ base: 'auto', md: '65px' }}
                     minH={uiScale[fontSizeLevel].inputH}
                     fontSize={fs}
-                    borderRadius="lg"
+                    borderRadius="1.25rem"
                     whiteSpace="normal"
                     onClick={toggleHighContrast}
                 >
