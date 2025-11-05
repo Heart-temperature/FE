@@ -98,17 +98,25 @@ export default function UserLoginPage() {
                             color={isHighContrast ? 'white' : '#2c1026'}
                             border="2px solid"
                             borderColor={isHighContrast ? 'white' : '#BEB8AD'}
-                            _focus={
+                            _focusVisible={
                                 isHighContrast
                                     ? {
                                           borderColor: 'yellow',
-                                          borderWidth: '3px',
+                                          borderWidth: '2px',
                                           boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: 'black',
+                                          ring: '2px',
+                                          ringColor: 'white',
                                       }
                                     : {
                                           borderColor: '#2c1026',
                                           borderWidth: '2px',
                                           boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: '#FBF8F3',
+                                          ring: '2px',
+                                          ringColor: '#BEB8AD',
                                       }
                             }
                         />
@@ -147,11 +155,19 @@ export default function UserLoginPage() {
                                           borderColor: 'yellow',
                                           borderWidth: '3px',
                                           boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: 'black',
+                                          ring: '2px',
+                                          ringColor: 'white',
                                       }
                                     : {
                                           borderColor: '#2c1026',
                                           borderWidth: '2px',
                                           boxShadow: 'none',
+                                          ringOffset: '2px',
+                                          ringOffsetColor: '#FBF8F3',
+                                          ring: '2px',
+                                          ringColor: '#BEB8AD',
                                       }
                             }
                         />
