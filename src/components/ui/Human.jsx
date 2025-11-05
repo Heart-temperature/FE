@@ -106,3 +106,4 @@ export const Human = ({ mode = 'idle' }) => {
     </VStack>
   );
 };
+

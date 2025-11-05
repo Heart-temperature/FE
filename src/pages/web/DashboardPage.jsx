@@ -42,10 +42,12 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Textarea
+    Textarea,
+    Image
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import dajungIcon from '../../assets/dajung-icon.png';
 import { 
     SearchIcon, 
     TimeIcon, 
@@ -57,20 +59,31 @@ import {
     AddIcon,
     EditIcon,
     ViewIcon,
-    WarningIcon
+    WarningIcon,
+    DeleteIcon
 } from '@chakra-ui/icons';
 
 const MOCK = [
-    { id: 'u1', name: '김영희', age: 82, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 외로움과 불안감 심각', lastCall: '5분 전', phone: '010-1234-5678', address: '서울시 강남구', joinedDate: '2023-03-12', lastActive: '1분 전', gender: '여성', callDuration: '12분', callSummary: '외로움과 불안감이 심각한 수준으로 상담 필요' },
-    { id: 'u2', name: '이철수', age: 76, emotion: 'caution', desc: 'AI 감정분석: 주의 - 우울감과 관심 저하', lastCall: '1일 전', phone: '010-2345-6789', address: '서울시 서초구', joinedDate: '2024-01-08', lastActive: '4일 전', gender: '남성', callDuration: '8분', callSummary: '우울감 표현, 일상에 대한 관심 저하' },
-    { id: 'u3', name: '박순자', age: 69, emotion: 'normal', desc: 'AI 감정분석: 정상 - 긍정적이고 활기찬 대화', lastCall: '3시간 전', phone: '010-3456-7890', address: '서울시 송파구', joinedDate: '2021-10-05', lastActive: '10일 전', gender: '여성', callDuration: '5분', callSummary: '활기찬 대화, 건강 상태 양호' },
+    { id: 'u7', name: '박철수', age: 73, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 좌절감과 신체적 어려움', lastCall: '1분 전', phone: '010-7890-1234', address: '서울시 강동구', joinedDate: '2022-11-30', lastActive: '1분 전', gender: '남성', callDuration: '4분', callSummary: '신체적 불편함이 심각, 움직임의 어려움' },
     { id: 'u4', name: '정민수', age: 74, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 불안감과 안전 우려', lastCall: '2분 전', phone: '010-4567-8901', address: '서울시 마포구', joinedDate: '2023-02-19', lastActive: '3개월 전', gender: '남성', callDuration: '3분', callSummary: '불안감이 심각, 혼자 있는 시간이 무서워함' },
+    { id: 'u10', name: '최순자', age: 77, emotion: 'caution', desc: 'AI 감정분석: 주의 - 스트레스와 압박감', lastCall: '3분 전', phone: '010-0123-4567', address: '서울시 도봉구', joinedDate: '2022-12-05', lastActive: '3분 전', gender: '여성', callDuration: '2분', callSummary: '스트레스 표현, 일상의 부담감' },
+    { id: 'u1', name: '김영희', age: 82, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 외로움과 불안감 심각', lastCall: '5분 전', phone: '010-1234-5678', address: '서울시 강남구', joinedDate: '2023-03-12', lastActive: '1분 전', gender: '여성', callDuration: '12분', callSummary: '외로움과 불안감이 심각한 수준으로 상담 필요' },
     { id: 'u5', name: '최영숙', age: 71, emotion: 'caution', desc: 'AI 감정분석: 주의 - 기억력 저하와 혼란', lastCall: '30분 전', phone: '010-5678-9012', address: '서울시 영등포구', joinedDate: '2022-07-15', lastActive: '1주 전', gender: '여성', callDuration: '7분', callSummary: '복용약 잊음, 기억력 저하 우려' },
     { id: 'u6', name: '강순자', age: 78, emotion: 'normal', desc: 'AI 감정분석: 정상 - 평온하고 안정적', lastCall: '2시간 전', phone: '010-6789-0123', address: '서울시 노원구', joinedDate: '2023-05-20', lastActive: '2시간 전', gender: '여성', callDuration: '6분', callSummary: '평온한 대화, 일상에 만족' },
-    { id: 'u7', name: '박철수', age: 73, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 좌절감과 신체적 어려움', lastCall: '1분 전', phone: '010-7890-1234', address: '서울시 강동구', joinedDate: '2022-11-30', lastActive: '1분 전', gender: '남성', callDuration: '4분', callSummary: '신체적 불편함이 심각, 움직임의 어려움' },
+    { id: 'u3', name: '박순자', age: 69, emotion: 'normal', desc: 'AI 감정분석: 정상 - 긍정적이고 활기찬 대화', lastCall: '3시간 전', phone: '010-3456-7890', address: '서울시 송파구', joinedDate: '2021-10-05', lastActive: '10일 전', gender: '여성', callDuration: '5분', callSummary: '활기찬 대화, 건강 상태 양호' },
     { id: 'u8', name: '이영숙', age: 80, emotion: 'caution', desc: 'AI 감정분석: 주의 - 외로움과 사회적 고립', lastCall: '6시간 전', phone: '010-8901-2345', address: '서울시 성동구', joinedDate: '2023-08-10', lastActive: '6시간 전', gender: '여성', callDuration: '9분', callSummary: '외로움 표현, 사람들과의 만남을 원함' },
+    { id: 'u2', name: '이철수', age: 76, emotion: 'caution', desc: 'AI 감정분석: 주의 - 우울감과 관심 저하', lastCall: '1일 전', phone: '010-2345-6789', address: '서울시 서초구', joinedDate: '2024-01-08', lastActive: '4일 전', gender: '남성', callDuration: '8분', callSummary: '우울감 표현, 일상에 대한 관심 저하' },
     { id: 'u9', name: '김민수', age: 75, emotion: 'normal', desc: 'AI 감정분석: 정상 - 만족스럽고 긍정적', lastCall: '1일 전', phone: '010-9012-3456', address: '서울시 중랑구', joinedDate: '2023-01-25', lastActive: '1일 전', gender: '남성', callDuration: '4분', callSummary: '만족스러운 대화, 현재 상황에 만족' },
-    { id: 'u10', name: '최순자', age: 77, emotion: 'caution', desc: 'AI 감정분석: 주의 - 스트레스와 압박감', lastCall: '3분 전', phone: '010-0123-4567', address: '서울시 도봉구', joinedDate: '2022-12-05', lastActive: '3분 전', gender: '여성', callDuration: '2분', callSummary: '스트레스 표현, 일상의 부담감' },
+    { id: 'u11', name: '손미영', age: 85, emotion: 'caution', desc: 'AI 감정분석: 주의 - 건강 악화 우려', lastCall: '10분 전', phone: '010-1111-2222', address: '서울시 성북구', joinedDate: '2022-09-14', lastActive: '10분 전', gender: '여성', callDuration: '6분', callSummary: '최근 건강 상태 악화, 정기적 관찰 필요' },
+    { id: 'u12', name: '오재훈', age: 72, emotion: 'normal', desc: 'AI 감정분석: 정상 - 긍정적 태도 유지', lastCall: '25분 전', phone: '010-3333-4444', address: '서울시 구로구', joinedDate: '2023-06-20', lastActive: '25분 전', gender: '남성', callDuration: '5분', callSummary: '항상 밝은 태도, 대화하기 즐거움' },
+    { id: 'u13', name: '유명희', age: 68, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 극심한 외로움', lastCall: '45분 전', phone: '010-5555-6666', address: '서울시 동작구', joinedDate: '2023-04-10', lastActive: '45분 전', gender: '여성', callDuration: '15분', callSummary: '극심한 외로움 표현, 적극적 상담 필요' },
+    { id: 'u14', name: '한봉식', age: 79, emotion: 'caution', desc: 'AI 감정분석: 주의 - 수면 부족', lastCall: '1시간 전', phone: '010-7777-8888', address: '서울시 금천구', joinedDate: '2022-08-05', lastActive: '1시간 전', gender: '남성', callDuration: '7분', callSummary: '수면 부족으로 인한 피로 호소' },
+    { id: 'u15', name: '이춘희', age: 81, emotion: 'normal', desc: 'AI 감정분석: 정상 - 건강한 대화', lastCall: '1시간 30분 전', phone: '010-9999-0000', address: '서울시 관악구', joinedDate: '2021-12-15', lastActive: '1시간 30분 전', gender: '여성', callDuration: '8분', callSummary: '일상에 만족하며 건강한 삶 유지' },
+    { id: 'u16', name: '박영배', age: 77, emotion: 'urgent', desc: 'AI 감정분석: 긴급 - 가족관계 갈등', lastCall: '2시간 전', phone: '010-2211-3344', address: '서울시 양천구', joinedDate: '2023-03-22', lastActive: '2시간 전', gender: '남성', callDuration: '10분', callSummary: '가족과의 관계에서 스트레스 호소' },
+    { id: 'u17', name: '정옥희', age: 74, emotion: 'caution', desc: 'AI 감정분석: 주의 - 약물 부작용 의심', lastCall: '3시간 전', phone: '010-4455-5566', address: '서울시 강서구', joinedDate: '2022-10-08', lastActive: '3시간 전', gender: '여성', callDuration: '9분', callSummary: '복용 약물에 대한 부작용 호소' },
+    { id: 'u18', name: '신두연', age: 70, emotion: 'normal', desc: 'AI 감정분석: 정상 - 활발한 사회활동', lastCall: '4시간 전', phone: '010-6677-7788', address: '서울시 종로구', joinedDate: '2023-02-14', lastActive: '4시간 전', gender: '남성', callDuration: '6분', callSummary: '사회활동 활발, 긍정적 태도' },
+    { id: 'u19', name: '김은순', age: 83, emotion: 'caution', desc: 'AI 감정분석: 주의 - 인지 기능 저하', lastCall: '5시간 전', phone: '010-8899-9900', address: '서울시 중구', joinedDate: '2021-11-20', lastActive: '5시간 전', gender: '여성', callDuration: '8분', callSummary: '최근 기억력 감소 호소, 정기 검진 필요' },
+    { id: 'u20', name: '조용주', age: 76, emotion: 'normal', desc: 'AI 감정분석: 정상 - 안정적인 상태', lastCall: '6시간 전', phone: '010-1122-2233', address: '서울시 용산구', joinedDate: '2022-07-30', lastActive: '6시간 전', gender: '남성', callDuration: '5분', callSummary: '전반적으로 안정적이고 만족스러운 상태' },
 ];
 
 export default function Dashboard() {
@@ -80,22 +93,29 @@ export default function Dashboard() {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentTime, setCurrentTime] = useState(new Date());
     const [selectedRows, setSelectedRows] = useState([]);
-    const [sortField, setSortField] = useState('name');
-    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortField, setSortField] = useState('lastCall');
+    const [sortDirection, setSortDirection] = useState('desc');
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
     const [selectedUserForMemo, setSelectedUserForMemo] = useState(null);
     const [memoText, setMemoText] = useState('');
 
-    // 실시간 시계 업데이트
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
-
+    // 시간 문자열을 분 단위로 변환하는 함수
+    const convertTimeToMinutes = (timeStr) => {
+        if (!timeStr) return Infinity;
+        const parts = timeStr.split(' ');
+        const value = parseInt(parts[0]);
+        const unit = parts[1];
+        
+        if (unit === '분') return value;
+        if (unit === '시간') return value * 60;
+        if (unit === '일') return value * 24 * 60;
+        if (unit === '주') return value * 7 * 24 * 60;
+        if (unit === '개월') return value * 30 * 24 * 60;
+        if (unit === '년') return value * 365 * 24 * 60;
+        return Infinity;
+    };
 
     // 필터링된 사용자 목록
     const filteredUsers = MOCK.filter(user => {
@@ -115,6 +135,9 @@ export default function Dashboard() {
             const emotionOrder = { urgent: 0, caution: 1, normal: 2 };
             aValue = emotionOrder[aValue] ?? 3;
             bValue = emotionOrder[bValue] ?? 3;
+        } else if (sortField === 'lastCall') {
+            aValue = convertTimeToMinutes(aValue);
+            bValue = convertTimeToMinutes(bValue);
         }
         
         if (typeof aValue === 'string') {
@@ -186,6 +209,34 @@ export default function Dashboard() {
         }
     };
 
+    const handleDeleteSelected = () => {
+        if (selectedRows.length === 0) {
+            toast({
+                title: '선택된 사용자 없음',
+                description: '삭제할 사용자를 선택해주세요.',
+                status: 'warning',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        // 선택된 사용자 이름 가져오기
+        const selectedUsers = paginatedUsers.filter(user => selectedRows.includes(user.id));
+        const userNames = selectedUsers.map(u => u.name).join(', ');
+
+        toast({
+            title: '사용자 삭제 완료!',
+            description: `${userNames}님이 삭제되었습니다.`,
+            status: 'success',
+            duration: 2000,
+            isClosable: true,
+        });
+
+        // 선택 초기화
+        setSelectedRows([]);
+    };
+
     const handleSort = (field) => {
         if (sortField === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -239,33 +290,15 @@ export default function Dashboard() {
                 <VStack spacing={3} align="stretch">
                     <Flex align="center" justify="space-between">
                         <HStack spacing={4}>
-                            <Box
-                                bg="linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
-                                borderRadius="lg"
-                                p={3}
-                                boxShadow="0 4px 12px rgba(37, 99, 235, 0.3)"
-                            >
-                                <Text fontSize="xl" fontWeight="bold" color="white">
-                                    🏥
-                                </Text>
-                            </Box>
+                                <Image src={dajungIcon} alt="Dajung Icon" boxSize="24px" />
                             <VStack align="start" spacing={0}>
                                 <Heading size="lg" color="gray.800" fontWeight="600">
-                                    독거노인 관리 시스템
+                                    다정이 관리 시스템
                                 </Heading>
-                                <Text color="gray.500" fontSize="sm">
-                                    Elderly Care Management System v2.1
-                                </Text>
                             </VStack>
                         </HStack>
                         
                         <HStack spacing={6}>
-                            <HStack spacing={2} bg="gray.50" px={3} py={2} borderRadius="md">
-                                <TimeIcon color="gray.600" />
-                                <Text fontSize="sm" fontWeight="500" color="gray.700">
-                                    {currentTime.toLocaleDateString('ko-KR')} {currentTime.toLocaleTimeString('ko-KR', { hour12: false })}
-                                </Text>
-                            </HStack>
                             
                             <HStack spacing={3}>
                                 <Button 
@@ -276,16 +309,22 @@ export default function Dashboard() {
                                 >
                                     사용자 추가
                                 </Button>
+                                <Button 
+                                    leftIcon={<DeleteIcon />} 
+                                    colorScheme="red"
+                                    size="sm"
+                                    onClick={handleDeleteSelected}
+                                    isDisabled={selectedRows.length === 0}
+                                >
+                                    {selectedRows.length > 0 ? `사용자 삭제 (${selectedRows.length})` : '사용자 삭제'}
+                                </Button>
                                 <HStack spacing={2} bg="blue.50" px={3} py={2} borderRadius="md">
-                                    <Avatar size="sm" name="관리자" bg="blue.500" />
-                                    <VStack align="start" spacing={0}>
-                                        <Text fontSize="sm" fontWeight="500" color="gray.800">
-                                            김관리
-                                        </Text>
-                                        <Text fontSize="xs" color="gray.500">
-                                            시스템 관리자
-                                        </Text>
-                                    </VStack>
+                                    <Text fontSize="sm" fontWeight="500" color="gray.800">
+                                        김관리
+                                    </Text>
+                                    <Text fontSize="xs" color="gray.500">
+                                        시스템 관리자
+                                    </Text>
                                 </HStack>
                             </HStack>
                         </HStack>

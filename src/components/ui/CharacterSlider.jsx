@@ -145,3 +145,4 @@ export const CharacterSlider = ({ character, setCharacter }) => {
     </VStack>
   );
 };
+

@@ -34,3 +34,4 @@ export const useCharacterSlider = (initialCharacter = 'robot') => {
     setCharacter: setCharacterById
   };
 };
+

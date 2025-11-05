@@ -30,7 +30,7 @@ import {
     Textarea,
 } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useNavigation } from '../hooks';
+import { useNavigation } from '../../hooks';
 import { useState } from 'react';
 import { ArrowBackIcon, WarningIcon, EditIcon, CalendarIcon, ChatIcon, InfoIcon } from '@chakra-ui/icons';
 import { CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts';
@@ -198,6 +198,8 @@ export default function UserDetail() {
     const user = MOCK_DETAIL[id] || MOCK_DETAIL.u1;
     const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
     const [memoText, setMemoText] = useState('');
+    const [selectedMemo, setSelectedMemo] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const getEmotionColor = (emotion) => {
         switch (emotion) {
@@ -227,6 +229,15 @@ export default function UserDetail() {
 
     const handleMemoClick = () => {
         setMemoText('');
+        setSelectedMemo(null);
+        setIsEditMode(false);
+        setIsMemoModalOpen(true);
+    };
+
+    const handleMemoEdit = (memo) => {
+        setMemoText(memo.content);
+        setSelectedMemo(memo);
+        setIsEditMode(true);
         setIsMemoModalOpen(true);
     };
 
@@ -234,14 +245,16 @@ export default function UserDetail() {
         if (memoText.trim()) {
             // 여기서 실제로는 서버에 메모를 저장해야 합니다
             toast({
-                title: '메모 저장 완료!',
-                description: `${user.name}님의 메모가 저장되었습니다.`,
+                title: `메모 ${isEditMode ? '수정' : '추가'} 완료!`,
+                description: `${user.name}님의 메모가 ${isEditMode ? '수정' : '추가'}되었습니다.`,
                 status: 'success',
                 duration: 2000,
                 isClosable: true,
             });
             setIsMemoModalOpen(false);
             setMemoText('');
+            setSelectedMemo(null);
+            setIsEditMode(false);
         } else {
             toast({
                 title: '메모를 입력해주세요',
@@ -256,6 +269,8 @@ export default function UserDetail() {
     const handleMemoCancel = () => {
         setIsMemoModalOpen(false);
         setMemoText('');
+        setSelectedMemo(null);
+        setIsEditMode(false);
     };
 
     // 감정 점수 데이터 준비
@@ -355,26 +370,28 @@ export default function UserDetail() {
                                 </HStack>
                             </CardHeader>
                             <CardBody>
-                                <VStack spacing={4} align="stretch">
-                                    {user.conversations.map((conv, index) => (
-                                        <Box key={index} p={4} bg="gray.50" borderRadius="lg">
-                                            <HStack justify="space-between" mb={2}>
-                                                <Text fontWeight="bold" color="gray.700">
-                                                    {conv.date}
-                                                </Text>
-                                                <HStack spacing={2}>
-                                                    <Badge bg={getEmotionColor(conv.emotion)} color="white" size="sm">
-                                                        {getEmotionText(conv.emotion)}
-                                                    </Badge>
-                                                    <Text fontSize="sm" color="gray.500">
-                                                        {conv.duration}
+                                <Box maxH="400px" overflowY="auto" pr={2}>
+                                    <VStack spacing={4} align="stretch">
+                                        {user.conversations.map((conv, index) => (
+                                            <Box key={index} p={4} bg="gray.50" borderRadius="lg">
+                                                <HStack justify="space-between" mb={2}>
+                                                    <Text fontWeight="bold" color="gray.700">
+                                                        {conv.date}
                                                     </Text>
+                                                    <HStack spacing={2}>
+                                                        <Badge bg={getEmotionColor(conv.emotion)} color="white" size="sm">
+                                                            {getEmotionText(conv.emotion)}
+                                                        </Badge>
+                                                        <Text fontSize="sm" color="gray.500">
+                                                            {conv.duration}
+                                                        </Text>
+                                                    </HStack>
                                                 </HStack>
-                                            </HStack>
-                                            <Text color="gray.600">{conv.summary}</Text>
-                                        </Box>
-                                    ))}
-                                </VStack>
+                                                <Text color="gray.600">{conv.summary}</Text>
+                                            </Box>
+                                        ))}
+                                    </VStack>
+                                </Box>
                             </CardBody>
                         </Card>
                     </VStack>
@@ -413,21 +430,9 @@ export default function UserDetail() {
                                     </Box>
                                     <Box>
                                         <Text fontSize="sm" color="gray.600" mb={1}>
-                                            응급연락처
+                                            긴급연락처
                                         </Text>
                                         <Text>{user.emergencyContact}</Text>
-                                    </Box>
-                                    <Box>
-                                        <Text fontSize="sm" color="gray.600" mb={1}>
-                                            의료이력
-                                        </Text>
-                                        <HStack spacing={2} wrap="wrap">
-                                            {user.medicalHistory.map((history, index) => (
-                                                <Tag key={index} size="sm" colorScheme="red">
-                                                    <TagLabel>{history}</TagLabel>
-                                                </Tag>
-                                            ))}
-                                        </HStack>
                                     </Box>
                                 </VStack>
                             </CardBody>
@@ -442,28 +447,38 @@ export default function UserDetail() {
                                 </HStack>
                             </CardHeader>
                             <CardBody>
-                                <VStack spacing={3} align="stretch">
-                                    {user.memos.map((memo) => (
-                                        <Box
-                                            key={memo.id}
-                                            p={3}
-                                            bg="orange.50"
-                                            borderRadius="md"
-                                            borderLeft="4px"
-                                            borderColor="orange.400"
-                                        >
-                                            <HStack justify="space-between" mb={1}>
-                                                <Text fontSize="sm" color="gray.600">
-                                                    {memo.date}
-                                                </Text>
-                                                <Text fontSize="xs" color="gray.500">
-                                                    {memo.author}
-                                                </Text>
-                                            </HStack>
-                                            <Text fontSize="sm">{memo.content}</Text>
-                                        </Box>
-                                    ))}
-                                </VStack>
+                                <Box maxH="350px" overflowY="auto" pr={2}>
+                                    <VStack spacing={3} align="stretch">
+                                        {user.memos.map((memo) => (
+                                            <Box
+                                                key={memo.id}
+                                                p={3}
+                                                bg="orange.50"
+                                                borderRadius="md"
+                                                borderLeft="4px"
+                                                borderColor="orange.400"
+                                                cursor="pointer"
+                                                _hover={{ 
+                                                    bg: "orange.100",
+                                                    borderColor: "orange.500",
+                                                    boxShadow: "md"
+                                                }}
+                                                transition="all 0.2s"
+                                                onClick={() => handleMemoEdit(memo)}
+                                            >
+                                                <HStack justify="space-between" mb={1}>
+                                                    <Text fontSize="sm" color="gray.600">
+                                                        {memo.date}
+                                                    </Text>
+                                                    <Text fontSize="xs" color="gray.500">
+                                                        {memo.author}
+                                                    </Text>
+                                                </HStack>
+                                                <Text fontSize="sm">{memo.content}</Text>
+                                            </Box>
+                                        ))}
+                                    </VStack>
+                                </Box>
                             </CardBody>
                         </Card>
 
@@ -485,11 +500,13 @@ export default function UserDetail() {
                 </Grid>
             </Container>
 
-            {/* 메모 추가 모달 */}
+            {/* 메모 추가/수정 모달 */}
             <Modal isOpen={isMemoModalOpen} onClose={handleMemoCancel} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>메모 추가 - {user.name}님</ModalHeader>
+                    <ModalHeader>
+                        메모 {isEditMode ? '수정' : '추가'} - {user.name}님
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
@@ -527,7 +544,7 @@ export default function UserDetail() {
                             취소
                         </Button>
                         <Button colorScheme="blue" onClick={handleMemoSave}>
-                            저장
+                            {isEditMode ? '수정' : '추가'}
                         </Button>
                     </ModalFooter>
                 </ModalContent>

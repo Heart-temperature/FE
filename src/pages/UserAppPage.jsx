@@ -6,6 +6,7 @@ import { Robot } from '../components/ui/Robot';
 import { Human } from '../components/ui/Human';
 import { VoiceWave } from '../components/ui/VoiceWave';
 import { APP_STATES } from '../constants';
+import { useSystemFontSize } from '../hooks';
 
 const MotionBox = motion(Box);
 
@@ -15,6 +16,9 @@ export default function UserApp() {
   const [character, setCharacter] = useState('robot');
   const toast = useToast();
   const ttsRef = useRef(null);
+  
+  // 시스템 폰트 사이즈 감지 및 적용
+  const { fontScale, scaledSize } = useSystemFontSize();
 
   // 인트로 → 자동 홈 전환
   useEffect(() => {
@@ -68,11 +72,13 @@ export default function UserApp() {
 
   // 공통 컨테이너
   const Screen = ({ children, bg = 'bg' }) => (
-    <Center minH="100vh" bg={bg} px={4}>
-      <VStack spacing={6} maxW="480px" w="100%">
-        {children}
-      </VStack>
-    </Center>
+    <Box className="user-app-container">
+      <Center minH="100vh" bg={bg} px={4}>
+        <VStack spacing={6} maxW="480px" w="100%">
+          {children}
+        </VStack>
+      </Center>
+    </Box>
   );
 
   // 각 화면 렌더링

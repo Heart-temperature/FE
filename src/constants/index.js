@@ -60,3 +60,4 @@ export const ANIMATION_CONFIG = {
     ease: "easeInOut"
   }
 };
+
