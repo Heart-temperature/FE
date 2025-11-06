@@ -13,6 +13,8 @@ export default function MainPage() {
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
     const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 (로그인 페이지 buttonHeights와 동일)
+    const arrowButtonSizes = ['md', 'lg', 'xl']; // 화살표 버튼 크기
+    const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
@@ -23,6 +25,8 @@ export default function MainPage() {
     const fs = fontSizes[fontSizeLevel];
     const callBtnH = callButtonHeights[fontSizeLevel];
     const settingBtnH = settingButtonHeights[fontSizeLevel];
+    const arrowBtnSize = arrowButtonSizes[fontSizeLevel];
+    const arrowIconSize = arrowIconSizes[fontSizeLevel];
 
     // AI 모델 데이터
     const aiModels = [
@@ -97,10 +101,10 @@ export default function MainPage() {
                             <HStack justify="space-between" align="center" spacing={4}>
                                 {/* 이전 버튼 */}
                                 <IconButton
-                                    icon={<ChevronLeftIcon boxSize={8} />}
+                                    icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
                                     aria-label="이전 모델"
                                     onClick={handlePrevModel}
-                                    size="lg"
+                                    size={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
@@ -174,10 +178,10 @@ export default function MainPage() {
 
                                 {/* 다음 버튼 */}
                                 <IconButton
-                                    icon={<ChevronRightIcon boxSize={8} />}
+                                    icon={<ChevronRightIcon boxSize={arrowIconSize} />}
                                     aria-label="다음 모델"
                                     onClick={handleNextModel}
-                                    size="lg"
+                                    size={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
