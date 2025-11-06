@@ -12,8 +12,11 @@ import {
     IconButton,
     VStack,
     HStack,
+    Image,
+    Divider,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import DajeongLogo from '../../components/common/image.png';
 
 export default function UserLoginPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
@@ -33,14 +36,7 @@ export default function UserLoginPage() {
     const inputH = inputHeights[fontSizeLevel];
 
     return (
-        <Flex
-            minH="100vh"
-            align="center"
-            justify="center"
-            bg={isHighContrast ? '#000000' : '#F5F7FA'}
-            px={6}
-            py={10}
-        >
+        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={6} py={10}>
             {/* 메인 로그인 카드 */}
             <Box
                 bg={isHighContrast ? '#000000' : 'white'}
@@ -58,28 +54,24 @@ export default function UserLoginPage() {
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={2}>
-                        <Text
-                            fontSize={{ base: '2.5rem', md: '3rem' }}
-                            fontWeight="700"
-                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                            mb={2}
-                        >
-                            다정 로그인
-                        </Text>
-                        <Text fontSize={fs} color={isHighContrast ? '#CCCCCC' : '#000000'} fontWeight="600">
-                            아이디와 비밀번호를 입력하세요
-                        </Text>
+                        <Image
+                            src={DajeongLogo}
+                            alt="다정이 로고"
+                            maxW="300px"
+                            mx="auto"
+                            mb={4}
+                        />
+                        <Divider
+                            borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}
+                            borderWidth="2px"
+                            mb={4}
+                        />
                     </Box>
 
                     {/* 아이디 */}
                     <FormControl>
-                        <FormLabel
-                            fontSize={fs}
-                            color={isHighContrast ? '#FFFFFF' : '#000000'}
-                            fontWeight="700"
-                            mb={3}
-                        >
-                            아이디 입력
+                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
+                            전화번호
                         </FormLabel>
                         <Input
                             value={id}
@@ -95,7 +87,7 @@ export default function UserLoginPage() {
                             color={isHighContrast ? '#FFFFFF' : '#1976D2'}
                             fontWeight="600"
                             _placeholder={{
-                                color: isHighContrast ? '#888888' : '#757575',
+                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
                                 fontWeight: '500',
                             }}
                             _hover={{
@@ -116,13 +108,8 @@ export default function UserLoginPage() {
 
                     {/* 비밀번호 */}
                     <FormControl>
-                        <FormLabel
-                            fontSize={fs}
-                            color={isHighContrast ? '#FFFFFF' : '#000000'}
-                            fontWeight="700"
-                            mb={3}
-                        >
-                            비밀번호 입력
+                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
+                            비밀번호
                         </FormLabel>
                         <InputGroup>
                             <Input
@@ -140,7 +127,7 @@ export default function UserLoginPage() {
                                 color={isHighContrast ? '#FFFFFF' : '#1976D2'}
                                 fontWeight="600"
                                 _placeholder={{
-                                    color: isHighContrast ? '#888888' : '#BBDEFB',
+                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
                                     fontWeight: '500',
                                 }}
                                 _hover={{
@@ -157,28 +144,6 @@ export default function UserLoginPage() {
                                 }}
                                 transition="all 0.2s"
                             />
-                            <InputRightElement height="100%" pr={4}>
-                                <IconButton
-                                    variant="ghost"
-                                    onClick={handleShowToggle}
-                                    icon={
-                                        show ? (
-                                            <ViewOffIcon
-                                                boxSize={7}
-                                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                                            />
-                                        ) : (
-                                            <ViewIcon boxSize={7} color={isHighContrast ? '#FFFFFF' : '#1976D2'} />
-                                        )
-                                    }
-                                    aria-label={show ? '비밀번호 숨기기' : '비밀번호 보기'}
-                                    _hover={{
-                                        bg: 'transparent',
-                                        color: isHighContrast ? '#FFFF00' : '#2196F3',
-                                        transform: 'scale(1.15)',
-                                    }}
-                                />
-                            </InputRightElement>
                         </InputGroup>
                     </FormControl>
 
@@ -205,20 +170,15 @@ export default function UserLoginPage() {
                         }}
                         transition="all 0.2s"
                     >
-                        로그인하기
+                        시작하기
                     </Button>
 
                     {/* 설정 영역 */}
-                    <Box
-                        mt={4}
-                        pt={6}
-                        borderTop="3px solid"
-                        borderColor={isHighContrast ? '#444444' : '#E3F2FD'}
-                    >
+                    <Box mt={4} pt={6} borderTop="3px solid" borderColor={isHighContrast ? '#444444' : '#E3F2FD'}>
                         <Text
                             fontSize={fs}
                             fontWeight="700"
-                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
                             mb={5}
                             textAlign="center"
                         >
@@ -232,27 +192,42 @@ export default function UserLoginPage() {
                             </Text>
                             <HStack spacing={0}>
                                 <Button
-                                    size="sm"
+                                    size="md"
                                     onClick={() => setFontSizeLevel(0)}
-                                    bg={fontSizeLevel === 0
-                                        ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    bg={
+                                        fontSizeLevel === 0
+                                            ? isHighContrast
+                                                ? '#FFD700'
+                                                : '#2196F3'
+                                            : isHighContrast
+                                            ? '#FFFFFF'
+                                            : '#E3F2FD'
                                     }
-                                    color={fontSizeLevel === 0
-                                        ? (isHighContrast ? '#000000' : 'white')
-                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    color={
+                                        fontSizeLevel === 0
+                                            ? isHighContrast
+                                                ? '#000000'
+                                                : 'white'
+                                            : isHighContrast
+                                            ? '#000000'
+                                            : '#1976D2'
                                     }
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
                                     minW="70px"
                                     h="55px"
-                                    fontSize="1.2rem"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
-                                        bg: fontSizeLevel === 0
-                                            ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                            : (isHighContrast ? '#FFEB3B' : '#64B5F6'),
+                                        bg:
+                                            fontSizeLevel === 0
+                                                ? isHighContrast
+                                                    ? '#FFD700'
+                                                    : '#2196F3'
+                                                : isHighContrast
+                                                ? '#FFEB3B'
+                                                : '#64B5F6',
                                         transform: 'scale(1.05)',
                                     }}
                                     transition="all 0.2s"
@@ -260,28 +235,43 @@ export default function UserLoginPage() {
                                     작게
                                 </Button>
                                 <Button
-                                    size="sm"
+                                    size="md"
                                     onClick={() => setFontSizeLevel(1)}
-                                    bg={fontSizeLevel === 1
-                                        ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    bg={
+                                        fontSizeLevel === 1
+                                            ? isHighContrast
+                                                ? '#FFD700'
+                                                : '#2196F3'
+                                            : isHighContrast
+                                            ? '#FFFFFF'
+                                            : '#E3F2FD'
                                     }
-                                    color={fontSizeLevel === 1
-                                        ? (isHighContrast ? '#000000' : 'white')
-                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    color={
+                                        fontSizeLevel === 1
+                                            ? isHighContrast
+                                                ? '#000000'
+                                                : 'white'
+                                            : isHighContrast
+                                            ? '#000000'
+                                            : '#1976D2'
                                     }
                                     fontWeight="700"
                                     borderRadius="0"
                                     minW="70px"
                                     h="55px"
-                                    fontSize="1.2rem"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
-                                        bg: fontSizeLevel === 1
-                                            ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                            : (isHighContrast ? '#FFEB3B' : '#64B5F6'),
+                                        bg:
+                                            fontSizeLevel === 1
+                                                ? isHighContrast
+                                                    ? '#FFD700'
+                                                    : '#2196F3'
+                                                : isHighContrast
+                                                ? '#FFEB3B'
+                                                : '#64B5F6',
                                         transform: 'scale(1.05)',
                                     }}
                                     transition="all 0.2s"
@@ -289,27 +279,42 @@ export default function UserLoginPage() {
                                     보통
                                 </Button>
                                 <Button
-                                    size="sm"
+                                    size="md"
                                     onClick={() => setFontSizeLevel(2)}
-                                    bg={fontSizeLevel === 2
-                                        ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    bg={
+                                        fontSizeLevel === 2
+                                            ? isHighContrast
+                                                ? '#FFD700'
+                                                : '#2196F3'
+                                            : isHighContrast
+                                            ? '#FFFFFF'
+                                            : '#E3F2FD'
                                     }
-                                    color={fontSizeLevel === 2
-                                        ? (isHighContrast ? '#000000' : 'white')
-                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    color={
+                                        fontSizeLevel === 2
+                                            ? isHighContrast
+                                                ? '#000000'
+                                                : 'white'
+                                            : isHighContrast
+                                            ? '#000000'
+                                            : '#1976D2'
                                     }
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
                                     minW="70px"
                                     h="55px"
-                                    fontSize="1.2rem"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
-                                        bg: fontSizeLevel === 2
-                                            ? (isHighContrast ? '#FFD700' : '#2196F3')
-                                            : (isHighContrast ? '#FFEB3B' : '#64B5F6'),
+                                        bg:
+                                            fontSizeLevel === 2
+                                                ? isHighContrast
+                                                    ? '#FFD700'
+                                                    : '#2196F3'
+                                                : isHighContrast
+                                                ? '#FFEB3B'
+                                                : '#64B5F6',
                                         transform: 'scale(1.05)',
                                     }}
                                     transition="all 0.2s"
@@ -325,7 +330,7 @@ export default function UserLoginPage() {
                                 선명한 화면
                             </Text>
                             <Button
-                                size="sm"
+                                size="md"
                                 onClick={toggleHighContrast}
                                 bg={isHighContrast ? '#FFD700' : '#2196F3'}
                                 color={isHighContrast ? '#000000' : 'white'}
@@ -333,7 +338,7 @@ export default function UserLoginPage() {
                                 borderRadius="10px"
                                 minW="210px"
                                 h="55px"
-                                fontSize="1.2rem"
+                                fontSize="1.4rem"
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
@@ -341,7 +346,7 @@ export default function UserLoginPage() {
                                 }}
                                 transition="all 0.2s"
                             >
-                                {isHighContrast ? '켜짐' : '끄짐'}
+                                {isHighContrast ? '켜짐' : '꺼짐'}
                             </Button>
                         </HStack>
                     </Box>
