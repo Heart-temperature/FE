@@ -10,20 +10,20 @@ const MotionBox = motion(Box);
 
 export default function MainPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
-    const fontSizes = ['1.5rem', '1.9rem', '2.5rem'];
-    const buttonHeights = ['70px', '85px', '110px'];
+    const fontSizes = ['1.5rem', '2.0rem', '2.5rem']; // 0.5rem씩 균등 증가
+    const buttonHeights = ['70px', '90px', '110px']; // 20px씩 균등 증가
 
-    // 동적 크기 설정
-    const imageSizes = ['150px', '200px', '260px']; // AI 모델 이미지 크기 - 전체적으로 크게, 차이 증가
-    const logoMaxWidths = ['250px', '300px', '360px']; // 로고 크기
-    const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
+    // 동적 크기 설정 - 모두 균등한 간격으로
+    const imageSizes = ['160px', '210px', '260px']; // 50px씩 균등 증가
+    const logoMaxWidths = ['260px', '310px', '360px']; // 50px씩 균등 증가
+    const arrowIconSizes = [6, 8, 10]; // 2씩 균등 증가
     const indicatorSizes = [
-        { active: '10px', inactive: '6px' },
-        { active: '12px', inactive: '8px' },
-        { active: '15px', inactive: '10px' },
-    ]; // 인디케이터 크기
-    const cardPaddings = [8, 10, 14]; // 카드 패딩
-    const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 높이
+        { active: '8px', inactive: '5px' },
+        { active: '11px', inactive: '7px' },
+        { active: '14px', inactive: '9px' },
+    ]; // active 3px씩, inactive 2px씩 균등 증가
+    const cardPaddings = [8, 11, 14]; // 3씩 균등 증가
+    const settingButtonHeights = ['50px', '60px', '70px']; // 10px씩 균등 증가
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
