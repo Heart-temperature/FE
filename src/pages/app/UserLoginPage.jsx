@@ -27,8 +27,6 @@ export default function UserLoginPage() {
     const [isHighContrast, setIsHighContrast] = useState(false);
 
     const handleShowToggle = () => setShow(!show);
-    const handleIncrease = () => setFontSizeLevel((prev) => Math.min(prev + 1, 2));
-    const handleDecrease = () => setFontSizeLevel((prev) => Math.max(prev - 1, 0));
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
 
     const fs = fontSizes[fontSizeLevel];
@@ -217,59 +215,58 @@ export default function UserLoginPage() {
                             <Text fontSize={fs} fontWeight="600" color={isHighContrast ? '#FFFFFF' : '#424242'}>
                                 글자 크기
                             </Text>
-                            <HStack spacing={2}>
+                            <HStack spacing={0}>
                                 <Button
                                     size="sm"
-                                    onClick={handleDecrease}
-                                    isDisabled={fontSizeLevel === 0}
-                                    bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
-                                    color={isHighContrast ? '#000000' : '#1976D2'}
+                                    onClick={() => setFontSizeLevel(0)}
+                                    bg={fontSizeLevel === 0
+                                        ? (isHighContrast ? '#FFD700' : '#90CAF9')
+                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    }
+                                    color={fontSizeLevel === 0
+                                        ? (isHighContrast ? '#000000' : 'white')
+                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    }
                                     fontWeight="700"
-                                    borderRadius="10px"
-                                    fontSize="1.1rem"
+                                    borderRadius="10px 0 0 10px"
+                                    px={6}
                                     h="50px"
-                                    w="50px"
+                                    fontSize="1.1rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
+                                    borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
-                                        bg: isHighContrast ? '#FFFF00' : '#BBDEFB',
+                                        bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
                                         transform: 'scale(1.05)',
                                     }}
-                                    _disabled={{
-                                        opacity: 0.3,
-                                    }}
+                                    transition="all 0.2s"
                                 >
-                                    A-
+                                    작게
                                 </Button>
-                                <Text
-                                    fontSize="1.1rem"
-                                    fontWeight="600"
-                                    color={isHighContrast ? '#CCCCCC' : '#616161'}
-                                    minW="50px"
-                                    textAlign="center"
-                                >
-                                    {fontSizeLevels[fontSizeLevel]}
-                                </Text>
                                 <Button
                                     size="sm"
-                                    onClick={handleIncrease}
-                                    isDisabled={fontSizeLevel === 2}
-                                    bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
-                                    color={isHighContrast ? '#000000' : '#1976D2'}
+                                    onClick={() => setFontSizeLevel(2)}
+                                    bg={fontSizeLevel === 2
+                                        ? (isHighContrast ? '#FFD700' : '#90CAF9')
+                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    }
+                                    color={fontSizeLevel === 2
+                                        ? (isHighContrast ? '#000000' : 'white')
+                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    }
                                     fontWeight="700"
-                                    borderRadius="10px"
-                                    fontSize="1.1rem"
+                                    borderRadius="0 10px 10px 0"
+                                    px={6}
                                     h="50px"
-                                    w="50px"
+                                    fontSize="1.1rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
+                                    borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
-                                        bg: isHighContrast ? '#FFFF00' : '#BBDEFB',
+                                        bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
                                         transform: 'scale(1.05)',
                                     }}
-                                    _disabled={{
-                                        opacity: 0.3,
-                                    }}
+                                    transition="all 0.2s"
                                 >
-                                    A+
+                                    크게
                                 </Button>
                             </HStack>
                         </HStack>
