@@ -13,6 +13,8 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
 import DajeongLogo from '../../components/common/image.png';
+import Img1 from '../../components/common/img1.png';
+import Img2 from '../../components/common/img2.png';
 
 const MotionBox = motion(Box);
 
@@ -35,14 +37,14 @@ export default function MainPage() {
         {
             id: 1,
             name: '다정이 1호',
-            emoji: '🤖',
+            image: Img1,
             color: isHighContrast ? '#FFD700' : '#2196F3',
             description: '친근하고 활기찬 음성',
         },
         {
             id: 2,
             name: '다정이 2호',
-            emoji: '👨‍⚕️',
+            image: Img2,
             color: isHighContrast ? '#FFD700' : '#4CAF50',
             description: '차분하고 안정된 음성',
         },
@@ -131,7 +133,7 @@ export default function MainPage() {
                                         transition={{ duration: 0.3 }}
                                     >
                                         <VStack spacing={4}>
-                                            {/* 이모지 */}
+                                            {/* AI 모델 이미지 */}
                                             <Box
                                                 w="140px"
                                                 h="140px"
@@ -141,14 +143,20 @@ export default function MainPage() {
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center"
-                                                fontSize="6xl"
                                                 boxShadow={
                                                     isHighContrast
                                                         ? '0 0 20px rgba(255, 215, 0, 0.5)'
                                                         : '0 8px 20px rgba(0, 0, 0, 0.1)'
                                                 }
+                                                overflow="hidden"
                                             >
-                                                {currentModel.emoji}
+                                                <Image
+                                                    src={currentModel.image}
+                                                    alt={currentModel.name}
+                                                    w="100%"
+                                                    h="100%"
+                                                    objectFit="cover"
+                                                />
                                             </Box>
 
                                             {/* 모델 이름 */}
