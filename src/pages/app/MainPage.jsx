@@ -10,20 +10,8 @@ const MotionBox = motion(Box);
 
 export default function MainPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
-    const fontSizes = ['1.5rem', '2.0rem', '2.5rem']; // 0.5rem씩 균등 증가
-    const buttonHeights = ['70px', '90px', '110px']; // 20px씩 균등 증가
-
-    // 동적 크기 설정 - 모두 균등한 간격으로
-    const imageSizes = ['160px', '210px', '260px']; // 50px씩 균등 증가
-    const logoMaxWidths = ['260px', '310px', '360px']; // 50px씩 균등 증가
-    const arrowIconSizes = [6, 8, 10]; // 2씩 균등 증가
-    const indicatorSizes = [
-        { active: '8px', inactive: '5px' },
-        { active: '11px', inactive: '7px' },
-        { active: '14px', inactive: '9px' },
-    ]; // active 3px씩, inactive 2px씩 균등 증가
-    const cardPaddings = [8, 11, 14]; // 3씩 균등 증가
-    const settingButtonHeights = ['50px', '60px', '70px']; // 10px씩 균등 증가
+    const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
+    const buttonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
@@ -33,12 +21,6 @@ export default function MainPage() {
 
     const fs = fontSizes[fontSizeLevel];
     const btnH = buttonHeights[fontSizeLevel];
-    const imgSize = imageSizes[fontSizeLevel];
-    const logoSize = logoMaxWidths[fontSizeLevel];
-    const arrowSize = arrowIconSizes[fontSizeLevel];
-    const indicatorSize = indicatorSizes[fontSizeLevel];
-    const cardPadding = cardPaddings[fontSizeLevel];
-    const settingBtnH = settingButtonHeights[fontSizeLevel];
 
     // AI 모델 데이터
     const aiModels = [
@@ -84,7 +66,7 @@ export default function MainPage() {
                         ? '0 0 0 4px white, 0 20px 60px rgba(255,255,255,0.5)'
                         : '0 10px 40px rgba(33, 150, 243, 0.15)'
                 }
-                p={{ base: cardPadding, md: cardPadding }}
+                p={{ base: 10, md: 14 }}
                 w="full"
                 maxW="550px"
                 border={isHighContrast ? '4px solid white' : 'none'}
@@ -92,7 +74,7 @@ export default function MainPage() {
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={2}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW={logoSize} mx="auto" mb={4} />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="300px" mx="auto" mb={4} />
                         <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
@@ -113,7 +95,7 @@ export default function MainPage() {
                             <HStack justify="space-between" align="center" spacing={4}>
                                 {/* 이전 버튼 */}
                                 <IconButton
-                                    icon={<ChevronLeftIcon boxSize={arrowSize} />}
+                                    icon={<ChevronLeftIcon boxSize={8} />}
                                     aria-label="이전 모델"
                                     onClick={handlePrevModel}
                                     size="lg"
@@ -143,8 +125,8 @@ export default function MainPage() {
                                         <VStack spacing={4}>
                                             {/* AI 모델 이미지 */}
                                             <Box
-                                                w={imgSize}
-                                                h={imgSize}
+                                                w="180px"
+                                                h="180px"
                                                 borderRadius="full"
                                                 bg={isHighContrast ? '#000000' : 'white'}
                                                 border={`5px solid ${currentModel.color}`}
@@ -190,7 +172,7 @@ export default function MainPage() {
 
                                 {/* 다음 버튼 */}
                                 <IconButton
-                                    icon={<ChevronRightIcon boxSize={arrowSize} />}
+                                    icon={<ChevronRightIcon boxSize={8} />}
                                     aria-label="다음 모델"
                                     onClick={handleNextModel}
                                     size="lg"
@@ -214,8 +196,8 @@ export default function MainPage() {
                                 {aiModels.map((model, index) => (
                                     <Box
                                         key={model.id}
-                                        w={index === currentModelIndex ? indicatorSize.active : indicatorSize.inactive}
-                                        h={index === currentModelIndex ? indicatorSize.active : indicatorSize.inactive}
+                                        w={index === currentModelIndex ? '12px' : '8px'}
+                                        h={index === currentModelIndex ? '12px' : '8px'}
                                         borderRadius="full"
                                         bg={
                                             index === currentModelIndex
@@ -307,8 +289,8 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
                                     minW="70px"
-                                    h={settingBtnH}
-                                    fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                    h="55px"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
@@ -350,8 +332,8 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0"
                                     minW="70px"
-                                    h={settingBtnH}
-                                    fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                    h="55px"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -394,8 +376,8 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
                                     minW="70px"
-                                    h={settingBtnH}
-                                    fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                    h="55px"
+                                    fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
                                     _hover={{
@@ -429,8 +411,8 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="10px"
                                 minW="210px"
-                                h={settingBtnH}
-                                fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                h="55px"
+                                fontSize="1.4rem"
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
