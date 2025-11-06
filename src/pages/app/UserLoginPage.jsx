@@ -103,10 +103,11 @@ export default function UserLoginPage() {
                                 boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
                             }}
                             _focus={{
-                                borderColor: isHighContrast ? '#FFFF00' : '#1976D2',
+                                borderWidth: '5px',
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
                                 boxShadow: isHighContrast
                                     ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                    : '0 0 0 4px rgba(25, 118, 210, 0.15)',
+                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
                                 outline: 'none',
                             }}
                             transition="all 0.2s"
@@ -147,10 +148,11 @@ export default function UserLoginPage() {
                                     boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
                                 }}
                                 _focus={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#1976D2',
+                                    borderWidth: '5px',
+                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
                                     boxShadow: isHighContrast
                                         ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(25, 118, 210, 0.15)',
+                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
                                     outline: 'none',
                                 }}
                                 transition="all 0.2s"
