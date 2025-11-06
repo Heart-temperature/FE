@@ -14,6 +14,7 @@ import {
     HStack,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import Logo from '../../components/common/Logo';
 
 export default function UserLoginPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
@@ -56,8 +57,11 @@ export default function UserLoginPage() {
                 <VStack spacing={8} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={4}>
+                        <Flex justify="center" mb={4}>
+                            <Logo size={fontSizeLevel === 0 ? 'md' : fontSizeLevel === 1 ? 'lg' : 'xl'} isHighContrast={isHighContrast} />
+                        </Flex>
                         <Text
-                            fontSize={{ base: '2.5rem', md: '3.5rem' }}
+                            fontSize={{ base: '2rem', md: '2.8rem' }}
                             fontWeight="900"
                             color={isHighContrast ? '#FFFFFF' : '#1565C0'}
                             mb={2}
