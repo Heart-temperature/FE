@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Button,
-    Flex,
-    Text,
-    VStack,
-    HStack,
-    Image,
-    Divider,
-    IconButton,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
 import DajeongLogo from '../../components/common/image.png';
+import Img1 from '../../components/common/img1.png';
+import Img2 from '../../components/common/img2.png';
 
 const MotionBox = motion(Box);
 
 export default function MainPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
-    const fontSizes = ['1.5rem', '1.9rem', '2.5rem'];
-    const buttonHeights = ['70px', '85px', '110px'];
+    const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
+    const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
+    const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 (로그인 페이지 buttonHeights와 동일)
+    const arrowButtonSizes = ['45px', '55px', '65px']; // 화살표 버튼 크기 (직접 지정)
+    const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
+    const aiImageSizes = ['160px', '200px', '240px']; // AI 모델 이미지 크기
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
@@ -28,21 +24,25 @@ export default function MainPage() {
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
 
     const fs = fontSizes[fontSizeLevel];
-    const btnH = buttonHeights[fontSizeLevel];
+    const callBtnH = callButtonHeights[fontSizeLevel];
+    const settingBtnH = settingButtonHeights[fontSizeLevel];
+    const arrowBtnSize = arrowButtonSizes[fontSizeLevel];
+    const arrowIconSize = arrowIconSizes[fontSizeLevel];
+    const aiImgSize = aiImageSizes[fontSizeLevel];
 
     // AI 모델 데이터
     const aiModels = [
         {
             id: 1,
-            name: '다정이 1호',
-            emoji: '🤖',
+            name: '다정이',
+            image: Img2,
             color: isHighContrast ? '#FFD700' : '#2196F3',
             description: '친근하고 활기찬 음성',
         },
         {
             id: 2,
-            name: '다정이 2호',
-            emoji: '👨‍⚕️',
+            name: '다복이',
+            image: Img1,
             color: isHighContrast ? '#FFD700' : '#4CAF50',
             description: '차분하고 안정된 음성',
         },
@@ -82,7 +82,7 @@ export default function MainPage() {
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={2}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="300px" mx="auto" mb={4} />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="230px" mx="auto" mb={4} />
                         <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
@@ -95,7 +95,7 @@ export default function MainPage() {
                             mb={4}
                             textAlign="center"
                         >
-                            통화할 다정이를 선택하세요
+                            통화할 상대를 선택하세요
                         </Text>
 
                         {/* AI 모델 슬라이더 */}
@@ -103,10 +103,12 @@ export default function MainPage() {
                             <HStack justify="space-between" align="center" spacing={4}>
                                 {/* 이전 버튼 */}
                                 <IconButton
-                                    icon={<ChevronLeftIcon boxSize={8} />}
+                                    icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
                                     aria-label="이전 모델"
                                     onClick={handlePrevModel}
-                                    size="lg"
+                                    w={arrowBtnSize}
+                                    h={arrowBtnSize}
+                                    minW={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
@@ -131,24 +133,30 @@ export default function MainPage() {
                                         transition={{ duration: 0.3 }}
                                     >
                                         <VStack spacing={4}>
-                                            {/* 이모지 */}
+                                            {/* AI 모델 이미지 */}
                                             <Box
-                                                w="140px"
-                                                h="140px"
+                                                w={aiImgSize}
+                                                h={aiImgSize}
                                                 borderRadius="full"
                                                 bg={isHighContrast ? '#000000' : 'white'}
                                                 border={`5px solid ${currentModel.color}`}
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center"
-                                                fontSize="6xl"
                                                 boxShadow={
                                                     isHighContrast
                                                         ? '0 0 20px rgba(255, 215, 0, 0.5)'
                                                         : '0 8px 20px rgba(0, 0, 0, 0.1)'
                                                 }
+                                                overflow="hidden"
                                             >
-                                                {currentModel.emoji}
+                                                <Image
+                                                    src={currentModel.image}
+                                                    alt={currentModel.name}
+                                                    w="100%"
+                                                    h="100%"
+                                                    objectFit="cover"
+                                                />
                                             </Box>
 
                                             {/* 모델 이름 */}
@@ -162,7 +170,7 @@ export default function MainPage() {
 
                                             {/* 모델 설명 */}
                                             <Text
-                                                fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                                fontSize={fs}
                                                 color={isHighContrast ? '#e2e2e2' : '#666666'}
                                                 fontWeight="500"
                                             >
@@ -174,10 +182,12 @@ export default function MainPage() {
 
                                 {/* 다음 버튼 */}
                                 <IconButton
-                                    icon={<ChevronRightIcon boxSize={8} />}
+                                    icon={<ChevronRightIcon boxSize={arrowIconSize} />}
                                     aria-label="다음 모델"
                                     onClick={handleNextModel}
-                                    size="lg"
+                                    w={arrowBtnSize}
+                                    h={arrowBtnSize}
+                                    minW={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
@@ -227,7 +237,7 @@ export default function MainPage() {
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
                         size="lg"
-                        height={btnH}
+                        height={callBtnH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
@@ -291,7 +301,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -334,7 +344,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -378,7 +388,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -413,8 +423,8 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="10px"
                                 minW="210px"
-                                h="55px"
-                                fontSize="1.4rem"
+                                h={settingBtnH}
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
