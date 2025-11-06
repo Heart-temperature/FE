@@ -162,7 +162,7 @@ export default function MainPage() {
 
                                             {/* 모델 설명 */}
                                             <Text
-                                                fontSize={fontSizes[fontSizeLevel > 0 ? fontSizeLevel - 1 : 0]}
+                                                fontSize={fs}
                                                 color={isHighContrast ? '#e2e2e2' : '#666666'}
                                                 fontWeight="500"
                                             >
