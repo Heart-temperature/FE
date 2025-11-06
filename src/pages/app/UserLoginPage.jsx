@@ -66,7 +66,7 @@ export default function UserLoginPage() {
                         >
                             다정 로그인
                         </Text>
-                        <Text fontSize={fs} color={isHighContrast ? '#CCCCCC' : '#616161'} fontWeight="600">
+                        <Text fontSize={fs} color={isHighContrast ? '#CCCCCC' : '#000000'} fontWeight="600">
                             아이디와 비밀번호를 입력하세요
                         </Text>
                     </Box>
@@ -75,7 +75,7 @@ export default function UserLoginPage() {
                     <FormControl>
                         <FormLabel
                             fontSize={fs}
-                            color={isHighContrast ? '#FFFFFF' : '#424242'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000'}
                             fontWeight="700"
                             mb={3}
                         >
@@ -95,7 +95,7 @@ export default function UserLoginPage() {
                             color={isHighContrast ? '#FFFFFF' : '#1976D2'}
                             fontWeight="600"
                             _placeholder={{
-                                color: isHighContrast ? '#888888' : '#BBDEFB',
+                                color: isHighContrast ? '#888888' : '#757575',
                                 fontWeight: '500',
                             }}
                             _hover={{
@@ -118,7 +118,7 @@ export default function UserLoginPage() {
                     <FormControl>
                         <FormLabel
                             fontSize={fs}
-                            color={isHighContrast ? '#FFFFFF' : '#424242'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000'}
                             fontWeight="700"
                             mb={3}
                         >
@@ -227,7 +227,7 @@ export default function UserLoginPage() {
 
                         {/* 글자 크기 조절 */}
                         <HStack justify="space-between" mb={5}>
-                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#424242'}>
+                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                 글자 크기
                             </Text>
                             <HStack spacing={0}>
@@ -321,7 +321,7 @@ export default function UserLoginPage() {
 
                         {/* 고대비 모드 */}
                         <HStack justify="space-between">
-                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#424242'}>
+                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                 선명한 화면
                             </Text>
                             <Button
