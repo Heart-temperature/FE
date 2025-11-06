@@ -13,8 +13,9 @@ export default function MainPage() {
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
     const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 (로그인 페이지 buttonHeights와 동일)
-    const arrowButtonSizes = ['md', 'lg', 'xl']; // 화살표 버튼 크기
+    const arrowButtonSizes = ['45px', '55px', '65px']; // 화살표 버튼 크기 (직접 지정)
     const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
+    const aiImageSizes = ['160px', '200px', '240px']; // AI 모델 이미지 크기
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
@@ -27,6 +28,7 @@ export default function MainPage() {
     const settingBtnH = settingButtonHeights[fontSizeLevel];
     const arrowBtnSize = arrowButtonSizes[fontSizeLevel];
     const arrowIconSize = arrowIconSizes[fontSizeLevel];
+    const aiImgSize = aiImageSizes[fontSizeLevel];
 
     // AI 모델 데이터
     const aiModels = [
@@ -104,7 +106,9 @@ export default function MainPage() {
                                     icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
                                     aria-label="이전 모델"
                                     onClick={handlePrevModel}
-                                    size={arrowBtnSize}
+                                    w={arrowBtnSize}
+                                    h={arrowBtnSize}
+                                    minW={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
@@ -131,8 +135,8 @@ export default function MainPage() {
                                         <VStack spacing={4}>
                                             {/* AI 모델 이미지 */}
                                             <Box
-                                                w="180px"
-                                                h="180px"
+                                                w={aiImgSize}
+                                                h={aiImgSize}
                                                 borderRadius="full"
                                                 bg={isHighContrast ? '#000000' : 'white'}
                                                 border={`5px solid ${currentModel.color}`}
@@ -181,7 +185,9 @@ export default function MainPage() {
                                     icon={<ChevronRightIcon boxSize={arrowIconSize} />}
                                     aria-label="다음 모델"
                                     onClick={handleNextModel}
-                                    size={arrowBtnSize}
+                                    w={arrowBtnSize}
+                                    h={arrowBtnSize}
+                                    minW={arrowBtnSize}
                                     bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
                                     color={isHighContrast ? '#000000' : '#2196F3'}
                                     borderRadius="50%"
