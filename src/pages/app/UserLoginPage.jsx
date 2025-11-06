@@ -25,6 +25,7 @@ export default function UserLoginPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem'];
     const inputHeights = ['70px', '85px', '110px'];
+    const buttonHeights = ['50px', '55px', '65px'];
 
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
@@ -41,6 +42,7 @@ export default function UserLoginPage() {
 
     const fs = fontSizes[fontSizeLevel];
     const inputH = inputHeights[fontSizeLevel];
+    const btnH = buttonHeights[fontSizeLevel];
 
     return (
         <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={6} py={10}>
@@ -213,7 +215,7 @@ export default function UserLoginPage() {
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
                                     minW="70px"
-                                    h="55px"
+                                    h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -256,7 +258,7 @@ export default function UserLoginPage() {
                                     fontWeight="700"
                                     borderRadius="0"
                                     minW="70px"
-                                    h="55px"
+                                    h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -300,7 +302,7 @@ export default function UserLoginPage() {
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
                                     minW="70px"
-                                    h="55px"
+                                    h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -335,8 +337,8 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="10px"
                                 minW="210px"
-                                h="55px"
-                                fontSize="1.4rem"
+                                h={btnH}
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
