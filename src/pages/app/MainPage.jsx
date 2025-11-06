@@ -11,7 +11,8 @@ const MotionBox = motion(Box);
 export default function MainPage() {
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
-    const buttonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
+    const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
+    const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 (로그인 페이지 buttonHeights와 동일)
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
@@ -20,21 +21,22 @@ export default function MainPage() {
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
 
     const fs = fontSizes[fontSizeLevel];
-    const btnH = buttonHeights[fontSizeLevel];
+    const callBtnH = callButtonHeights[fontSizeLevel];
+    const settingBtnH = settingButtonHeights[fontSizeLevel];
 
     // AI 모델 데이터
     const aiModels = [
         {
             id: 1,
-            name: '다정이 1호',
-            image: Img1,
+            name: '다정이',
+            image: Img2,
             color: isHighContrast ? '#FFD700' : '#2196F3',
             description: '친근하고 활기찬 음성',
         },
         {
             id: 2,
-            name: '다정이 2호',
-            image: Img2,
+            name: '다복이',
+            image: Img1,
             color: isHighContrast ? '#FFD700' : '#4CAF50',
             description: '차분하고 안정된 음성',
         },
@@ -74,7 +76,7 @@ export default function MainPage() {
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={2}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="300px" mx="auto" mb={4} />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="230px" mx="auto" mb={4} />
                         <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
@@ -87,7 +89,7 @@ export default function MainPage() {
                             mb={4}
                             textAlign="center"
                         >
-                            통화할 다정이를 선택하세요
+                            통화할 상대를 선택하세요
                         </Text>
 
                         {/* AI 모델 슬라이더 */}
@@ -225,7 +227,7 @@ export default function MainPage() {
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
                         size="lg"
-                        height={btnH}
+                        height={callBtnH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
@@ -289,7 +291,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -332,7 +334,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -376,7 +378,7 @@ export default function MainPage() {
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
                                     minW="70px"
-                                    h="55px"
+                                    h={settingBtnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
                                     borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
@@ -411,8 +413,8 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="10px"
                                 minW="210px"
-                                h="55px"
-                                fontSize="1.4rem"
+                                h={settingBtnH}
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
