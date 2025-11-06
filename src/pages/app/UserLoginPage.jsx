@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -17,8 +18,10 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import DajeongLogo from '../../components/common/image.png';
+import { ROUTES } from '../../routes';
 
 export default function UserLoginPage() {
+    const navigate = useNavigate();
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem'];
     const inputHeights = ['70px', '85px', '110px'];
@@ -31,6 +34,10 @@ export default function UserLoginPage() {
 
     const handleShowToggle = () => setShow(!show);
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
+    const handleLogin = () => {
+        // TODO: 실제 로그인 로직 추가
+        navigate(ROUTES.USER_APP_HOME);
+    };
 
     const fs = fontSizes[fontSizeLevel];
     const inputH = inputHeights[fontSizeLevel];
@@ -149,6 +156,7 @@ export default function UserLoginPage() {
                         boxShadow="0 4px 14px rgba(33, 150, 243, 0.3)"
                         border={isHighContrast ? '3px solid white' : 'none'}
                         mt={2}
+                        onClick={handleLogin}
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                             transform: 'translateY(-2px)',
