@@ -47,7 +47,7 @@ export default function UserLoginPage() {
             align="center"
             justify="center"
             minH="100vh"
-            bg={isHighContrast ? 'black' : '#F5F0E8'}
+            bg={isHighContrast ? '#000814' : '#E3F2FD'}
             px={{ base: 4 }}
         >
             {/* 로고 */}
@@ -63,7 +63,7 @@ export default function UserLoginPage() {
             {/* 슬로건 */}
             <Text
                 fontSize={fs}
-                color={isHighContrast ? 'white' : '#1a0a15'}
+                color={isHighContrast ? '#FFFFFF' : '#01579B'}
                 fontWeight="bold"
                 mb={uiScale[fontSizeLevel].mb}
             >
@@ -72,9 +72,9 @@ export default function UserLoginPage() {
 
             {/* 로그인 박스 */}
             <Box
-                bg={isHighContrast ? 'black' : 'white'}
+                bg={isHighContrast ? '#000814' : 'white'}
                 border="3px solid"
-                borderColor={isHighContrast ? 'white' : '#8B7E6A'}
+                borderColor={isHighContrast ? '#4FC3F7' : '#1976D2'}
                 borderRadius="20px"
                 px={{ base: uiScale[fontSizeLevel].BoxPx }}
                 py={uiScale[fontSizeLevel].mb}
@@ -85,7 +85,7 @@ export default function UserLoginPage() {
             >
                 {/* 아이디 */}
                 <FormControl mb={uiScale[fontSizeLevel].mb}>
-                    <FormLabel fontSize={fs} color={isHighContrast ? 'white' : '#1a0a15'} fontWeight="bold">
+                    <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#01579B'} fontWeight="bold">
                         아이디
                     </FormLabel>
                     <InputGroup>
@@ -96,31 +96,31 @@ export default function UserLoginPage() {
                             borderRadius="15px"
                             height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
-                            color={isHighContrast ? 'white' : '#1a0a15'}
-                            bg={isHighContrast ? 'black' : 'white'}
+                            color={isHighContrast ? '#FFFFFF' : '#01579B'}
+                            bg={isHighContrast ? '#000814' : 'white'}
                             border="3px solid"
-                            borderColor={isHighContrast ? 'white' : '#8B7E6A'}
+                            borderColor={isHighContrast ? '#4FC3F7' : '#1976D2'}
                             _placeholder={{
-                                color: isHighContrast ? '#CCCCCC' : '#6B5E4F',
+                                color: isHighContrast ? '#90CAF9' : '#64B5F6',
                                 opacity: 0.8,
                             }}
                             _focusVisible={
                                 isHighContrast
                                     ? {
-                                          borderColor: '#FFD700',
+                                          borderColor: '#FFD740',
                                           borderWidth: '4px',
-                                          boxShadow: '0 0 0 3px rgba(255, 215, 0, 0.5)',
+                                          boxShadow: '0 0 0 3px rgba(255, 215, 64, 0.5)',
                                           outline: 'none',
                                       }
                                     : {
-                                          borderColor: '#2D5016',
+                                          borderColor: '#0D47A1',
                                           borderWidth: '3px',
-                                          boxShadow: '0 0 0 3px rgba(45, 80, 22, 0.2)',
+                                          boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.3)',
                                           outline: 'none',
                                       }
                             }
                             _hover={{
-                                borderColor: isHighContrast ? '#FFD700' : '#5A4830',
+                                borderColor: isHighContrast ? '#FFD740' : '#0D47A1',
                             }}
                         />
                         {id && (
@@ -131,13 +131,13 @@ export default function UserLoginPage() {
                                     onClick={() => setId('')}
                                     icon={
                                         <CloseIcon
-                                            color={isHighContrast ? 'white' : '#1a0a15'}
+                                            color={isHighContrast ? '#FFFFFF' : '#01579B'}
                                             boxSize={uiScale[fontSizeLevel].buttonIconSize}
                                         />
                                     }
                                     aria-label="아이디 입력 초기화"
                                     _hover={{
-                                        bg: isHighContrast ? 'rgba(255, 215, 0, 0.2)' : 'rgba(45, 80, 22, 0.1)',
+                                        bg: isHighContrast ? 'rgba(79, 195, 247, 0.2)' : 'rgba(25, 118, 210, 0.1)',
                                     }}
                                 />
                             </InputRightElement>
@@ -147,7 +147,7 @@ export default function UserLoginPage() {
 
                 {/* 비밀번호 */}
                 <FormControl mb={uiScale[fontSizeLevel].mb * 2}>
-                    <FormLabel fontSize={fs} color={isHighContrast ? 'white' : '#1a0a15'} fontWeight="bold">
+                    <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#01579B'} fontWeight="bold">
                         비밀번호
                     </FormLabel>
                     <InputGroup>
@@ -157,31 +157,31 @@ export default function UserLoginPage() {
                             borderRadius="15px"
                             height={{ base: uiScale[fontSizeLevel].inputH }}
                             fontSize={fs}
-                            color={isHighContrast ? 'white' : '#1a0a15'}
-                            bg={isHighContrast ? 'black' : 'white'}
+                            color={isHighContrast ? '#FFFFFF' : '#01579B'}
+                            bg={isHighContrast ? '#000814' : 'white'}
                             border="3px solid"
-                            borderColor={isHighContrast ? 'white' : '#8B7E6A'}
+                            borderColor={isHighContrast ? '#4FC3F7' : '#1976D2'}
                             _placeholder={{
-                                color: isHighContrast ? '#CCCCCC' : '#6B5E4F',
+                                color: isHighContrast ? '#90CAF9' : '#64B5F6',
                                 opacity: 0.8,
                             }}
                             _focusVisible={
                                 isHighContrast
                                     ? {
-                                          borderColor: '#FFD700',
+                                          borderColor: '#FFD740',
                                           borderWidth: '4px',
-                                          boxShadow: '0 0 0 3px rgba(255, 215, 0, 0.5)',
+                                          boxShadow: '0 0 0 3px rgba(255, 215, 64, 0.5)',
                                           outline: 'none',
                                       }
                                     : {
-                                          borderColor: '#2D5016',
+                                          borderColor: '#0D47A1',
                                           borderWidth: '3px',
-                                          boxShadow: '0 0 0 3px rgba(45, 80, 22, 0.2)',
+                                          boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.3)',
                                           outline: 'none',
                                       }
                             }
                             _hover={{
-                                borderColor: isHighContrast ? '#FFD700' : '#5A4830',
+                                borderColor: isHighContrast ? '#FFD740' : '#0D47A1',
                             }}
                         />
                         <InputRightElement top="50%" transform="translateY(-50%)" pr={2}>
@@ -192,19 +192,19 @@ export default function UserLoginPage() {
                                 icon={
                                     show ? (
                                         <ViewOffIcon
-                                            color={isHighContrast ? 'white' : '#1a0a15'}
+                                            color={isHighContrast ? '#FFFFFF' : '#01579B'}
                                             boxSize={uiScale[fontSizeLevel].buttonIconSize}
                                         />
                                     ) : (
                                         <ViewIcon
-                                            color={isHighContrast ? 'white' : '#1a0a15'}
+                                            color={isHighContrast ? '#FFFFFF' : '#01579B'}
                                             boxSize={uiScale[fontSizeLevel].buttonIconSize}
                                         />
                                     )
                                 }
                                 aria-label="비밀번호 보기 토글"
                                 _hover={{
-                                    bg: isHighContrast ? 'rgba(255, 215, 0, 0.2)' : 'rgba(45, 80, 22, 0.1)',
+                                    bg: isHighContrast ? 'rgba(79, 195, 247, 0.2)' : 'rgba(25, 118, 210, 0.1)',
                                 }}
                             />
                         </InputRightElement>
@@ -213,39 +213,39 @@ export default function UserLoginPage() {
 
                 {/* 로그인 버튼 */}
                 <Button
-                    bg={isHighContrast ? '#FFD700' : '#2D5016'}
-                    color={isHighContrast ? 'black' : 'white'}
+                    bg={isHighContrast ? '#29B6F6' : '#1976D2'}
+                    color="white"
                     w="85%"
                     height={{ base: uiScale[fontSizeLevel].inputH }}
                     fontSize={fs}
                     fontWeight="bold"
                     borderRadius="1.25rem"
                     border="3px solid"
-                    borderColor={isHighContrast ? 'white' : '#2D5016'}
+                    borderColor={isHighContrast ? '#4FC3F7' : '#1565C0'}
                     boxShadow="lg"
                     _hover={
                         isHighContrast
                             ? {
-                                  bg: 'white',
-                                  color: 'black',
+                                  bg: '#4FC3F7',
+                                  color: 'white',
                                   transform: 'scale(1.02)',
-                                  boxShadow: '0 0 0 4px rgba(255, 215, 0, 0.5)',
+                                  boxShadow: '0 0 0 4px rgba(79, 195, 247, 0.5)',
                               }
                             : {
-                                  bg: '#3A6B1E',
+                                  bg: '#1565C0',
                                   transform: 'scale(1.02)',
                                   boxShadow: 'xl',
                               }
                     }
                     _active={
                         isHighContrast
-                            ? { bg: '#CCCCCC', transform: 'scale(0.98)' }
-                            : { bg: '#1F3A0E', transform: 'scale(0.98)' }
+                            ? { bg: '#039BE5', transform: 'scale(0.98)' }
+                            : { bg: '#0D47A1', transform: 'scale(0.98)' }
                     }
                     _focusVisible={{
                         boxShadow: isHighContrast
-                            ? '0 0 0 4px rgba(255, 255, 255, 0.6)'
-                            : '0 0 0 4px rgba(45, 80, 22, 0.4)',
+                            ? '0 0 0 4px rgba(255, 215, 64, 0.6)'
+                            : '0 0 0 4px rgba(25, 118, 210, 0.4)',
                         outline: 'none',
                     }}
                     mb={uiScale[fontSizeLevel].mb / 2}
@@ -271,20 +271,20 @@ export default function UserLoginPage() {
                 <IconButton
                     aria-label="글자 크기 줄이기"
                     icon={<MinusIcon boxSize={uiScale[fontSizeLevel].buttonIconSize} />}
-                    bg={isHighContrast ? '#FFD700' : '#2D5016'}
-                    color={isHighContrast ? 'black' : 'white'}
+                    bg={isHighContrast ? '#29B6F6' : '#1976D2'}
+                    color="white"
                     border="3px solid"
-                    borderColor={isHighContrast ? 'white' : '#2D5016'}
+                    borderColor={isHighContrast ? '#4FC3F7' : '#1565C0'}
                     _hover={
                         isHighContrast
                             ? {
-                                  bg: 'white',
-                                  color: 'black',
+                                  bg: '#4FC3F7',
+                                  color: 'white',
                                   transform: 'scale(1.1)',
-                                  boxShadow: '0 0 0 4px rgba(255, 215, 0, 0.5)',
+                                  boxShadow: '0 0 0 4px rgba(79, 195, 247, 0.5)',
                               }
                             : {
-                                  bg: '#3A6B1E',
+                                  bg: '#1565C0',
                                   transform: 'scale(1.1)',
                                   boxShadow: 'lg',
                               }
@@ -308,7 +308,7 @@ export default function UserLoginPage() {
                 <Text
                     fontSize={fs}
                     fontWeight="bold"
-                    color={isHighContrast ? 'white' : '#1a0a15'}
+                    color={isHighContrast ? '#FFFFFF' : '#01579B'}
                     minW="80px"
                     textAlign="center"
                 >
@@ -319,20 +319,20 @@ export default function UserLoginPage() {
                 <IconButton
                     aria-label="글자 크기 키우기"
                     icon={<AddIcon boxSize={uiScale[fontSizeLevel].buttonIconSize} />}
-                    bg={isHighContrast ? '#FFD700' : '#2D5016'}
-                    color={isHighContrast ? 'black' : 'white'}
+                    bg={isHighContrast ? '#29B6F6' : '#1976D2'}
+                    color="white"
                     border="3px solid"
-                    borderColor={isHighContrast ? 'white' : '#2D5016'}
+                    borderColor={isHighContrast ? '#4FC3F7' : '#1565C0'}
                     _hover={
                         isHighContrast
                             ? {
-                                  bg: 'white',
-                                  color: 'black',
+                                  bg: '#4FC3F7',
+                                  color: 'white',
                                   transform: 'scale(1.1)',
-                                  boxShadow: '0 0 0 4px rgba(255, 215, 0, 0.5)',
+                                  boxShadow: '0 0 0 4px rgba(79, 195, 247, 0.5)',
                               }
                             : {
-                                  bg: '#3A6B1E',
+                                  bg: '#1565C0',
                                   transform: 'scale(1.1)',
                                   boxShadow: 'lg',
                               }
@@ -355,10 +355,10 @@ export default function UserLoginPage() {
 
                 {/* 고대비 모드 버튼 */}
                 <Button
-                    bg={isHighContrast ? '#FFD700' : '#1a1a1a'}
-                    color={isHighContrast ? 'black' : 'white'}
+                    bg={isHighContrast ? '#FFD740' : '#0D47A1'}
+                    color={isHighContrast ? '#000814' : 'white'}
                     border="3px solid"
-                    borderColor={isHighContrast ? 'white' : '#1a1a1a'}
+                    borderColor={isHighContrast ? '#FFD740' : '#0D47A1'}
                     fontWeight="bold"
                     px={5}
                     height={{ base: 'auto' }}
@@ -370,13 +370,13 @@ export default function UserLoginPage() {
                     _hover={
                         isHighContrast
                             ? {
-                                  bg: 'white',
-                                  color: 'black',
+                                  bg: '#FFEB3B',
+                                  color: '#000814',
                                   transform: 'scale(1.02)',
-                                  boxShadow: '0 0 0 4px rgba(255, 215, 0, 0.5)',
+                                  boxShadow: '0 0 0 4px rgba(255, 215, 64, 0.5)',
                               }
                             : {
-                                  bg: '#2D2D2D',
+                                  bg: '#01579B',
                                   transform: 'scale(1.02)',
                                   boxShadow: 'xl',
                               }
@@ -387,7 +387,7 @@ export default function UserLoginPage() {
                     _focusVisible={{
                         boxShadow: isHighContrast
                             ? '0 0 0 4px rgba(255, 255, 255, 0.6)'
-                            : '0 0 0 4px rgba(255, 215, 0, 0.4)',
+                            : '0 0 0 4px rgba(25, 118, 210, 0.4)',
                         outline: 'none',
                     }}
                     onClick={toggleHighContrast}
