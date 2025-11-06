@@ -39,28 +39,19 @@ export default function UserLoginPage() {
             minH="100vh"
             align="center"
             justify="center"
-            bgGradient={
-                isHighContrast
-                    ? 'linear(to-br, #000000, #1a1a1a)'
-                    : 'linear(to-br, #667eea, #764ba2, #f093fb)'
-            }
+            bg={isHighContrast ? '#000000' : '#E3F2FD'}
             px={6}
             py={10}
         >
             {/* 메인 로그인 카드 */}
             <Box
-                bg={isHighContrast ? '#000000' : 'rgba(255, 255, 255, 0.95)'}
-                backdropFilter="blur(10px)"
-                borderRadius="40px"
-                boxShadow={
-                    isHighContrast
-                        ? '0 0 0 3px white, 0 30px 90px rgba(255,255,255,0.3)'
-                        : '0 30px 90px rgba(0, 0, 0, 0.3)'
-                }
+                bg={isHighContrast ? '#000000' : 'white'}
+                borderRadius="30px"
+                boxShadow={isHighContrast ? '0 0 0 4px white, 0 20px 60px rgba(255,255,255,0.5)' : '0 20px 60px rgba(0, 0, 0, 0.15)'}
                 p={{ base: 10, md: 14 }}
                 w="full"
                 maxW="550px"
-                border={isHighContrast ? '3px solid white' : 'none'}
+                border={isHighContrast ? '4px solid white' : '2px solid #BBDEFB'}
             >
                 <VStack spacing={8} align="stretch">
                     {/* 헤더 */}
@@ -68,17 +59,12 @@ export default function UserLoginPage() {
                         <Text
                             fontSize={{ base: '2.5rem', md: '3.5rem' }}
                             fontWeight="900"
-                            bgGradient={
-                                isHighContrast
-                                    ? 'linear(to-r, white, white)'
-                                    : 'linear(to-r, #667eea, #764ba2)'
-                            }
-                            bgClip="text"
+                            color={isHighContrast ? '#FFFFFF' : '#1565C0'}
                             mb={2}
                         >
                             로그인
                         </Text>
-                        <Text fontSize={fs} color={isHighContrast ? '#CCCCCC' : 'gray.600'} fontWeight="500">
+                        <Text fontSize={fs} color={isHighContrast ? '#CCCCCC' : '#546E7A'} fontWeight="600">
                             다정 서비스에 오신 것을 환영합니다
                         </Text>
                     </Box>
@@ -105,14 +91,14 @@ export default function UserLoginPage() {
                                 color: isHighContrast ? '#666666' : 'gray.400',
                             }}
                             _hover={{
-                                borderColor: isHighContrast ? '#FFFF00' : '#667eea',
+                                borderColor: isHighContrast ? '#FFFF00' : '#1976D2',
                             }}
                             _focus={{
-                                borderColor: isHighContrast ? '#FFFF00' : '#667eea',
+                                borderColor: isHighContrast ? '#FFFF00' : '#1565C0',
                                 borderWidth: '3px',
                                 boxShadow: isHighContrast
                                     ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                    : '0 0 0 4px rgba(102, 126, 234, 0.2)',
+                                    : '0 0 0 4px rgba(21, 101, 192, 0.2)',
                                 outline: 'none',
                             }}
                         />
@@ -142,14 +128,14 @@ export default function UserLoginPage() {
                                     color: isHighContrast ? '#666666' : 'gray.400',
                                 }}
                                 _hover={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#667eea',
+                                    borderColor: isHighContrast ? '#FFFF00' : '#1976D2',
                                 }}
                                 _focus={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#667eea',
+                                    borderColor: isHighContrast ? '#FFFF00' : '#1565C0',
                                     borderWidth: '3px',
                                     boxShadow: isHighContrast
                                         ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(102, 126, 234, 0.2)',
+                                        : '0 0 0 4px rgba(21, 101, 192, 0.2)',
                                     outline: 'none',
                                 }}
                             />
@@ -170,7 +156,7 @@ export default function UserLoginPage() {
                                     aria-label={show ? '비밀번호 숨기기' : '비밀번호 보기'}
                                     _hover={{
                                         bg: 'transparent',
-                                        color: isHighContrast ? '#FFFF00' : '#667eea',
+                                        color: isHighContrast ? '#FFFF00' : '#1565C0',
                                     }}
                                 />
                             </InputRightElement>
@@ -179,9 +165,7 @@ export default function UserLoginPage() {
 
                     {/* 로그인 버튼 */}
                     <Button
-                        bgGradient={
-                            isHighContrast ? 'linear(to-r, #FFD700, #FFC700)' : 'linear(to-r, #667eea, #764ba2)'
-                        }
+                        bg={isHighContrast ? '#FFD700' : '#1976D2'}
                         color={isHighContrast ? '#000000' : 'white'}
                         size="lg"
                         height={inputH}
@@ -190,10 +174,12 @@ export default function UserLoginPage() {
                         borderRadius="20px"
                         boxShadow="lg"
                         _hover={{
+                            bg: isHighContrast ? '#FFEB3B' : '#1565C0',
                             transform: 'translateY(-2px)',
                             boxShadow: '2xl',
                         }}
                         _active={{
+                            bg: isHighContrast ? '#FFC107' : '#0D47A1',
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
