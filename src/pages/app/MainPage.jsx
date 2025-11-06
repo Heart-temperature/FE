@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Button,
-    Flex,
-    Text,
-    VStack,
-    HStack,
-    Image,
-    Divider,
-    IconButton,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
 import DajeongLogo from '../../components/common/image.png';
@@ -25,12 +15,12 @@ export default function MainPage() {
 
     // 동적 크기 설정
     const imageSizes = ['120px', '150px', '190px']; // AI 모델 이미지 크기
-    const logoMaxWidths = ['250px', '300px', '360px']; // 로고 크기
+    const logoMaxWidths = ['200px', '250px', '310px']; // 로고 크기
     const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
     const indicatorSizes = [
         { active: '10px', inactive: '6px' },
         { active: '12px', inactive: '8px' },
-        { active: '15px', inactive: '10px' }
+        { active: '15px', inactive: '10px' },
     ]; // 인디케이터 크기
     const cardPaddings = [8, 10, 14]; // 카드 패딩
     const settingButtonHeights = ['50px', '55px', '65px']; // 설정 버튼 높이
