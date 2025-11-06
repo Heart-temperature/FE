@@ -14,8 +14,8 @@ export default function MainPage() {
     const buttonHeights = ['70px', '85px', '110px'];
 
     // 동적 크기 설정
-    const imageSizes = ['120px', '150px', '190px']; // AI 모델 이미지 크기
-    const logoMaxWidths = ['200px', '250px', '310px']; // 로고 크기
+    const imageSizes = ['150px', '200px', '260px']; // AI 모델 이미지 크기 - 전체적으로 크게, 차이 증가
+    const logoMaxWidths = ['250px', '300px', '360px']; // 로고 크기
     const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
     const indicatorSizes = [
         { active: '10px', inactive: '6px' },
