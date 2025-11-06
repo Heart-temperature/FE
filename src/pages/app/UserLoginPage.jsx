@@ -54,18 +54,8 @@ export default function UserLoginPage() {
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
                     <Box textAlign="center" mb={2}>
-                        <Image
-                            src={DajeongLogo}
-                            alt="다정이 로고"
-                            maxW="300px"
-                            mx="auto"
-                            mb={4}
-                        />
-                        <Divider
-                            borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}
-                            borderWidth="2px"
-                            mb={4}
-                        />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="300px" mx="auto" mb={4} />
+                        <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
                     {/* 아이디 */}
@@ -174,7 +164,7 @@ export default function UserLoginPage() {
                     </Button>
 
                     {/* 설정 영역 */}
-                    <Box mt={4} pt={6} borderTop="3px solid" borderColor={isHighContrast ? '#444444' : '#E3F2FD'}>
+                    <Box mt={4} pt={6} borderTop="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
                         <Text
                             fontSize={fs}
                             fontWeight="700"
