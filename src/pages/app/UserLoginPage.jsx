@@ -226,7 +226,7 @@ export default function UserLoginPage() {
                         {/* 글자 크기 조절 */}
                         <HStack justify="space-between" mb={5}>
                             <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#424242'}>
-                                글자 크기 변경
+                                글자 크기
                             </Text>
                             <HStack spacing={0}>
                                 <Button
@@ -242,7 +242,7 @@ export default function UserLoginPage() {
                                     }
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
-                                    px={7}
+                                    minW="70px"
                                     h="55px"
                                     fontSize="1.2rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
@@ -259,6 +259,35 @@ export default function UserLoginPage() {
                                 </Button>
                                 <Button
                                     size="sm"
+                                    onClick={() => setFontSizeLevel(1)}
+                                    bg={fontSizeLevel === 1
+                                        ? (isHighContrast ? '#FFD700' : '#2196F3')
+                                        : (isHighContrast ? '#FFFFFF' : '#E3F2FD')
+                                    }
+                                    color={fontSizeLevel === 1
+                                        ? (isHighContrast ? '#000000' : 'white')
+                                        : (isHighContrast ? '#000000' : '#1976D2')
+                                    }
+                                    fontWeight="700"
+                                    borderRadius="0"
+                                    minW="70px"
+                                    h="55px"
+                                    fontSize="1.2rem"
+                                    border={isHighContrast ? '2px solid white' : 'none'}
+                                    borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
+                                    borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
+                                    _hover={{
+                                        bg: fontSizeLevel === 1
+                                            ? (isHighContrast ? '#FFD700' : '#2196F3')
+                                            : (isHighContrast ? '#FFEB3B' : '#64B5F6'),
+                                        transform: 'scale(1.05)',
+                                    }}
+                                    transition="all 0.2s"
+                                >
+                                    보통
+                                </Button>
+                                <Button
+                                    size="sm"
                                     onClick={() => setFontSizeLevel(2)}
                                     bg={fontSizeLevel === 2
                                         ? (isHighContrast ? '#FFD700' : '#2196F3')
@@ -270,7 +299,7 @@ export default function UserLoginPage() {
                                     }
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
-                                    px={7}
+                                    minW="70px"
                                     h="55px"
                                     fontSize="1.2rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
@@ -300,7 +329,7 @@ export default function UserLoginPage() {
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
                                 borderRadius="10px"
-                                px={7}
+                                minW="210px"
                                 h="55px"
                                 fontSize="1.2rem"
                                 border={isHighContrast ? '2px solid white' : 'none'}
