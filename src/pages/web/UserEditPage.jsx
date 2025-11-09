@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useNavigation } from '../../hooks';
-import { addUser } from '../../api';
+import { updateUser, updateUserInfoMemo, getUserInfo } from '../../api';
 import {
     Box,
     Button,
@@ -25,9 +25,10 @@ import {
     IconButton,
     useColorModeValue
 } from '@chakra-ui/react';
-import { ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, EditIcon } from '@chakra-ui/icons';
 
-export default function UserAdd() {
+export default function UserEditPage() {
+    const { id } = useParams();
     const navigate = useNavigate();
     const { goBack } = useNavigation();
     const toast = useToast();
@@ -48,6 +49,55 @@ export default function UserAdd() {
 
     // 에러 상태
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+    // 사용자 정보 로드
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                setIsLoadingUser(true);
+                const userInfo = await getUserInfo(id);
+                
+                if (userInfo) {
+                    // API 응답 형식에 맞게 폼 데이터 설정
+                    setFormData({
+                        name: userInfo.name || '',
+                        birthDate: userInfo.birthDate ? userInfo.birthDate.split('T')[0] : '', // ISO 형식에서 날짜만 추출
+                        sexuality: userInfo.sexuality === 'M' ? '남성' : userInfo.sexuality === 'F' ? '여성' : '',
+                        address: userInfo.address || '',
+                        phoneNum: userInfo.phoneNum || '',
+                        user_loginPw: '',
+                        extra_phoneNum: userInfo.extraPhoneNum || '',
+                        memo: userInfo.memo || ''
+                    });
+                } else {
+                    toast({
+                        title: '사용자 정보 없음',
+                        description: '사용자 정보를 불러올 수 없습니다.',
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                toast({
+                    title: '사용자 정보 로드 실패',
+                    description: '사용자 정보를 불러오는데 실패했습니다.',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } finally {
+                setIsLoadingUser(false);
+            }
+        };
+
+        if (id) {
+            loadUserData();
+        }
+    }, [id, toast]);
 
     // 입력값 변경 핸들러
     const handleInputChange = (field, value) => {
@@ -110,20 +160,17 @@ export default function UserAdd() {
             newErrors.phoneNum = '올바른 연락처 형식이 아닙니다 (010-0000-0000)';
         }
 
-        if (!formData.user_loginPw.trim()) {
-            newErrors.user_loginPw = '비밀번호를 입력해주세요';
-        } else if (!/^\d{4}$/.test(formData.user_loginPw.trim())) {
-            newErrors.user_loginPw = '비밀번호는 숫자 4자리여야 합니다';
-        }
-
         if (formData.extra_phoneNum && !/^010-\d{4}-\d{4}$/.test(formData.extra_phoneNum)) {
             newErrors.extra_phoneNum = '올바른 연락처 형식이 아닙니다 (010-0000-0000)';
+        }
+
+        if (formData.user_loginPw && !/^\d{4}$/.test(formData.user_loginPw.trim())) {
+            newErrors.user_loginPw = '비밀번호는 숫자 4자리여야 합니다';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
 
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
@@ -141,6 +188,8 @@ export default function UserAdd() {
         }
 
         try {
+            setIsLoading(true);
+            
             // 성별을 M/F 형식으로 변환
             const sexualityMap = {
                 '남성': 'M',
@@ -151,44 +200,48 @@ export default function UserAdd() {
             const birthDateFormatted = formData.birthDate ? 
                 new Date(formData.birthDate).toISOString() : 
                 null;
-
-            // API 요청 데이터 구성
+            
+            // API 요청 데이터 구성 (메모 제외)
             const apiData = {
-                user_loginId: formData.phoneNum, // phoneNum을 user_loginId로 사용
-                user_loginPw: formData.user_loginPw,
+                user_loginId: formData.phoneNum,
                 name: formData.name,
                 sexuality: sexualityMap[formData.sexuality] || formData.sexuality, // "남성"/"여성" -> "M"/"F"
                 birthDate: birthDateFormatted, // ISO 8601 형식
                 address: formData.address,
                 phoneNum: formData.phoneNum,
+                user_loginPw: formData.user_loginPw || '',
                 extra_phoneNum: formData.extra_phoneNum || '',
-                memo: formData.memo || '',
             };
 
-            // API 호출
-            await addUser(apiData);
+            // 사용자 정보 업데이트 API 호출
+            await updateUser(id, apiData);
+            
+            // 메모는 별도 API로 업데이트
+            await updateUserInfoMemo(id, formData.memo || '');
 
             const age = calculateAge(formData.birthDate);
             
             toast({
-                title: '사용자 추가 완료!',
-                description: `${formData.name}님(만 ${age}세)이 성공적으로 추가되었습니다.`,
+                title: '사용자 정보 수정 완료!',
+                description: `${formData.name}님(만 ${age}세)의 정보가 성공적으로 수정되었습니다.`,
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
             });
 
-            // 대시보드로 이동
-            navigate('/');
+            // 상세 페이지로 이동
+            navigate(`/user/${id}`);
         } catch (error) {
             toast({
-                title: '사용자 추가 실패',
+                title: '정보 수정 실패',
                 description: '서버 오류가 발생했습니다. 다시 시도해주세요.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
             });
-            console.error('User Add Error:', error);
+            console.error('User Edit Error:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -196,6 +249,15 @@ export default function UserAdd() {
     const handleCancel = () => {
         goBack();
     };
+
+    // 로딩 중일 때
+    if (isLoadingUser) {
+        return (
+            <Box minH="100vh" bg={bgColor} display="flex" alignItems="center" justifyContent="center">
+                <Text fontSize="lg" color="gray.500">로딩 중...</Text>
+            </Box>
+        );
+    }
 
     return (
         <Box minH="100vh" bg={bgColor}>
@@ -217,16 +279,17 @@ export default function UserAdd() {
                         variant="ghost"
                         aria-label="뒤로 가기"
                     />
-                    <Heading size="md">사용자 추가</Heading>
+                    <Heading size="md">{formData.name} - 정보 수정</Heading>
                 </HStack>
                 <HStack spacing={3}>
-                    <Button variant="outline" onClick={handleCancel}>
+                    <Button variant="outline" onClick={handleCancel} isDisabled={isLoading}>
                         취소
                     </Button>
                     <Button 
-                        leftIcon={<AddIcon />} 
+                        leftIcon={<EditIcon />} 
                         colorScheme="blue" 
                         onClick={handleSubmit}
+                        isLoading={isLoading}
                     >
                         저장
                     </Button>
@@ -237,10 +300,10 @@ export default function UserAdd() {
                 <Card bg={cardBg} boxShadow="lg">
                     <CardHeader>
                         <Heading size="lg" color="gray.700">
-                            기본 인적사항 입력
+                            사용자 정보 수정
                         </Heading>
                         <Text color="gray.500" fontSize="sm" mt={2}>
-                            필수 식별 정보를 입력해주세요. 관리자 페이지 목록에 표시됩니다.
+                            변경할 정보를 입력하고 저장해주세요.
                         </Text>
                     </CardHeader>
                     <CardBody>
@@ -319,7 +382,7 @@ export default function UserAdd() {
                                         <FormErrorMessage>{errors.phoneNum}</FormErrorMessage>
                                     </FormControl>
 
-                                    <FormControl isRequired isInvalid={errors.user_loginPw}>
+                                    <FormControl isInvalid={errors.user_loginPw}>
                                         <FormLabel>비밀번호 (숫자 4자리)</FormLabel>
                                         <Input
                                             type="password"
