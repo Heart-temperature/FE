@@ -176,16 +176,24 @@ export default function AdminLoginPage() {
             align="center"
             justify="center"
             minH="100vh"
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bg="#F5F7FB"
             px={4}
         >
             {/* 로고 영역 */}
-            <Flex direction="column" align="center" mb={8}>
-                <Image src={dajungIcon} h="60px" mb={4} />
-                <Heading size="2xl" color="white" fontWeight="bold">
+            <Flex direction="column" align="center" mb={10}>
+                <Box
+                    bg="white"
+                    p={4}
+                    borderRadius="2xl"
+                    boxShadow="md"
+                    mb={4}
+                >
+                    <Image src={dajungIcon} h="60px" />
+                </Box>
+                <Heading size="2xl" color="gray.800" fontWeight="700">
                     다정이 관리자
                 </Heading>
-                <Text fontSize="md" color="rgba(255, 255, 255, 0.8)" mt={2}>
+                <Text fontSize="lg" color="gray.600" mt={2} fontWeight="500">
                     {isSignUp ? '관리자 계정 생성' : '관리자 로그인'}
                 </Text>
             </Flex>
@@ -193,50 +201,57 @@ export default function AdminLoginPage() {
             {/* 로그인 박스 */}
             <Box
                 bg="white"
-                borderRadius="lg"
-                p={8}
-                boxShadow="2xl"
+                borderRadius="2xl"
+                p={10}
+                boxShadow="xl"
                 w="100%"
-                maxW="400px"
+                maxW="480px"
+                border="1px"
+                borderColor="gray.100"
             >
-                <VStack spacing={6} as="form" onSubmit={handleSubmit}>
+                <VStack spacing={5} as="form" onSubmit={handleSubmit}>
                     {/* 아이디 입력 */}
                     <FormControl isRequired isInvalid={!!errors.loginId}>
-                        <FormLabel fontWeight="bold" color="gray.700">
+                        <FormLabel fontWeight="600" color="gray.700" fontSize="sm">
                             아이디
                         </FormLabel>
                         <Input
                             type="text"
-                            placeholder="관리자 아이디 입력"
+                            placeholder="관리자 아이디를 입력하세요"
                             value={formData.loginId}
                             onChange={(e) => handleInputChange('loginId', e.target.value)}
                             size="lg"
-                            borderColor="gray.300"
-                            _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
+                            borderColor="gray.200"
+                            bg="gray.50"
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                         />
                         <FormErrorMessage>{errors.loginId}</FormErrorMessage>
                     </FormControl>
 
                     {/* 비밀번호 입력 */}
                     <FormControl isRequired isInvalid={!!errors.loginPw}>
-                        <FormLabel fontWeight="bold" color="gray.700">
+                        <FormLabel fontWeight="600" color="gray.700" fontSize="sm">
                             비밀번호
                         </FormLabel>
                         <InputGroup>
                             <Input
                                 type={showPassword ? 'text' : 'password'}
-                                placeholder="비밀번호 입력"
+                                placeholder="비밀번호를 입력하세요"
                                 value={formData.loginPw}
                                 onChange={(e) => handleInputChange('loginPw', e.target.value)}
                                 size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
+                                borderColor="gray.200"
+                                bg="gray.50"
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
                             <InputRightElement h="3rem">
                                 <Button
                                     variant="ghost"
                                     onClick={handleShowToggle}
                                     _focus={{ boxShadow: 'none' }}
+                                    color="gray.500"
                                 >
                                     {showPassword ? <ViewOffIcon /> : <ViewIcon />}
                                 </Button>
@@ -248,17 +263,19 @@ export default function AdminLoginPage() {
                     {/* 회원가입 - 이름 입력 */}
                     {isSignUp && (
                         <FormControl isRequired isInvalid={!!errors.name}>
-                            <FormLabel fontWeight="bold" color="gray.700">
+                            <FormLabel fontWeight="600" color="gray.700" fontSize="sm">
                                 이름
                             </FormLabel>
                             <Input
                                 type="text"
-                                placeholder="관리자 이름 입력"
+                                placeholder="관리자 이름을 입력하세요"
                                 value={formData.name}
                                 onChange={(e) => handleInputChange('name', e.target.value)}
                                 size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
+                                borderColor="gray.200"
+                                bg="gray.50"
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
                             <FormErrorMessage>{errors.name}</FormErrorMessage>
                         </FormControl>
@@ -267,17 +284,19 @@ export default function AdminLoginPage() {
                     {/* 회원가입 - 나이 입력 */}
                     {isSignUp && (
                         <FormControl isRequired isInvalid={!!errors.age}>
-                            <FormLabel fontWeight="bold" color="gray.700">
+                            <FormLabel fontWeight="600" color="gray.700" fontSize="sm">
                                 나이
                             </FormLabel>
                             <Input
                                 type="number"
-                                placeholder="나이 입력"
+                                placeholder="나이를 입력하세요"
                                 value={formData.age}
                                 onChange={(e) => handleInputChange('age', e.target.value)}
                                 size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
+                                borderColor="gray.200"
+                                bg="gray.50"
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
                             <FormErrorMessage>{errors.age}</FormErrorMessage>
                         </FormControl>
@@ -286,7 +305,7 @@ export default function AdminLoginPage() {
                     {/* 회원가입 - 연락처 입력 */}
                     {isSignUp && (
                         <FormControl isRequired isInvalid={!!errors.phoneNum}>
-                            <FormLabel fontWeight="bold" color="gray.700">
+                            <FormLabel fontWeight="600" color="gray.700" fontSize="sm">
                                 연락처
                             </FormLabel>
                             <Input
@@ -295,8 +314,10 @@ export default function AdminLoginPage() {
                                 value={formData.phoneNum}
                                 onChange={(e) => handleInputChange('phoneNum', e.target.value)}
                                 size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
+                                borderColor="gray.200"
+                                bg="gray.50"
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
                             <FormErrorMessage>{errors.phoneNum}</FormErrorMessage>
                         </FormControl>
@@ -305,28 +326,30 @@ export default function AdminLoginPage() {
                     {/* 로그인/회원가입 버튼 */}
                     <Button
                         w="100%"
-                        colorScheme="purple"
+                        colorScheme="blue"
                         size="lg"
-                        fontWeight="bold"
+                        fontWeight="600"
                         type="submit"
                         isLoading={isLoading}
-                        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                        mt={2}
                         _hover={{
-                            bg: 'linear-gradient(135deg, #5568d3 0%, #6a3f94 100%)',
+                            transform: 'translateY(-1px)',
+                            boxShadow: 'lg',
                         }}
+                        transition="all 0.2s"
                     >
                         {isSignUp ? '계정 생성' : '로그인'}
                     </Button>
 
                     {/* 로그인/회원가입 토글 */}
-                    <Box textAlign="center" w="100%">
+                    <Box textAlign="center" w="100%" pt={2}>
                         <Text fontSize="sm" color="gray.600">
                             {isSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?'}
                             <Button
                                 variant="link"
-                                colorScheme="purple"
+                                colorScheme="blue"
                                 fontSize="sm"
-                                fontWeight="bold"
+                                fontWeight="600"
                                 ml={2}
                                 onClick={() => {
                                     setIsSignUp(!isSignUp);
@@ -343,15 +366,20 @@ export default function AdminLoginPage() {
                         <Box
                             bg="blue.50"
                             p={4}
-                            borderRadius="md"
+                            borderRadius="lg"
                             w="100%"
                             textAlign="center"
+                            border="1px"
+                            borderColor="blue.100"
                         >
-                            <Text fontSize="sm" color="gray.600">
-                                테스트 아이디: <Text as="span" fontWeight="bold">admin</Text>
+                            <Text fontSize="sm" color="gray.700" fontWeight="500" mb={1}>
+                                테스트 계정 정보
                             </Text>
                             <Text fontSize="sm" color="gray.600">
-                                테스트 비밀번호: <Text as="span" fontWeight="bold">1234</Text>
+                                아이디: <Text as="span" fontWeight="bold" color="blue.600">admin</Text>
+                            </Text>
+                            <Text fontSize="sm" color="gray.600">
+                                비밀번호: <Text as="span" fontWeight="bold" color="blue.600">1234</Text>
                             </Text>
                         </Box>
                     )}
@@ -359,7 +387,7 @@ export default function AdminLoginPage() {
             </Box>
 
             {/* 하단 정보 */}
-            <Text fontSize="sm" color="rgba(255, 255, 255, 0.7)" mt={8}>
+            <Text fontSize="sm" color="gray.500" mt={8} fontWeight="500">
                 © 2024 다정이 관리 시스템. All rights reserved.
             </Text>
         </Flex>
