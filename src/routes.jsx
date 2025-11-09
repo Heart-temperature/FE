@@ -3,6 +3,8 @@ import App from './App';
 import DashboardPage from './pages/web/DashboardPage';
 import UserAddPage from './pages/web/UserAddPage';
 import UserDetailPage from './pages/web/UserDetailPage';
+import UserEditPage from './pages/web/UserEditPage';
+import AdminLoginPage from './pages/web/AdminLoginPage';
 import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
@@ -10,13 +12,15 @@ import MainPage from './pages/app/MainPage';
 
 // 라우트 경로 상수 정의
 export const ROUTES = {
-    // 메인 페이지
+    // 관리자 페이지
+    ADMIN_LOGIN: '/admin/login',
     HOME: '/',
     DASHBOARD: '/dashboard',
     LOGIN: '/login',
 
     // 사용자 관련
     USER_DETAIL: '/user/:id',
+    USER_EDIT: '/user/:id/edit',
     USER_ADD: '/user/add',
 
     // 사용자 앱
@@ -44,12 +48,16 @@ export const getUserDetailRoute = (userId) => getRoute('USER_DETAIL', { id: user
 
 // 라우트별 메타데이터
 export const ROUTE_META = {
+    [ROUTES.ADMIN_LOGIN]: {
+        title: '관리자 로그인 - 다정이',
+        description: '관리자 로그인',
+    },
     [ROUTES.HOME]: {
-        title: '독거노인 관리 - 다정이',
+        title: '다정이',
         description: '관리자 대시보드',
     },
     [ROUTES.DASHBOARD]: {
-        title: '독거노인 관리 - 다정이',
+        title: '다정이',
         description: '관리자 대시보드',
     },
     [ROUTES.LOGIN]: {
@@ -88,6 +96,12 @@ export const ROUTE_META = {
 
 export const router = createBrowserRouter([
     {
+        // 관리자 로그인 (App.jsx 외부)
+        path: ROUTES.ADMIN_LOGIN,
+        element: <AdminLoginPage />,
+        handle: ROUTE_META[ROUTES.ADMIN_LOGIN],
+    },
+    {
         // App.jsx (공통 레이아웃)
         element: <App />,
 
@@ -117,6 +131,14 @@ export const router = createBrowserRouter([
                 path: ROUTES.USER_DETAIL,
                 element: <UserDetailPage />,
                 handle: ROUTE_META[ROUTES.USER_DETAIL],
+            },
+            {
+                path: ROUTES.USER_EDIT,
+                element: <UserEditPage />,
+                handle: {
+                    title: '사용자 정보 수정 - 다정이',
+                    description: '사용자 정보 수정',
+                },
             },
             {
                 path: ROUTES.USER_APP,
