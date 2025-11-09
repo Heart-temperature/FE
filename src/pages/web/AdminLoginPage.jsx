@@ -18,18 +18,14 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import dajungIcon from '../../assets/dajung-icon.png';
-import { loginAdmin, signUpAdmin } from '../../api';
+import { loginAdmin } from '../../api';
 
 export default function AdminLoginPage() {
     const navigate = useNavigate();
     const toast = useToast();
-    const [isSignUp, setIsSignUp] = useState(false);
     const [formData, setFormData] = useState({
         loginId: '',
         loginPw: '',
-        name: '',
-        age: '',
-        phoneNum: '',
     });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
@@ -48,22 +44,6 @@ export default function AdminLoginPage() {
             newErrors.loginPw = '비밀번호를 입력해주세요';
         }
 
-        if (isSignUp) {
-            if (!formData.name.trim()) {
-                newErrors.name = '이름을 입력해주세요';
-            }
-
-            if (!formData.age || formData.age < 0) {
-                newErrors.age = '나이를 입력해주세요';
-            }
-
-            if (!formData.phoneNum.trim()) {
-                newErrors.phoneNum = '연락처를 입력해주세요';
-            } else if (!/^\d{10,11}$/.test(formData.phoneNum.replace(/-/g, ''))) {
-                newErrors.phoneNum = '올바른 연락처 형식이 아닙니다';
-            }
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -77,81 +57,50 @@ export default function AdminLoginPage() {
 
         setIsLoading(true);
         try {
-            if (isSignUp) {
-                // 회원가입 요청
-                const requestBody = {
-                    loginId: formData.loginId.trim(),
-                    loginPw: formData.loginPw.trim(),
-                    name: formData.name.trim(),
-                    age: parseInt(formData.age),
-                    phoneNum: formData.phoneNum.trim(),
-                };
+            // 로그인 요청
+            const result = await loginAdmin(formData.loginId.trim(), formData.loginPw.trim());
 
-                await signUpAdmin(requestBody);
+            // 토큰 저장
+            let token = null;
 
-                toast({
-                    title: '회원가입 성공!',
-                    description: '관리자 계정이 생성되었습니다. 이제 로그인해주세요.',
-                    status: 'success',
-                    duration: 2000,
-                    isClosable: true,
-                });
-
-                // 로그인 폼으로 전환
-                setIsSignUp(false);
-                setFormData({
-                    loginId: formData.loginId,
-                    loginPw: formData.loginPw,
-                    name: '',
-                    age: '',
-                    phoneNum: '',
-                });
-            } else {
-                // 로그인 요청
-                const result = await loginAdmin(formData.loginId.trim(), formData.loginPw.trim());
-
-                // 토큰 저장
-                let token = null;
-                
-                if (result.token) {
-                    token = result.token;
-                } else if (result.accessToken) {
-                    token = result.accessToken;
-                } else if (result.jwtToken) {
-                    token = result.jwtToken;
-                }
-
-                if (token) {
-                    const bearerToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-                    localStorage.setItem('Authorization', bearerToken);
-                    localStorage.setItem('adminToken', token);
-                    localStorage.setItem('accessToken', token);
-                    localStorage.setItem('jwtToken', token);
-                    
-                    // 관리자 아이디 저장
-                    localStorage.setItem('adminId', formData.loginId);
-                }
-
-                toast({
-                    title: '로그인 성공!',
-                    description: '관리자 페이지로 이동합니다.',
-                    status: 'success',
-                    duration: 2000,
-                    isClosable: true,
-                });
-
-                // 대시보드로 이동
-                setTimeout(() => navigate('/'), 1000);
+            if (result.token) {
+                token = result.token;
+            } else if (result.accessToken) {
+                token = result.accessToken;
+            } else if (result.jwtToken) {
+                token = result.jwtToken;
             }
+
+            if (token) {
+                const bearerToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+                localStorage.setItem('Authorization', bearerToken);
+                localStorage.setItem('adminToken', token);
+                localStorage.setItem('accessToken', token);
+                localStorage.setItem('jwtToken', token);
+
+                // 관리자 아이디 저장
+                localStorage.setItem('adminId', formData.loginId);
+            }
+
+            toast({
+                title: '로그인 성공!',
+                description: '관리자 페이지로 이동합니다.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
+
+            // 대시보드로 이동
+            setTimeout(() => navigate('/'), 1000);
         } catch (error) {
             toast({
-                title: isSignUp ? '회원가입 실패' : '로그인 실패',
-                description: error.message || (isSignUp ? '회원가입에 실패했습니다.' : '아이디 또는 비밀번호가 올바르지 않습니다.'),
+                title: '로그인 실패',
+                description: error.message || '아이디 또는 비밀번호가 올바르지 않습니다.',
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
             });
-            console.error(isSignUp ? 'Sign Up Error:' : 'Login Error:', error);
+            console.error('Login Error:', error);
         } finally {
             setIsLoading(false);
         }
@@ -176,192 +125,235 @@ export default function AdminLoginPage() {
             align="center"
             justify="center"
             minH="100vh"
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bgGradient="linear(to-br, #0F2027, #203A43, #2C5364)"
             px={4}
+            position="relative"
+            overflow="hidden"
         >
-            {/* 로고 영역 */}
-            <Flex direction="column" align="center" mb={8}>
-                <Image src={dajungIcon} h="60px" mb={4} />
-                <Heading size="2xl" color="white" fontWeight="bold">
-                    다정이 관리자
-                </Heading>
-                <Text fontSize="md" color="rgba(255, 255, 255, 0.8)" mt={2}>
-                    {isSignUp ? '관리자 계정 생성' : '관리자 로그인'}
-                </Text>
-            </Flex>
-
-            {/* 로그인 박스 */}
+            {/* 배경 장식 요소들 */}
             <Box
-                bg="white"
-                borderRadius="lg"
-                p={8}
-                boxShadow="2xl"
-                w="100%"
-                maxW="400px"
-            >
-                <VStack spacing={6} as="form" onSubmit={handleSubmit}>
-                    {/* 아이디 입력 */}
-                    <FormControl isRequired isInvalid={!!errors.loginId}>
-                        <FormLabel fontWeight="bold" color="gray.700">
-                            아이디
-                        </FormLabel>
-                        <Input
-                            type="text"
-                            placeholder="관리자 아이디 입력"
-                            value={formData.loginId}
-                            onChange={(e) => handleInputChange('loginId', e.target.value)}
-                            size="lg"
-                            borderColor="gray.300"
-                            _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
-                        />
-                        <FormErrorMessage>{errors.loginId}</FormErrorMessage>
-                    </FormControl>
+                position="absolute"
+                top="-10%"
+                right="-5%"
+                w="400px"
+                h="400px"
+                borderRadius="full"
+                bgGradient="radial(circle, rgba(56, 189, 248, 0.1), transparent)"
+                filter="blur(40px)"
+            />
+            <Box
+                position="absolute"
+                bottom="-10%"
+                left="-5%"
+                w="500px"
+                h="500px"
+                borderRadius="full"
+                bgGradient="radial(circle, rgba(139, 92, 246, 0.15), transparent)"
+                filter="blur(40px)"
+            />
 
-                    {/* 비밀번호 입력 */}
-                    <FormControl isRequired isInvalid={!!errors.loginPw}>
-                        <FormLabel fontWeight="bold" color="gray.700">
-                            비밀번호
-                        </FormLabel>
-                        <InputGroup>
-                            <Input
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="비밀번호 입력"
-                                value={formData.loginPw}
-                                onChange={(e) => handleInputChange('loginPw', e.target.value)}
-                                size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
-                            />
-                            <InputRightElement h="3rem">
-                                <Button
-                                    variant="ghost"
-                                    onClick={handleShowToggle}
-                                    _focus={{ boxShadow: 'none' }}
-                                >
-                                    {showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                                </Button>
-                            </InputRightElement>
-                        </InputGroup>
-                        <FormErrorMessage>{errors.loginPw}</FormErrorMessage>
-                    </FormControl>
+            {/* 메인 컨텐츠 */}
+            <Box position="relative" zIndex={1} w="100%" maxW="460px">
+                {/* 로고 영역 */}
+                <Flex direction="column" align="center" mb={8}>
+                    <Box
+                        bg="linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))"
+                        backdropFilter="blur(10px)"
+                        p={6}
+                        borderRadius="3xl"
+                        boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
+                        border="1px solid rgba(255, 255, 255, 0.18)"
+                        mb={6}
+                        transition="all 0.3s ease"
+                        _hover={{
+                            transform: 'translateY(-5px) scale(1.02)',
+                            boxShadow: '0 12px 40px 0 rgba(0, 0, 0, 0.5)'
+                        }}
+                    >
+                        <Image src={dajungIcon} h="80px" />
+                    </Box>
+                    <Heading
+                        size="2xl"
+                        color="white"
+                        fontWeight="800"
+                        letterSpacing="-1px"
+                        textShadow="0 2px 10px rgba(0,0,0,0.3)"
+                    >
+                        다정이 관리 시스템
+                    </Heading>
+                    <Text
+                        fontSize="lg"
+                        color="rgba(255, 255, 255, 0.7)"
+                        mt={3}
+                        fontWeight="500"
+                        textShadow="0 1px 3px rgba(0,0,0,0.3)"
+                    >
+                        관리자 로그인
+                    </Text>
+                </Flex>
 
-                    {/* 회원가입 - 이름 입력 */}
-                    {isSignUp && (
-                        <FormControl isRequired isInvalid={!!errors.name}>
-                            <FormLabel fontWeight="bold" color="gray.700">
-                                이름
+                {/* 로그인 박스 - 글래스모피즘 */}
+                <Box
+                    bg="linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))"
+                    backdropFilter="blur(10px)"
+                    borderRadius="3xl"
+                    p={10}
+                    boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
+                    border="1px solid rgba(255, 255, 255, 0.18)"
+                >
+                    <VStack spacing={6} as="form" onSubmit={handleSubmit}>
+                        {/* 아이디 입력 */}
+                        <FormControl isRequired isInvalid={!!errors.loginId}>
+                            <FormLabel fontWeight="600" color="white" fontSize="sm" mb={3}>
+                                아이디
                             </FormLabel>
                             <Input
                                 type="text"
-                                placeholder="관리자 이름 입력"
-                                value={formData.name}
-                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                placeholder="관리자 아이디를 입력하세요"
+                                value={formData.loginId}
+                                onChange={(e) => handleInputChange('loginId', e.target.value)}
                                 size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
-                            />
-                            <FormErrorMessage>{errors.name}</FormErrorMessage>
-                        </FormControl>
-                    )}
-
-                    {/* 회원가입 - 나이 입력 */}
-                    {isSignUp && (
-                        <FormControl isRequired isInvalid={!!errors.age}>
-                            <FormLabel fontWeight="bold" color="gray.700">
-                                나이
-                            </FormLabel>
-                            <Input
-                                type="number"
-                                placeholder="나이 입력"
-                                value={formData.age}
-                                onChange={(e) => handleInputChange('age', e.target.value)}
-                                size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
-                            />
-                            <FormErrorMessage>{errors.age}</FormErrorMessage>
-                        </FormControl>
-                    )}
-
-                    {/* 회원가입 - 연락처 입력 */}
-                    {isSignUp && (
-                        <FormControl isRequired isInvalid={!!errors.phoneNum}>
-                            <FormLabel fontWeight="bold" color="gray.700">
-                                연락처
-                            </FormLabel>
-                            <Input
-                                type="tel"
-                                placeholder="01012345678"
-                                value={formData.phoneNum}
-                                onChange={(e) => handleInputChange('phoneNum', e.target.value)}
-                                size="lg"
-                                borderColor="gray.300"
-                                _focus={{ borderColor: '#667eea', boxShadow: '0 0 0 1px #667eea' }}
-                            />
-                            <FormErrorMessage>{errors.phoneNum}</FormErrorMessage>
-                        </FormControl>
-                    )}
-
-                    {/* 로그인/회원가입 버튼 */}
-                    <Button
-                        w="100%"
-                        colorScheme="purple"
-                        size="lg"
-                        fontWeight="bold"
-                        type="submit"
-                        isLoading={isLoading}
-                        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                        _hover={{
-                            bg: 'linear-gradient(135deg, #5568d3 0%, #6a3f94 100%)',
-                        }}
-                    >
-                        {isSignUp ? '계정 생성' : '로그인'}
-                    </Button>
-
-                    {/* 로그인/회원가입 토글 */}
-                    <Box textAlign="center" w="100%">
-                        <Text fontSize="sm" color="gray.600">
-                            {isSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?'}
-                            <Button
-                                variant="link"
-                                colorScheme="purple"
-                                fontSize="sm"
-                                fontWeight="bold"
-                                ml={2}
-                                onClick={() => {
-                                    setIsSignUp(!isSignUp);
-                                    setErrors({});
+                                bg="rgba(255, 255, 255, 0.9)"
+                                borderColor="rgba(255, 255, 255, 0.2)"
+                                color="gray.800"
+                                _placeholder={{ color: 'gray.500' }}
+                                _hover={{
+                                    bg: 'white',
+                                    borderColor: 'cyan.300'
                                 }}
-                            >
-                                {isSignUp ? '로그인' : '회원가입'}
-                            </Button>
-                        </Text>
-                    </Box>
+                                _focus={{
+                                    bg: 'white',
+                                    borderColor: 'cyan.400',
+                                    boxShadow: '0 0 0 3px rgba(34, 211, 238, 0.2)'
+                                }}
+                                borderRadius="xl"
+                                fontSize="md"
+                                h="56px"
+                            />
+                            <FormErrorMessage color="red.300">{errors.loginId}</FormErrorMessage>
+                        </FormControl>
 
-                    {/* 안내 메시지 */}
-                    {!isSignUp && (
+                        {/* 비밀번호 입력 */}
+                        <FormControl isRequired isInvalid={!!errors.loginPw}>
+                            <FormLabel fontWeight="600" color="white" fontSize="sm" mb={3}>
+                                비밀번호
+                            </FormLabel>
+                            <InputGroup>
+                                <Input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="비밀번호를 입력하세요"
+                                    value={formData.loginPw}
+                                    onChange={(e) => handleInputChange('loginPw', e.target.value)}
+                                    size="lg"
+                                    bg="rgba(255, 255, 255, 0.9)"
+                                    borderColor="rgba(255, 255, 255, 0.2)"
+                                    color="gray.800"
+                                    _placeholder={{ color: 'gray.500' }}
+                                    _hover={{
+                                        bg: 'white',
+                                        borderColor: 'cyan.300'
+                                    }}
+                                    _focus={{
+                                        bg: 'white',
+                                        borderColor: 'cyan.400',
+                                        boxShadow: '0 0 0 3px rgba(34, 211, 238, 0.2)'
+                                    }}
+                                    borderRadius="xl"
+                                    fontSize="md"
+                                    h="56px"
+                                />
+                                <InputRightElement h="56px" pr={2}>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={handleShowToggle}
+                                        _focus={{ boxShadow: 'none' }}
+                                        _hover={{ bg: 'rgba(0,0,0,0.05)' }}
+                                        color="gray.600"
+                                        size="sm"
+                                    >
+                                        {showPassword ? <ViewOffIcon boxSize={5} /> : <ViewIcon boxSize={5} />}
+                                    </Button>
+                                </InputRightElement>
+                            </InputGroup>
+                            <FormErrorMessage color="red.300">{errors.loginPw}</FormErrorMessage>
+                        </FormControl>
+
+                        {/* 로그인 버튼 */}
+                        <Button
+                            w="100%"
+                            size="lg"
+                            fontWeight="700"
+                            type="submit"
+                            isLoading={isLoading}
+                            bgGradient="linear(to-r, cyan.400, blue.500)"
+                            color="white"
+                            _hover={{
+                                bgGradient: 'linear(to-r, cyan.500, blue.600)',
+                                transform: 'translateY(-3px)',
+                                boxShadow: '0 10px 30px rgba(34, 211, 238, 0.4)'
+                            }}
+                            _active={{
+                                transform: 'translateY(-1px)',
+                            }}
+                            transition="all 0.3s"
+                            mt={4}
+                            borderRadius="xl"
+                            h="56px"
+                            fontSize="lg"
+                            boxShadow="0 4px 15px rgba(34, 211, 238, 0.3)"
+                        >
+                            로그인
+                        </Button>
+
+                        {/* 테스트 계정 안내 */}
                         <Box
-                            bg="blue.50"
+                            bg="rgba(34, 211, 238, 0.1)"
+                            backdropFilter="blur(10px)"
                             p={4}
-                            borderRadius="md"
+                            borderRadius="xl"
                             w="100%"
                             textAlign="center"
+                            border="1px solid rgba(34, 211, 238, 0.2)"
+                            mt={2}
                         >
-                            <Text fontSize="sm" color="gray.600">
-                                테스트 아이디: <Text as="span" fontWeight="bold">admin</Text>
+                            <Text fontSize="xs" color="cyan.200" mb={2} fontWeight="700" letterSpacing="wider">
+                                테스트 계정
                             </Text>
-                            <Text fontSize="sm" color="gray.600">
-                                테스트 비밀번호: <Text as="span" fontWeight="bold">1234</Text>
-                            </Text>
+                            <Flex justify="space-around" mt={3}>
+                                <Box>
+                                    <Text fontSize="xs" color="rgba(255,255,255,0.6)" mb={1}>
+                                        아이디
+                                    </Text>
+                                    <Text fontSize="md" fontWeight="800" color="cyan.300">
+                                        admin
+                                    </Text>
+                                </Box>
+                                <Box h="40px" w="1px" bg="rgba(255,255,255,0.2)" />
+                                <Box>
+                                    <Text fontSize="xs" color="rgba(255,255,255,0.6)" mb={1}>
+                                        비밀번호
+                                    </Text>
+                                    <Text fontSize="md" fontWeight="800" color="cyan.300">
+                                        1234
+                                    </Text>
+                                </Box>
+                            </Flex>
                         </Box>
-                    )}
-                </VStack>
-            </Box>
+                    </VStack>
+                </Box>
 
-            {/* 하단 정보 */}
-            <Text fontSize="sm" color="rgba(255, 255, 255, 0.7)" mt={8}>
-                © 2024 다정이 관리 시스템. All rights reserved.
-            </Text>
+                {/* 하단 정보 */}
+                <Text
+                    fontSize="sm"
+                    color="rgba(255, 255, 255, 0.5)"
+                    mt={8}
+                    textAlign="center"
+                    fontWeight="500"
+                    textShadow="0 1px 3px rgba(0,0,0,0.3)"
+                >
+                    © 2024 다정이 관리 시스템. All rights reserved.
+                </Text>
+            </Box>
         </Flex>
     );
 }
