@@ -157,7 +157,6 @@ export default function MainPage() {
                                                 overflow="hidden"
                                             >
                                                 <AnimatedCharacter
-                                                    image={currentModel.image}
                                                     alt={currentModel.name}
                                                     isTalking={isTalking}
                                                     characterType={currentModel.characterType}
