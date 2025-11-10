@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
 import Img2 from '../../components/common/img2.png';
 import { AnimatedCharacter } from '../../components/ui';
+import { ROUTES } from '../../routes';
 
 const MotionBox = motion(Box);
 
 export default function MainPage() {
+    const navigate = useNavigate();
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
@@ -21,7 +24,6 @@ export default function MainPage() {
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
-    const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중인지 여부
 
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
 
@@ -64,9 +66,16 @@ export default function MainPage() {
 
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
-        // 통화 시작/종료 토글 (테스트용)
-        setIsTalking((prev) => !prev);
-        // TODO: 실제 통화 시작 로직 구현
+        // CallPage로 이동하면서 선택된 캐릭터 정보 전달
+        navigate(ROUTES.USER_APP_CALL, {
+            state: {
+                character: {
+                    name: currentModel.name,
+                    characterType: currentModel.characterType,
+                    color: currentModel.color,
+                },
+            },
+        });
     };
 
     return (
@@ -158,7 +167,7 @@ export default function MainPage() {
                                             >
                                                 <AnimatedCharacter
                                                     alt={currentModel.name}
-                                                    isTalking={isTalking}
+                                                    isTalking={false}
                                                     characterType={currentModel.characterType}
                                                 />
                                             </Box>
@@ -238,7 +247,7 @@ export default function MainPage() {
 
                     {/* 통화 시작 버튼 */}
                     <Button
-                        bg={isTalking ? (isHighContrast ? '#FF5252' : '#F44336') : (isHighContrast ? '#FFD700' : '#2196F3')}
+                        bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
                         size="lg"
                         height={callBtnH}
@@ -250,17 +259,17 @@ export default function MainPage() {
                         mt={2}
                         onClick={handleStartCall}
                         _hover={{
-                            bg: isTalking ? (isHighContrast ? '#FF1744' : '#E53935') : (isHighContrast ? '#FFEB3B' : '#1976D2'),
+                            bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                             transform: 'translateY(-2px)',
                             boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
                         }}
                         _active={{
-                            bg: isTalking ? (isHighContrast ? '#D50000' : '#C62828') : (isHighContrast ? '#FFC107' : '#1565C0'),
+                            bg: isHighContrast ? '#FFC107' : '#1565C0',
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
                     >
-                        {isTalking ? '통화 종료' : '통화 시작'}
+                        통화 시작
                     </Button>
 
                     {/* 설정 영역 */}
