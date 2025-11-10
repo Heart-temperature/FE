@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import dajungIcon from '../../assets/dajung-icon.png';
+import dajungIcon from '../../components/common/image.png';
 import { loginAdmin } from '../../api';
 
 export default function AdminLoginPage() {
@@ -107,14 +107,14 @@ export default function AdminLoginPage() {
     };
 
     const handleInputChange = (field, value) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [field]: value
+            [field]: value,
         }));
         if (errors[field]) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                [field]: ''
+                [field]: '',
             }));
         }
     };
@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
             align="center"
             justify="center"
             minH="100vh"
-            bgGradient="linear(to-br, #0F2027, #203A43, #2C5364)"
+            bg="white"
             px={4}
             position="relative"
             overflow="hidden"
@@ -138,7 +138,7 @@ export default function AdminLoginPage() {
                 w="400px"
                 h="400px"
                 borderRadius="full"
-                bgGradient="radial(circle, rgba(56, 189, 248, 0.1), transparent)"
+                bgGradient="radial(circle, rgba(59, 130, 246, 0.08), transparent)"
                 filter="blur(40px)"
             />
             <Box
@@ -148,7 +148,7 @@ export default function AdminLoginPage() {
                 w="500px"
                 h="500px"
                 borderRadius="full"
-                bgGradient="radial(circle, rgba(139, 92, 246, 0.15), transparent)"
+                bgGradient="radial(circle, rgba(96, 165, 250, 0.06), transparent)"
                 filter="blur(40px)"
             />
 
@@ -157,54 +157,33 @@ export default function AdminLoginPage() {
                 {/* 로고 영역 */}
                 <Flex direction="column" align="center" mb={8}>
                     <Box
-                        bg="linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))"
-                        backdropFilter="blur(10px)"
-                        p={6}
-                        borderRadius="3xl"
-                        boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
-                        border="1px solid rgba(255, 255, 255, 0.18)"
-                        mb={6}
+                        p={2}
                         transition="all 0.3s ease"
                         _hover={{
                             transform: 'translateY(-5px) scale(1.02)',
-                            boxShadow: '0 12px 40px 0 rgba(0, 0, 0, 0.5)'
+                            boxShadow: '0 15px 50px #2196F3',
                         }}
                     >
-                        <Image src={dajungIcon} h="80px" />
+                        <Image src={dajungIcon} h="150px" />
                     </Box>
-                    <Heading
-                        size="2xl"
-                        color="white"
-                        fontWeight="800"
-                        letterSpacing="-1px"
-                        textShadow="0 2px 10px rgba(0,0,0,0.3)"
-                    >
-                        다정이 관리 시스템
-                    </Heading>
-                    <Text
-                        fontSize="lg"
-                        color="rgba(255, 255, 255, 0.7)"
-                        mt={3}
-                        fontWeight="500"
-                        textShadow="0 1px 3px rgba(0,0,0,0.3)"
-                    >
+                    <Heading size="xl" color="gray.800" fontWeight="800" letterSpacing="-1px">
                         관리자 로그인
-                    </Text>
+                    </Heading>
                 </Flex>
 
-                {/* 로그인 박스 - 글래스모피즘 */}
+                {/* 로그인 박스 */}
                 <Box
-                    bg="linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))"
-                    backdropFilter="blur(10px)"
+                    bg="white"
                     borderRadius="3xl"
                     p={10}
-                    boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
-                    border="1px solid rgba(255, 255, 255, 0.18)"
+                    boxShadow="0 20px 60px rgba(0, 0, 0, 0.1)"
+                    border="1px solid"
+                    borderColor="gray.200"
                 >
                     <VStack spacing={6} as="form" onSubmit={handleSubmit}>
                         {/* 아이디 입력 */}
                         <FormControl isRequired isInvalid={!!errors.loginId}>
-                            <FormLabel fontWeight="600" color="white" fontSize="sm" mb={3}>
+                            <FormLabel fontWeight="600" color="gray.700" fontSize="sm" mb={3}>
                                 아이디
                             </FormLabel>
                             <Input
@@ -213,29 +192,29 @@ export default function AdminLoginPage() {
                                 value={formData.loginId}
                                 onChange={(e) => handleInputChange('loginId', e.target.value)}
                                 size="lg"
-                                bg="rgba(255, 255, 255, 0.9)"
-                                borderColor="rgba(255, 255, 255, 0.2)"
+                                bg="gray.50"
+                                borderColor="gray.200"
                                 color="gray.800"
                                 _placeholder={{ color: 'gray.500' }}
                                 _hover={{
                                     bg: 'white',
-                                    borderColor: 'cyan.300'
+                                    borderColor: 'blue.400',
                                 }}
                                 _focus={{
                                     bg: 'white',
-                                    borderColor: 'cyan.400',
-                                    boxShadow: '0 0 0 3px rgba(34, 211, 238, 0.2)'
+                                    borderColor: 'blue.500',
+                                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)',
                                 }}
                                 borderRadius="xl"
                                 fontSize="md"
                                 h="56px"
                             />
-                            <FormErrorMessage color="red.300">{errors.loginId}</FormErrorMessage>
+                            <FormErrorMessage color="red.500">{errors.loginId}</FormErrorMessage>
                         </FormControl>
 
                         {/* 비밀번호 입력 */}
                         <FormControl isRequired isInvalid={!!errors.loginPw}>
-                            <FormLabel fontWeight="600" color="white" fontSize="sm" mb={3}>
+                            <FormLabel fontWeight="600" color="gray.700" fontSize="sm" mb={3}>
                                 비밀번호
                             </FormLabel>
                             <InputGroup>
@@ -245,18 +224,18 @@ export default function AdminLoginPage() {
                                     value={formData.loginPw}
                                     onChange={(e) => handleInputChange('loginPw', e.target.value)}
                                     size="lg"
-                                    bg="rgba(255, 255, 255, 0.9)"
-                                    borderColor="rgba(255, 255, 255, 0.2)"
+                                    bg="gray.50"
+                                    borderColor="gray.200"
                                     color="gray.800"
                                     _placeholder={{ color: 'gray.500' }}
                                     _hover={{
                                         bg: 'white',
-                                        borderColor: 'cyan.300'
+                                        borderColor: 'blue.400',
                                     }}
                                     _focus={{
                                         bg: 'white',
-                                        borderColor: 'cyan.400',
-                                        boxShadow: '0 0 0 3px rgba(34, 211, 238, 0.2)'
+                                        borderColor: 'blue.500',
+                                        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)',
                                     }}
                                     borderRadius="xl"
                                     fontSize="md"
@@ -267,7 +246,7 @@ export default function AdminLoginPage() {
                                         variant="ghost"
                                         onClick={handleShowToggle}
                                         _focus={{ boxShadow: 'none' }}
-                                        _hover={{ bg: 'rgba(0,0,0,0.05)' }}
+                                        _hover={{ bg: 'gray.100' }}
                                         color="gray.600"
                                         size="sm"
                                     >
@@ -275,7 +254,7 @@ export default function AdminLoginPage() {
                                     </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            <FormErrorMessage color="red.300">{errors.loginPw}</FormErrorMessage>
+                            <FormErrorMessage color="red.500">{errors.loginPw}</FormErrorMessage>
                         </FormControl>
 
                         {/* 로그인 버튼 */}
@@ -285,55 +264,56 @@ export default function AdminLoginPage() {
                             fontWeight="700"
                             type="submit"
                             isLoading={isLoading}
-                            bgGradient="linear(to-r, cyan.400, blue.500)"
+                            bg="#2196F3"
                             color="white"
                             _hover={{
-                                bgGradient: 'linear(to-r, cyan.500, blue.600)',
+                                bg: 'blue.700',
                                 transform: 'translateY(-3px)',
-                                boxShadow: '0 10px 30px rgba(34, 211, 238, 0.4)'
+                                boxShadow: '0 10px 30px rgba(110, 164, 252, 0.5)',
                             }}
                             _active={{
                                 transform: 'translateY(-1px)',
+                                bg: 'blue',
                             }}
                             transition="all 0.3s"
                             mt={4}
                             borderRadius="xl"
                             h="56px"
                             fontSize="lg"
-                            boxShadow="0 4px 15px rgba(34, 211, 238, 0.3)"
+                            boxShadow="0 4px 20px rgba(59, 130, 246, 0.4)"
                         >
                             로그인
                         </Button>
 
                         {/* 테스트 계정 안내 */}
                         <Box
-                            bg="rgba(34, 211, 238, 0.1)"
-                            backdropFilter="blur(10px)"
+                            bg="blue.50"
                             p={4}
                             borderRadius="xl"
                             w="100%"
                             textAlign="center"
-                            border="1px solid rgba(34, 211, 238, 0.2)"
+                            border="1px solid"
+                            borderColor="blue.200"
                             mt={2}
                         >
-                            <Text fontSize="xs" color="cyan.200" mb={2} fontWeight="700" letterSpacing="wider">
-                                테스트 계정
+                            <Text fontSize="xs" color="blue.600" mb={2} fontWeight="700" letterSpacing="wider">
+                                관리자 계정
                             </Text>
                             <Flex justify="space-around" mt={3}>
                                 <Box>
-                                    <Text fontSize="xs" color="rgba(255,255,255,0.6)" mb={1}>
+                                    <Text fontSize="xs" color="gray.600" mb={1}>
                                         아이디
                                     </Text>
-                                    <Text fontSize="md" fontWeight="800" color="cyan.300">
+                                    <Text fontSize="md" fontWeight="800" color="blue.600">
                                         admin
                                     </Text>
                                 </Box>
-                                <Box h="40px" w="1px" bg="rgba(255,255,255,0.2)" />
+                                <Box h="40px" w="1px" bg="gray.300" />
                                 <Box>
-                                    <Text fontSize="xs" color="rgba(255,255,255,0.6)" mb={1}>
+                                    <Text fontSize="xs" color="gray.600" mb={1}>
                                         비밀번호
                                     </Text>
-                                    <Text fontSize="md" fontWeight="800" color="cyan.300">
+                                    <Text fontSize="md" fontWeight="800" color="blue.600">
                                         1234
                                     </Text>
                                 </Box>
@@ -341,20 +321,7 @@ export default function AdminLoginPage() {
                         </Box>
                     </VStack>
                 </Box>
-
-                {/* 하단 정보 */}
-                <Text
-                    fontSize="sm"
-                    color="rgba(255, 255, 255, 0.5)"
-                    mt={8}
-                    textAlign="center"
-                    fontWeight="500"
-                    textShadow="0 1px 3px rgba(0,0,0,0.3)"
-                >
-                    © 2024 다정이 관리 시스템. All rights reserved.
-                </Text>
             </Box>
         </Flex>
     );
 }
-
