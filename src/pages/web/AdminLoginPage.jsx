@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
             align="center"
             justify="center"
             minH="100vh"
-            bg="linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #0f3460 100%)"
+            bg="white"
             px={4}
             position="relative"
             overflow="hidden"
@@ -138,7 +138,7 @@ export default function AdminLoginPage() {
                 w="400px"
                 h="400px"
                 borderRadius="full"
-                bgGradient="radial(circle, rgba(59, 130, 246, 0.15), transparent)"
+                bgGradient="radial(circle, rgba(59, 130, 246, 0.08), transparent)"
                 filter="blur(40px)"
             />
             <Box
@@ -148,7 +148,7 @@ export default function AdminLoginPage() {
                 w="500px"
                 h="500px"
                 borderRadius="full"
-                bgGradient="radial(circle, rgba(96, 165, 250, 0.1), transparent)"
+                bgGradient="radial(circle, rgba(96, 165, 250, 0.06), transparent)"
                 filter="blur(40px)"
             />
 
@@ -157,7 +157,7 @@ export default function AdminLoginPage() {
                 {/* 로고 영역 */}
                 <Flex direction="column" align="center" mb={8}>
                     <Box
-                        bg="white"
+                        bg="blue.600"
                         p={6}
                         borderRadius="3xl"
                         boxShadow="0 10px 40px rgba(59, 130, 246, 0.3)"
@@ -172,19 +172,17 @@ export default function AdminLoginPage() {
                     </Box>
                     <Heading
                         size="2xl"
-                        color="white"
+                        color="gray.800"
                         fontWeight="800"
                         letterSpacing="-1px"
-                        textShadow="0 2px 10px rgba(0,0,0,0.5)"
                     >
                         다정이 관리 시스템
                     </Heading>
                     <Text
                         fontSize="lg"
-                        color="rgba(255, 255, 255, 0.85)"
+                        color="gray.600"
                         mt={3}
                         fontWeight="500"
-                        textShadow="0 1px 3px rgba(0,0,0,0.3)"
                     >
                         관리자 로그인
                     </Text>
@@ -195,8 +193,9 @@ export default function AdminLoginPage() {
                     bg="white"
                     borderRadius="3xl"
                     p={10}
-                    boxShadow="0 20px 60px rgba(0, 0, 0, 0.5)"
-                    border="1px solid rgba(59, 130, 246, 0.2)"
+                    boxShadow="0 20px 60px rgba(0, 0, 0, 0.1)"
+                    border="1px solid"
+                    borderColor="gray.200"
                 >
                     <VStack spacing={6} as="form" onSubmit={handleSubmit}>
                         {/* 아이디 입력 */}
@@ -343,11 +342,10 @@ export default function AdminLoginPage() {
                 {/* 하단 정보 */}
                 <Text
                     fontSize="sm"
-                    color="rgba(255, 255, 255, 0.5)"
+                    color="gray.500"
                     mt={8}
                     textAlign="center"
                     fontWeight="500"
-                    textShadow="0 1px 3px rgba(0,0,0,0.3)"
                 >
                     © 2024 다정이 관리 시스템. All rights reserved.
                 </Text>
