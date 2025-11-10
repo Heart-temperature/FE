@@ -2,61 +2,122 @@ import React, { useEffect, useState } from 'react';
 import { Box, Image } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// 입 모양 이미지 import
-import Img1Closed from '../common/img1_closedmouth.png';
-import Img1Open from '../common/img1_openmouth.png';
-import Img2Closed from '../common/img2.png';
-import Img2Open from '../common/img2_openmouth.png';
+// Grandpa (다복이) 이미지 import
+import GrandpaClosedMouthEyesOpen from '../common/close_m_grandap.png';
+import GrandpaClosedMouthEyesClosed from '../common/close_m_e_grandpa.png';
+import GrandpaOpenMouthEyesClosed from '../common/open_m_grandpa.png';
+import GrandpaOpenMouthEyesOpen from '../common/open_m_e_grandpa.png';
+
+// Dajeong (다정이) 이미지 import
+import DajeongClosed from '../common/img2.png';
+import DajeongOpen from '../common/img2_openmouth.png';
 
 const MotionImage = motion(Image);
 
 /**
- * 실제 이미지 파일을 사용한 립싱크 애니메이션 컴포넌트
+ * 정교한 립싱크 + 눈 깜빡임 애니메이션 컴포넌트
  * @param {Object} props
  * @param {string} props.alt - 이미지 alt 텍스트
  * @param {boolean} props.isTalking - 말하는 중인지 여부
- * @param {string} props.characterType - 'dabok' (img1) 또는 'dajeong' (img2)
+ * @param {string} props.characterType - 'dabok' (grandpa) 또는 'dajeong'
  */
 export const AnimatedCharacter = ({ alt, isTalking = false, characterType = 'dajeong' }) => {
-    const [mouthOpen, setMouthOpen] = useState(false);
+    const [currentImage, setCurrentImage] = useState('');
 
-    // 캐릭터별 이미지 매핑
-    const characterImages = {
-        dabok: {
-            closed: Img1Closed,
-            open: Img1Open,
-        },
-        dajeong: {
-            closed: Img2Closed,
-            open: Img2Open,
-        },
-    };
-
-    const images = characterImages[characterType];
-
-    // 말할 때 입 모양 번갈아 변경
+    // Grandpa 애니메이션 로직
     useEffect(() => {
+        if (characterType !== 'dabok') return;
+
+        // 말하지 않을 때
         if (!isTalking) {
-            setMouthOpen(false);
+            setCurrentImage(GrandpaClosedMouthEyesOpen);
+
+            // 랜덤하게 눈 깜빡임 (2-5초마다)
+            const blinkInterval = setInterval(() => {
+                setCurrentImage(GrandpaClosedMouthEyesClosed);
+                setTimeout(() => {
+                    setCurrentImage(GrandpaClosedMouthEyesOpen);
+                }, 150); // 150ms 동안 눈 감음
+            }, 2000 + Math.random() * 3000);
+
+            return () => clearInterval(blinkInterval);
+        }
+
+        // 말할 때 정교한 애니메이션
+        let timeoutId;
+        let blinkTimeoutId;
+
+        const talkingStates = [
+            { image: GrandpaClosedMouthEyesOpen, duration: 200 },
+            { image: GrandpaOpenMouthEyesOpen, duration: 300 },
+            { image: GrandpaClosedMouthEyesOpen, duration: 200 },
+            { image: GrandpaOpenMouthEyesOpen, duration: 250 },
+        ];
+
+        let stateIndex = 0;
+        let shouldBlink = false;
+
+        const animateTalking = () => {
+            // 20% 확률로 눈 깜빡임
+            if (Math.random() < 0.2) {
+                shouldBlink = true;
+            }
+
+            const currentState = talkingStates[stateIndex % talkingStates.length];
+            let imageToShow = currentState.image;
+
+            // 눈 깜빡임 적용
+            if (shouldBlink) {
+                if (imageToShow === GrandpaClosedMouthEyesOpen) {
+                    imageToShow = GrandpaClosedMouthEyesClosed;
+                } else if (imageToShow === GrandpaOpenMouthEyesOpen) {
+                    imageToShow = GrandpaOpenMouthEyesClosed;
+                }
+
+                // 깜빡임 후 다시 눈 뜸
+                blinkTimeoutId = setTimeout(() => {
+                    shouldBlink = false;
+                }, 150);
+            }
+
+            setCurrentImage(imageToShow);
+            stateIndex++;
+
+            const randomVariation = Math.random() * 100 - 50; // -50ms ~ +50ms 변화
+            timeoutId = setTimeout(animateTalking, currentState.duration + randomVariation);
+        };
+
+        animateTalking();
+
+        return () => {
+            clearTimeout(timeoutId);
+            clearTimeout(blinkTimeoutId);
+        };
+    }, [isTalking, characterType]);
+
+    // Dajeong 애니메이션 로직 (기존 방식)
+    useEffect(() => {
+        if (characterType !== 'dajeong') return;
+
+        if (!isTalking) {
+            setCurrentImage(DajeongClosed);
             return;
         }
 
-        // 랜덤한 간격으로 입 모양 변경 (200ms~500ms)
-        const animate = () => {
-            setMouthOpen((prev) => !prev);
-            const randomDelay = 200 + Math.random() * 300;
-            return setTimeout(animate, randomDelay);
+        let timeoutId;
+        let isOpen = false;
+
+        const animateTalking = () => {
+            isOpen = !isOpen;
+            setCurrentImage(isOpen ? DajeongOpen : DajeongClosed);
+            const delay = 200 + Math.random() * 300;
+            timeoutId = setTimeout(animateTalking, delay);
         };
 
-        const timeout = animate();
+        animateTalking();
 
-        return () => {
-            clearTimeout(timeout);
-        };
-    }, [isTalking]);
-
-    // 현재 표시할 이미지
-    const currentImage = isTalking && mouthOpen ? images.open : images.closed;
+        return () => clearTimeout(timeoutId);
+    }, [isTalking, characterType]);
 
     return (
         <Box position="relative" w="100%" h="100%">
@@ -68,10 +129,10 @@ export const AnimatedCharacter = ({ alt, isTalking = false, characterType = 'daj
                     w="100%"
                     h="100%"
                     objectFit="cover"
-                    initial={{ opacity: 0.8 }}
+                    initial={{ opacity: 0.7 }}
                     animate={{ opacity: 1 }}
-                    exit={{ opacity: 0.8 }}
-                    transition={{ duration: 0.15 }}
+                    exit={{ opacity: 0.7 }}
+                    transition={{ duration: 0.1 }}
                 />
             </AnimatePresence>
         </Box>
