@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import dajungIcon from '../../assets/img.png';
+import dajungIcon from '../../components/common/image.png';
 import { loginAdmin } from '../../api';
 
 export default function AdminLoginPage() {
@@ -107,14 +107,14 @@ export default function AdminLoginPage() {
     };
 
     const handleInputChange = (field, value) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [field]: value
+            [field]: value,
         }));
         if (errors[field]) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                [field]: ''
+                [field]: '',
             }));
         }
     };
@@ -157,35 +157,18 @@ export default function AdminLoginPage() {
                 {/* 로고 영역 */}
                 <Flex direction="column" align="center" mb={8}>
                     <Box
-                        bg="blue.600"
-                        p={6}
-                        borderRadius="3xl"
-                        boxShadow="0 10px 40px rgba(59, 130, 246, 0.3)"
-                        mb={6}
+                        p={2}
                         transition="all 0.3s ease"
                         _hover={{
                             transform: 'translateY(-5px) scale(1.02)',
-                            boxShadow: '0 15px 50px rgba(59, 130, 246, 0.5)'
+                            boxShadow: '0 15px 50px #2196F3',
                         }}
                     >
-                        <Image src={dajungIcon} h="80px" />
+                        <Image src={dajungIcon} h="150px" />
                     </Box>
-                    <Heading
-                        size="2xl"
-                        color="gray.800"
-                        fontWeight="800"
-                        letterSpacing="-1px"
-                    >
-                        다정이 관리 시스템
-                    </Heading>
-                    <Text
-                        fontSize="lg"
-                        color="gray.600"
-                        mt={3}
-                        fontWeight="500"
-                    >
+                    <Heading size="xl" color="gray.800" fontWeight="800" letterSpacing="-1px">
                         관리자 로그인
-                    </Text>
+                    </Heading>
                 </Flex>
 
                 {/* 로그인 박스 */}
@@ -215,12 +198,12 @@ export default function AdminLoginPage() {
                                 _placeholder={{ color: 'gray.500' }}
                                 _hover={{
                                     bg: 'white',
-                                    borderColor: 'blue.400'
+                                    borderColor: 'blue.400',
                                 }}
                                 _focus={{
                                     bg: 'white',
                                     borderColor: 'blue.500',
-                                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)'
+                                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)',
                                 }}
                                 borderRadius="xl"
                                 fontSize="md"
@@ -247,12 +230,12 @@ export default function AdminLoginPage() {
                                     _placeholder={{ color: 'gray.500' }}
                                     _hover={{
                                         bg: 'white',
-                                        borderColor: 'blue.400'
+                                        borderColor: 'blue.400',
                                     }}
                                     _focus={{
                                         bg: 'white',
                                         borderColor: 'blue.500',
-                                        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)'
+                                        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)',
                                     }}
                                     borderRadius="xl"
                                     fontSize="md"
@@ -281,16 +264,16 @@ export default function AdminLoginPage() {
                             fontWeight="700"
                             type="submit"
                             isLoading={isLoading}
-                            bg="blue.600"
+                            bg="#2196F3"
                             color="white"
                             _hover={{
                                 bg: 'blue.700',
                                 transform: 'translateY(-3px)',
-                                boxShadow: '0 10px 30px rgba(59, 130, 246, 0.5)'
+                                boxShadow: '0 10px 30px rgba(110, 164, 252, 0.5)',
                             }}
                             _active={{
                                 transform: 'translateY(-1px)',
-                                bg: 'blue.800'
+                                bg: 'blue',
                             }}
                             transition="all 0.3s"
                             mt={4}
@@ -314,7 +297,7 @@ export default function AdminLoginPage() {
                             mt={2}
                         >
                             <Text fontSize="xs" color="blue.600" mb={2} fontWeight="700" letterSpacing="wider">
-                                테스트 계정
+                                관리자 계정
                             </Text>
                             <Flex justify="space-around" mt={3}>
                                 <Box>
@@ -338,19 +321,7 @@ export default function AdminLoginPage() {
                         </Box>
                     </VStack>
                 </Box>
-
-                {/* 하단 정보 */}
-                <Text
-                    fontSize="sm"
-                    color="gray.500"
-                    mt={8}
-                    textAlign="center"
-                    fontWeight="500"
-                >
-                    © 2024 다정이 관리 시스템. All rights reserved.
-                </Text>
             </Box>
         </Flex>
     );
 }
-
