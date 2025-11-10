@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Box, Image } from '@chakra-ui/react';
 
 // Grandpa (다복이) 이미지 import - 누끼 버전
-import GrandpaClosedMouthEyesOpen from '../common/close_m_grandap-removebg-preview.png';
-import GrandpaClosedMouthEyesClosed from '../common/close_m_e_grandpa-removebg-preview.png';
-import GrandpaOpenMouthEyesClosed from '../common/open_m_grandpa-removebg-preview.png';
-import GrandpaOpenMouthEyesOpen from '../common/open_m_e_grandpa-removebg-preview.png';
+import GrandpaClosedMouthEyesOpen from '../common/close_m-removebg-preview.png';
+import GrandpaClosedMouthEyesClosed from '../common/close_m_e-removebg-preview.png';
+import GrandpaOpenMouthEyesClosed from '../common/open_m-removebg-preview.png';
+import GrandpaOpenMouthEyesOpen from '../common/open_m_e-removebg-preview.png';
 
 // Dajeong (다정이) 이미지 import
 import DajeongClosed from '../common/img2.png';
@@ -120,14 +120,7 @@ export const AnimatedCharacter = ({ alt, isTalking = false, characterType = 'daj
     // Grandpa용 겹침 레이어 방식 (흔들림 방지)
     if (characterType === 'dabok') {
         return (
-            <Box
-                position="relative"
-                w="500px"
-                h="500px"
-                maxW="100%"
-                maxH="100%"
-                margin="0 auto"
-            >
+            <Box position="relative" w="500px" h="500px" maxW="100%" maxH="100%" margin="0 auto">
                 {/* 모든 이미지를 정확히 같은 위치에 겹쳐서 배치 */}
                 <Image
                     src={GrandpaClosedMouthEyesOpen}
