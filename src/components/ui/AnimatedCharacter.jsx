@@ -119,54 +119,47 @@ export const AnimatedCharacter = ({ alt, isTalking = false, characterType = 'daj
 
     // Grandpa용 겹침 레이어 방식 (흔들림 방지)
     if (characterType === 'dabok') {
+        const imageStyle = {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '500px',
+            height: '500px',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            objectPosition: 'center center',
+        };
+
         return (
-            <Box position="relative" w="100%" h="100%">
+            <Box position="relative" w="100%" h="100%" display="flex" alignItems="center" justifyContent="center">
                 {/* 모든 이미지를 같은 위치에 겹쳐서 배치 */}
                 <Image
                     src={GrandpaClosedMouthEyesOpen}
                     alt={alt}
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="100%"
-                    h="100%"
-                    objectFit="contain"
+                    {...imageStyle}
                     opacity={currentImage === GrandpaClosedMouthEyesOpen ? 1 : 0}
                     transition="opacity 0.05s ease-in-out"
                 />
                 <Image
                     src={GrandpaClosedMouthEyesClosed}
                     alt={alt}
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="100%"
-                    h="100%"
-                    objectFit="contain"
+                    {...imageStyle}
                     opacity={currentImage === GrandpaClosedMouthEyesClosed ? 1 : 0}
                     transition="opacity 0.05s ease-in-out"
                 />
                 <Image
                     src={GrandpaOpenMouthEyesClosed}
                     alt={alt}
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="100%"
-                    h="100%"
-                    objectFit="contain"
+                    {...imageStyle}
                     opacity={currentImage === GrandpaOpenMouthEyesClosed ? 1 : 0}
                     transition="opacity 0.05s ease-in-out"
                 />
                 <Image
                     src={GrandpaOpenMouthEyesOpen}
                     alt={alt}
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="100%"
-                    h="100%"
-                    objectFit="contain"
+                    {...imageStyle}
                     opacity={currentImage === GrandpaOpenMouthEyesOpen ? 1 : 0}
                     transition="opacity 0.05s ease-in-out"
                 />
