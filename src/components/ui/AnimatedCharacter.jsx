@@ -1,132 +1,79 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Image } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const MotionBox = motion(Box);
+// 입 모양 이미지 import
+import Img1Closed from '../common/img1_closedmouth.png';
+import Img1Open from '../common/img1_openmouth.png';
+import Img2Closed from '../common/img2.png';
+import Img2Open from '../common/img2_openmouth.png';
+
+const MotionImage = motion(Image);
 
 /**
- * 2D 캐릭터 이미지에 입 애니메이션을 추가하는 컴포넌트
+ * 실제 이미지 파일을 사용한 립싱크 애니메이션 컴포넌트
  * @param {Object} props
- * @param {string} props.image - 캐릭터 이미지 경로
  * @param {string} props.alt - 이미지 alt 텍스트
  * @param {boolean} props.isTalking - 말하는 중인지 여부
  * @param {string} props.characterType - 'dabok' (img1) 또는 'dajeong' (img2)
  */
-export const AnimatedCharacter = ({ image, alt, isTalking = false, characterType = 'dajeong' }) => {
-    const [currentViseme, setCurrentViseme] = useState('neutral');
+export const AnimatedCharacter = ({ alt, isTalking = false, characterType = 'dajeong' }) => {
+    const [mouthOpen, setMouthOpen] = useState(false);
 
-    // 말할 때 랜덤하게 viseme 변경 (실제로는 음성 API에서 받아올 수 있음)
+    // 캐릭터별 이미지 매핑
+    const characterImages = {
+        dabok: {
+            closed: Img1Closed,
+            open: Img1Open,
+        },
+        dajeong: {
+            closed: Img2Closed,
+            open: Img2Open,
+        },
+    };
+
+    const images = characterImages[characterType];
+
+    // 말할 때 입 모양 번갈아 변경
     useEffect(() => {
         if (!isTalking) {
-            setCurrentViseme('neutral');
+            setMouthOpen(false);
             return;
         }
 
-        const visemes = ['a', 'u', 'i', 'neutral'];
-        const interval = setInterval(() => {
-            const randomViseme = visemes[Math.floor(Math.random() * visemes.length)];
-            setCurrentViseme(randomViseme);
-        }, 300); // 300ms마다 입 모양 변경
-
-        return () => clearInterval(interval);
-    }, [isTalking]);
-
-    // 각 캐릭터별 입 위치 조정
-    const mouthPosition = {
-        dabok: {
-            // 다복이 (할아버지) - img1.png
-            top: '62%',
-            left: '50%',
-        },
-        dajeong: {
-            // 다정이 (여성) - img2.png
-            top: '65%',
-            left: '50%',
-        },
-    };
-
-    const position = mouthPosition[characterType];
-
-    // Viseme별 입 모양 정의
-    const getMouthStyle = () => {
-        const baseStyle = {
-            position: 'absolute',
-            top: position.top,
-            left: position.left,
-            transform: 'translate(-50%, -50%)',
-            bg: '#4A3428', // 갈색 입
-            borderRadius: '50%',
+        // 랜덤한 간격으로 입 모양 변경 (200ms~500ms)
+        const animate = () => {
+            setMouthOpen((prev) => !prev);
+            const randomDelay = 200 + Math.random() * 300;
+            return setTimeout(animate, randomDelay);
         };
 
-        switch (currentViseme) {
-            case 'a': // '아' - 크게 벌린 입
-                return {
-                    ...baseStyle,
-                    w: '22px',
-                    h: '18px',
-                    borderRadius: '50% 50% 50% 50%',
-                };
-            case 'u': // '우' - 둥근 작은 입
-                return {
-                    ...baseStyle,
-                    w: '14px',
-                    h: '14px',
-                    borderRadius: 'full',
-                };
-            case 'i': // '이' - 가로로 긴 입
-                return {
-                    ...baseStyle,
-                    w: '26px',
-                    h: '8px',
-                    borderRadius: '4px',
-                };
-            default: // neutral - 기본 미소
-                return {
-                    ...baseStyle,
-                    w: '20px',
-                    h: '4px',
-                    borderRadius: '10px',
-                };
-        }
-    };
+        const timeout = animate();
 
-    // 말할 때 애니메이션 variants
-    const mouthVariants = {
-        a: {
-            scaleY: [0.9, 1.1, 0.95, 1.05, 0.9],
-            scaleX: [0.95, 1.05, 1, 0.95, 1],
-            transition: { duration: 0.3, repeat: Infinity, ease: 'easeInOut' },
-        },
-        u: {
-            scale: [0.8, 1.2, 0.9, 1.1, 0.85],
-            transition: { duration: 0.8, repeat: Infinity, ease: 'circOut' },
-        },
-        i: {
-            scaleY: [0.7, 1.1, 0.8, 1.2, 0.7],
-            scaleX: [0.95, 1.05, 1, 0.95, 1],
-            transition: { duration: 0.4, repeat: Infinity, ease: 'linear' },
-        },
-        neutral: {
-            scaleY: [0.9, 1.1, 0.9],
-            transition: { duration: 0.5, repeat: Infinity, ease: 'easeInOut' },
-        },
-    };
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [isTalking]);
+
+    // 현재 표시할 이미지
+    const currentImage = isTalking && mouthOpen ? images.open : images.closed;
 
     return (
         <Box position="relative" w="100%" h="100%">
-            {/* 캐릭터 이미지 */}
-            <Image src={image} alt={alt} w="100%" h="100%" objectFit="cover" />
-
-            {/* 입 애니메이션 오버레이 */}
-            {isTalking && (
-                <MotionBox
-                    {...getMouthStyle()}
-                    animate={mouthVariants[currentViseme]}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
+            <AnimatePresence mode="wait">
+                <MotionImage
+                    key={currentImage}
+                    src={currentImage}
+                    alt={alt}
+                    w="100%"
+                    h="100%"
+                    objectFit="cover"
+                    initial={{ opacity: 0.8 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0.8 }}
+                    transition={{ duration: 0.15 }}
                 />
-            )}
+            </AnimatePresence>
         </Box>
     );
 };
