@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
 import Img2 from '../../components/common/img2.png';
+import { AnimatedCharacter } from '../../components/ui';
 
 const MotionBox = motion(Box);
 
@@ -20,6 +21,7 @@ export default function MainPage() {
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
+    const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중인지 여부
 
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
 
@@ -36,6 +38,7 @@ export default function MainPage() {
             id: 1,
             name: '다정이',
             image: Img2,
+            characterType: 'dajeong',
             color: isHighContrast ? '#FFD700' : '#2196F3',
             description: '친근하고 활기찬 음성',
         },
@@ -43,6 +46,7 @@ export default function MainPage() {
             id: 2,
             name: '다복이',
             image: Img1,
+            characterType: 'dabok',
             color: isHighContrast ? '#FFD700' : '#4CAF50',
             description: '차분하고 안정된 음성',
         },
@@ -60,7 +64,9 @@ export default function MainPage() {
 
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
-        // TODO: 통화 시작 로직 구현
+        // 통화 시작/종료 토글 (테스트용)
+        setIsTalking((prev) => !prev);
+        // TODO: 실제 통화 시작 로직 구현
     };
 
     return (
@@ -150,12 +156,11 @@ export default function MainPage() {
                                                 }
                                                 overflow="hidden"
                                             >
-                                                <Image
-                                                    src={currentModel.image}
+                                                <AnimatedCharacter
+                                                    image={currentModel.image}
                                                     alt={currentModel.name}
-                                                    w="100%"
-                                                    h="100%"
-                                                    objectFit="cover"
+                                                    isTalking={isTalking}
+                                                    characterType={currentModel.characterType}
                                                 />
                                             </Box>
 
@@ -234,7 +239,7 @@ export default function MainPage() {
 
                     {/* 통화 시작 버튼 */}
                     <Button
-                        bg={isHighContrast ? '#FFD700' : '#2196F3'}
+                        bg={isTalking ? (isHighContrast ? '#FF5252' : '#F44336') : (isHighContrast ? '#FFD700' : '#2196F3')}
                         color={isHighContrast ? '#000000' : 'white'}
                         size="lg"
                         height={callBtnH}
@@ -246,17 +251,17 @@ export default function MainPage() {
                         mt={2}
                         onClick={handleStartCall}
                         _hover={{
-                            bg: isHighContrast ? '#FFEB3B' : '#1976D2',
+                            bg: isTalking ? (isHighContrast ? '#FF1744' : '#E53935') : (isHighContrast ? '#FFEB3B' : '#1976D2'),
                             transform: 'translateY(-2px)',
                             boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
                         }}
                         _active={{
-                            bg: isHighContrast ? '#FFC107' : '#1565C0',
+                            bg: isTalking ? (isHighContrast ? '#D50000' : '#C62828') : (isHighContrast ? '#FFC107' : '#1565C0'),
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
                     >
-                        통화 시작
+                        {isTalking ? '통화 종료' : '통화 시작'}
                     </Button>
 
                     {/* 설정 영역 */}
