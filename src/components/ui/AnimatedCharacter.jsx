@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Box, Image } from '@chakra-ui/react';
 
 // Grandpa (다복이) 이미지 import - 누끼 버전
-import GrandpaClosedMouthEyesOpen from '../common/close_m-removebg-preview.png';
-import GrandpaClosedMouthEyesClosed from '../common/close_m_e-removebg-preview.png';
-import GrandpaOpenMouthEyesClosed from '../common/open_m-removebg-preview.png';
-import GrandpaOpenMouthEyesOpen from '../common/open_m_e-removebg-preview.png';
+import GrandpaClosedMouthEyesOpen from '../common/close_m_grandap-removebg-preview.png';
+import GrandpaClosedMouthEyesClosed from '../common/close_m_e_grandpa-removebg-preview.png';
+import GrandpaOpenMouthEyesClosed from '../common/open_m_grandpa-removebg-preview.png';
+import GrandpaOpenMouthEyesOpen from '../common/open_m_e_grandpa-removebg-preview.png';
 
 // Dajeong (다정이) 이미지 import
 import DajeongClosed from '../common/img2.png';
