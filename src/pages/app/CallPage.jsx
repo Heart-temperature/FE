@@ -106,26 +106,23 @@ export default function CallPage() {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5 }}
                         w="100%"
-                        h="400px"
+                        h="500px"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
+                        overflow="hidden"
                     >
                         {/* video 태그로 mp4 재생 제어 */}
                         <Box
                             as="video"
                             ref={videoRef}
-                            src={
-                                character.characterType === 'dabok'
-                                    ? `/video/dabok_${isHighContrast ? 'black' : 'white'}.mp4`
-                                    : '/video/dajeong.mp4'
-                            }
+                            src={character.characterType === 'dabok' ? `/video/dabok.webm` : '/video/dajeung.webm'}
                             loop
                             muted
                             playsInline
                             w="100%"
                             h="100%"
-                            objectFit="contain"
+                            objectFit="cover"
                             onError={(e) => {
                                 console.error('Video 로드 실패:', e.target.src);
                             }}
