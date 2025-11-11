@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
@@ -9,6 +10,7 @@ import Img2 from '../../components/common/img2.png';
 const MotionBox = motion(Box);
 
 export default function MainPage() {
+    const navigate = useNavigate();
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
@@ -60,7 +62,10 @@ export default function MainPage() {
 
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
-        // TODO: 통화 시작 로직 구현
+        // CallPage로 이동하면서 선택된 모델 정보 전달
+        navigate('/app/call', {
+            state: { selectedModel: currentModel }
+        });
     };
 
     return (

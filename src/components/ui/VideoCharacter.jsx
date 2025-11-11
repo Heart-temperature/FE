@@ -8,6 +8,7 @@ import { Box } from '@chakra-ui/react';
  * @param {string} videoSrc - MP4 영상 파일 경로
  * @param {boolean} speaking - AI가 말하고 있는지 여부
  * @param {boolean} loop - 영상을 반복 재생할지 여부 (기본값: true)
+ * @param {boolean} muted - 영상 음소거 여부 (기본값: true)
  * @param {string} width - 영상 너비 (기본값: '400px')
  * @param {string} height - 영상 높이 (기본값: '400px')
  */
@@ -15,6 +16,7 @@ export const VideoCharacter = ({
   videoSrc,
   speaking = false,
   loop = true,
+  muted = true,
   width = '400px',
   height = '400px',
   ...props
@@ -49,7 +51,7 @@ export const VideoCharacter = ({
         ref={videoRef}
         src={videoSrc}
         loop={loop}
-        muted={false}
+        muted={muted}
         playsInline
         style={{
           width,
