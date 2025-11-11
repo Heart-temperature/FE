@@ -1,11 +1,10 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import DashboardPage from './pages/web/DashboardPage';
 import UserAddPage from './pages/web/UserAddPage';
 import UserDetailPage from './pages/web/UserDetailPage';
 import UserEditPage from './pages/web/UserEditPage';
 import AdminLoginPage from './pages/web/AdminLoginPage';
-import UserAppPage from './pages/UserAppPage';
 import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
 import MainPage from './pages/app/MainPage';
@@ -148,7 +147,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: ROUTES.USER_APP,
-                element: <UserAppPage />,
+                element: <Navigate to={ROUTES.USER_APP_HOME} replace />,
                 handle: ROUTE_META[ROUTES.USER_APP],
             },
             {
