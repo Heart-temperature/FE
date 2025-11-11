@@ -14,6 +14,7 @@ export default function CallPage() {
     const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
     const [currentSubtitle, setCurrentSubtitle] = useState('');
+    const [gifKey, setGifKey] = useState(0); // gif 강제 리로드용
 
     // 전달받은 캐릭터 정보 및 고대비 모드
     const character = location.state?.character || {
@@ -22,6 +23,13 @@ export default function CallPage() {
         color: '#2196F3',
     };
     const isHighContrast = location.state?.isHighContrast || false;
+
+    // isTalking이 true로 변경될 때마다 gif 강제 리로드
+    useEffect(() => {
+        if (isTalking && !isUserTalking) {
+            setGifKey((prev) => prev + 1);
+        }
+    }, [isTalking, isUserTalking]);
 
     // 테스트용 AI 음성 및 자막 시뮬레이션
     useEffect(() => {
@@ -86,21 +94,27 @@ export default function CallPage() {
                     {isTalking && !isUserTalking ? (
                         character.characterType === 'dabok' ? (
                             <Image
-                                key={`gif-${isHighContrast ? 'black' : 'white'}`}
+                                key={`gif-dabok-${isHighContrast ? 'black' : 'white'}-${gifKey}`}
                                 src={`/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`}
-                                alt={character.name}
+                                alt={`${character.name} 말하는 중`}
                                 w="100%"
                                 h="100%"
                                 objectFit="contain"
+                                onError={(e) => {
+                                    console.error('GIF 로드 실패:', `/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`);
+                                }}
                             />
                         ) : (
                             <Image
-                                key="gif-dajeong"
+                                key={`gif-dajeong-${gifKey}`}
                                 src="/video/dajeong.gif"
-                                alt={character.name}
+                                alt={`${character.name} 말하는 중`}
                                 w="100%"
                                 h="100%"
                                 objectFit="contain"
+                                onError={(e) => {
+                                    console.error('GIF 로드 실패: /video/dajeong.gif');
+                                }}
                             />
                         )
                     ) : (
