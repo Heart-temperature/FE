@@ -74,50 +74,67 @@ export default function CallPage() {
             direction="column"
             align="center"
             justify="center"
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bg={isHighContrast ? '#000000' : '#FFFFFF'}
             p={6}
             gap={8}
         >
-            {/* 캐릭터 영역 - 테두리 없이 */}
-            <VStack spacing={8} w="full" maxW="600px" align="center">
-                <MotionBox
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    w="400px"
-                    h="400px"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    {/* AI가 말하는 중일 때만 gif 표시, 아니면 정적 이미지 */}
-                    {isTalking && !isUserTalking ? (
-                        character.characterType === 'dabok' ? (
-                            <Image
-                                key={`gif-dabok-${isHighContrast ? 'black' : 'white'}-${gifKey}`}
-                                src={`/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`}
-                                alt={`${character.name} 말하는 중`}
-                                w="100%"
-                                h="100%"
-                                objectFit="contain"
-                                onError={(e) => {
-                                    console.error('GIF 로드 실패:', `/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`);
-                                }}
-                            />
-                        ) : (
-                            <Image
-                                key={`gif-dajeong-${gifKey}`}
-                                src="/video/dajeong.gif"
-                                alt={`${character.name} 말하는 중`}
-                                w="100%"
-                                h="100%"
-                                objectFit="contain"
-                                onError={(e) => {
-                                    console.error('GIF 로드 실패: /video/dajeong.gif');
-                                }}
-                            />
-                        )
+            {/* 카드 형태의 깔끔한 디자인 */}
+            <Box
+                bg={isHighContrast ? '#000000' : 'white'}
+                borderRadius="20px"
+                boxShadow={
+                    isHighContrast
+                        ? '0 0 0 4px white, 0 20px 60px rgba(255,255,255,0.5)'
+                        : '0 10px 40px rgba(33, 150, 243, 0.15)'
+                }
+                p={{ base: 8, md: 12 }}
+                w="full"
+                maxW="600px"
+                border={isHighContrast ? '4px solid white' : 'none'}
+            >
+                <VStack spacing={8} align="stretch">
+                    {/* 캐릭터 영역 */}
+                    <MotionBox
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        w="100%"
+                        h="400px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
+                    {/* gif를 항상 표시하되, 말할 때만 보이게 함 (멈춤/재생 효과) */}
+                    {character.characterType === 'dabok' ? (
+                        <Image
+                            key={`gif-dabok-${isHighContrast ? 'black' : 'white'}-${gifKey}`}
+                            src={`/video/daboki_${isHighContrast ? 'black' : 'white'}.gif`}
+                            alt={character.name}
+                            w="100%"
+                            h="100%"
+                            objectFit="contain"
+                            display={isTalking && !isUserTalking ? 'block' : 'none'}
+                            onError={(e) => {
+                                console.error('GIF 로드 실패:', `/video/daboki_${isHighContrast ? 'black' : 'white'}.gif`);
+                            }}
+                        />
                     ) : (
+                        <Image
+                            key={`gif-dajeong-${gifKey}`}
+                            src="/video/dajeong.gif"
+                            alt={character.name}
+                            w="100%"
+                            h="100%"
+                            objectFit="contain"
+                            display={isTalking && !isUserTalking ? 'block' : 'none'}
+                            onError={(e) => {
+                                console.error('GIF 로드 실패: /video/dajeong.gif');
+                            }}
+                        />
+                    )}
+
+                    {/* AI가 말 안할 때 gif의 첫 프레임처럼 보이는 정적 이미지 */}
+                    {(!isTalking || isUserTalking) && (
                         <Image
                             src={character.characterType === 'dabok' ? DabokImage : DajeongImage}
                             alt={character.name}
@@ -128,54 +145,62 @@ export default function CallPage() {
                     )}
                 </MotionBox>
 
-                {/* 현재 자막 */}
-                <AnimatePresence mode="wait">
-                    <MotionText
-                        key={currentSubtitle}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        fontSize="2xl"
-                        fontWeight="600"
-                        color="white"
-                        textAlign="center"
-                        bg="rgba(0, 0, 0, 0.3)"
-                        px={6}
-                        py={4}
-                        borderRadius="20px"
-                        minH="80px"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        w="full"
-                    >
-                        {currentSubtitle}
-                    </MotionText>
-                </AnimatePresence>
+                    {/* 현재 자막 */}
+                    <AnimatePresence mode="wait">
+                        <MotionText
+                            key={currentSubtitle}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                            fontSize="xl"
+                            fontWeight="600"
+                            color={isHighContrast ? '#FFFFFF' : '#000000'}
+                            textAlign="center"
+                            bg={isHighContrast ? 'rgba(255, 255, 255, 0.1)' : '#F5F7FA'}
+                            px={6}
+                            py={4}
+                            borderRadius="15px"
+                            minH="80px"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            w="full"
+                            border={isHighContrast ? '2px solid white' : 'none'}
+                        >
+                            {currentSubtitle}
+                        </MotionText>
+                    </AnimatePresence>
 
-                {/* 통화 종료 버튼 */}
-                <Button
-                    w="full"
-                    size="lg"
-                    colorScheme="red"
-                    onClick={handleEndCall}
-                    fontSize="xl"
-                    fontWeight="700"
-                    height="60px"
-                    borderRadius="15px"
-                    _hover={{
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 6px 20px rgba(244, 67, 54, 0.4)',
-                    }}
-                    _active={{
-                        transform: 'translateY(0)',
-                    }}
-                    transition="all 0.2s"
-                >
-                    통화 종료
-                </Button>
-            </VStack>
+                    {/* 통화 종료 버튼 */}
+                    <Button
+                        w="full"
+                        size="lg"
+                        bg={isHighContrast ? '#FFD700' : '#F44336'}
+                        color={isHighContrast ? '#000000' : 'white'}
+                        onClick={handleEndCall}
+                        fontSize="xl"
+                        fontWeight="700"
+                        height="60px"
+                        borderRadius="15px"
+                        border={isHighContrast ? '3px solid white' : 'none'}
+                        _hover={{
+                            bg: isHighContrast ? '#FFEB3B' : '#D32F2F',
+                            transform: 'translateY(-2px)',
+                            boxShadow: isHighContrast
+                                ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                : '0 6px 20px rgba(244, 67, 54, 0.4)',
+                        }}
+                        _active={{
+                            bg: isHighContrast ? '#FFC107' : '#C62828',
+                            transform: 'translateY(0)',
+                        }}
+                        transition="all 0.2s"
+                    >
+                        통화 종료
+                    </Button>
+                </VStack>
+            </Box>
         </Flex>
     );
 }
