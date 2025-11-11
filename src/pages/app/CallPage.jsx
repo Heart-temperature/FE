@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Flex, Text, VStack } from '@chakra-ui/react';
+import { Button, Flex, Text, VStack, Box, Image } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatedCharacter } from '../../components/ui';
@@ -10,37 +10,46 @@ const MotionText = motion(Text);
 export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isTalking, setIsTalking] = useState(true); // 통화 중이므로 기본 true
+    const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
+    const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
     const [currentSubtitle, setCurrentSubtitle] = useState('');
 
-    // 전달받은 캐릭터 정보
+    // 전달받은 캐릭터 정보 및 고대비 모드
     const character = location.state?.character || {
         name: '다정이',
         characterType: 'dajeong',
         color: '#2196F3',
     };
+    const isHighContrast = location.state?.isHighContrast || false;
 
-    // 테스트용 자막 시뮬레이션
+    // 테스트용 AI 음성 및 자막 시뮬레이션
     useEffect(() => {
         const testSubtitles = [
-            '안녕하세요! 오늘 기분이 어떠세요?',
-            '오늘 날씨가 참 좋네요.',
-            '무슨 이야기를 나누고 싶으세요?',
-            '편하게 말씀해 주세요.',
-            '잘 듣고 있습니다.',
+            { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
+            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
+            { text: '오늘 날씨가 참 좋네요.', duration: 2500, aiTalking: true },
+            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
+            { text: '무슨 이야기를 나누고 싶으세요?', duration: 3000, aiTalking: true },
+            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
         ];
 
         let index = 0;
-        const interval = setInterval(() => {
-            const subtitle = testSubtitles[index % testSubtitles.length];
-            setCurrentSubtitle(subtitle);
+
+        const showNextSubtitle = () => {
+            const current = testSubtitles[index % testSubtitles.length];
+            setCurrentSubtitle(current.text);
+            setIsTalking(current.aiTalking);
+
             index++;
-        }, 4000); // 4초마다 자막 변경
+            setTimeout(showNextSubtitle, current.duration);
+        };
 
         // 첫 자막 즉시 표시
-        setCurrentSubtitle(testSubtitles[0]);
+        showNextSubtitle();
 
-        return () => clearInterval(interval);
+        return () => {
+            index = testSubtitles.length; // cleanup
+        };
     }, []);
 
     const handleEndCall = () => {
@@ -72,11 +81,22 @@ export default function CallPage() {
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <AnimatedCharacter
-                        alt={character.name}
-                        isTalking={isTalking}
-                        characterType={character.characterType}
-                    />
+                    {/* 다복이 캐릭터이고 AI가 말하는 중일 때만 gif 표시 */}
+                    {character.characterType === 'dabok' && isTalking && !isUserTalking ? (
+                        <Image
+                            src={`/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`}
+                            alt={character.name}
+                            w="100%"
+                            h="100%"
+                            objectFit="contain"
+                        />
+                    ) : (
+                        <AnimatedCharacter
+                            alt={character.name}
+                            isTalking={isTalking && !isUserTalking}
+                            characterType={character.characterType}
+                        />
+                    )}
                 </MotionBox>
 
                 {/* 현재 자막 */}
