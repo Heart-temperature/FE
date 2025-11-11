@@ -338,7 +338,6 @@ export default function UserLoginPage() {
                                 borderRadius="10px"
                                 minW="210px"
                                 h={btnH}
-                                h="55px"
                                 fontSize={fs}
                                 border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
