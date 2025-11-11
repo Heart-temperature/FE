@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
 import Img2 from '../../components/common/img2.png';
+import { ROUTES } from '../../routes';
 
 const MotionBox = motion(Box);
 
 export default function MainPage() {
+    const navigate = useNavigate();
     const fontSizeLevels = ['작게', '보통', '크게'];
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
@@ -36,6 +39,7 @@ export default function MainPage() {
             id: 1,
             name: '다정이',
             image: Img2,
+            characterType: 'dajeong',
             color: isHighContrast ? '#FFD700' : '#2196F3',
             description: '친근하고 활기찬 음성',
         },
@@ -43,6 +47,7 @@ export default function MainPage() {
             id: 2,
             name: '다복이',
             image: Img1,
+            characterType: 'dabok',
             color: isHighContrast ? '#FFD700' : '#4CAF50',
             description: '차분하고 안정된 음성',
         },
@@ -60,7 +65,17 @@ export default function MainPage() {
 
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
-        // TODO: 통화 시작 로직 구현
+        // CallPage로 이동하면서 선택된 캐릭터 정보 및 고대비 모드 전달
+        navigate(ROUTES.USER_APP_CALL, {
+            state: {
+                character: {
+                    name: currentModel.name,
+                    characterType: currentModel.characterType,
+                    color: currentModel.color,
+                },
+                isHighContrast: isHighContrast,
+            },
+        });
     };
 
     return (
@@ -155,7 +170,7 @@ export default function MainPage() {
                                                     alt={currentModel.name}
                                                     w="100%"
                                                     h="100%"
-                                                    objectFit="cover"
+                                                    objectFit="contain"
                                                 />
                                             </Box>
 
