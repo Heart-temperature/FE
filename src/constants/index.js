@@ -25,7 +25,8 @@ export const EMOTION_TEXTS = {
 // 캐릭터 관련 상수
 export const CHARACTERS = [
   { id: 'robot', name: '로봇 상담사', emoji: '🤖', color: 'blue' },
-  { id: 'human', name: '사람 상담사', emoji: '👨‍⚕️', color: 'green' }
+  { id: 'human', name: '사람 상담사', emoji: '👨‍⚕️', color: 'green' },
+  { id: 'video', name: '영상 상담사', emoji: '🎥', color: 'purple' }
 ];
 
 // 앱 상태 상수

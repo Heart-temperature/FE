@@ -88,7 +88,12 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public  # Vite uses public folder, so don't ignore it
+
+# Video files (users should add their own)
+public/videos/*.mp4
+public/videos/*.webm
+public/videos/*.mov
 
 # Storybook build outputs
 .out
