@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
 import Img2 from '../../components/common/img2.png';
-import { AnimatedCharacter } from '../../components/ui';
 import { ROUTES } from '../../routes';
 
 const MotionBox = motion(Box);
@@ -166,10 +165,12 @@ export default function MainPage() {
                                                 }
                                                 overflow="hidden"
                                             >
-                                                <AnimatedCharacter
+                                                <Image
+                                                    src={currentModel.image}
                                                     alt={currentModel.name}
-                                                    isTalking={false}
-                                                    characterType={currentModel.characterType}
+                                                    w="100%"
+                                                    h="100%"
+                                                    objectFit="contain"
                                                 />
                                             </Box>
 

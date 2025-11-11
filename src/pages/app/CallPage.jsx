@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Flex, Text, VStack, Box, Image } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AnimatedCharacter } from '../../components/ui';
+import DabokImage from '../../components/common/img1.png';
+import DajeongImage from '../../components/common/img2.png';
 
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
@@ -81,20 +82,34 @@ export default function CallPage() {
                     alignItems="center"
                     justifyContent="center"
                 >
-                    {/* 다복이 캐릭터이고 AI가 말하는 중일 때만 gif 표시 */}
-                    {character.characterType === 'dabok' && isTalking && !isUserTalking ? (
+                    {/* AI가 말하는 중일 때만 gif 표시, 아니면 정적 이미지 */}
+                    {isTalking && !isUserTalking ? (
+                        character.characterType === 'dabok' ? (
+                            <Image
+                                key={`gif-${isHighContrast ? 'black' : 'white'}`}
+                                src={`/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`}
+                                alt={character.name}
+                                w="100%"
+                                h="100%"
+                                objectFit="contain"
+                            />
+                        ) : (
+                            <Image
+                                key="gif-dajeong"
+                                src="/video/dajeong.gif"
+                                alt={character.name}
+                                w="100%"
+                                h="100%"
+                                objectFit="contain"
+                            />
+                        )
+                    ) : (
                         <Image
-                            src={`/video/dabok_${isHighContrast ? 'black' : 'white'}.gif`}
+                            src={character.characterType === 'dabok' ? DabokImage : DajeongImage}
                             alt={character.name}
                             w="100%"
                             h="100%"
                             objectFit="contain"
-                        />
-                    ) : (
-                        <AnimatedCharacter
-                            alt={character.name}
-                            isTalking={isTalking && !isUserTalking}
-                            characterType={character.characterType}
                         />
                     )}
                 </MotionBox>
