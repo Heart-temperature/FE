@@ -34,7 +34,6 @@ export default function CallPage() {
         } else {
             // AI 말 안할 때 또는 사용자 말할 때: 정지하고 처음으로
             videoRef.current.pause();
-            videoRef.current.currentTime = 0;
         }
     }, [isTalking, isUserTalking]);
 
