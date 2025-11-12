@@ -45,19 +45,24 @@ export default function UserLoginPage() {
     const btnH = buttonHeights[fontSizeLevel];
 
     return (
-        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={2}>
+        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
             {/* 메인 로그인 카드 */}
-            <Box p={5} w="full" maxW="530px">
-                <VStack spacing={10} align="stretch">
+            <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
+                <VStack spacing={9} align="stretch">
                     {/* 헤더 */}
-                    <Box mb={2}>
+                    <Box mb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
                         <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" mb={4} />
-                        <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
                     {/* 아이디 */}
                     <FormControl>
-                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
+                        <FormLabel
+                            fontSize={fs}
+                            color={isHighContrast ? '#FFFFFF' : '#000000'}
+                            fontWeight="700"
+                            mb={3}
+                            width="fit-content"
+                        >
                             전화번호
                         </FormLabel>
                         <InputGroup>
@@ -108,7 +113,13 @@ export default function UserLoginPage() {
 
                     {/* 비밀번호 */}
                     <FormControl>
-                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
+                        <FormLabel
+                            fontSize={fs}
+                            color={isHighContrast ? '#FFFFFF' : '#000000'}
+                            fontWeight="700"
+                            mb={3}
+                            width="fit-content"
+                        >
                             비밀번호
                         </FormLabel>
                         <InputGroup>
@@ -187,7 +198,7 @@ export default function UserLoginPage() {
                     </Button>
 
                     {/* 설정 영역 */}
-                    <Box mt={4} pt={6} borderTop="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
+                    <Box my={5} pt={7} borderTop="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
                         {/* 글자 크기 조절 */}
                         <Text
                             fontSize={fs}
@@ -335,7 +346,7 @@ export default function UserLoginPage() {
                         >
                             선명한 화면
                         </Text>
-                        <HStack justify="center" mb={1}>
+                        <HStack justify="center">
                             <Button
                                 size="md"
                                 onClick={toggleHighContrast}
