@@ -253,7 +253,7 @@ export default function MainPage() {
                         }}
                         transition="all 0.2s"
                     >
-                        {isPolite ? '존댓말 모드 ON' : '존댓말 모드 OFF'}
+                        {isPolite ? '존댓말 모드 켜기' : '존댓말 모드 끄기'}
                     </Button>
 
                     {/* 통화 시작 버튼 */}

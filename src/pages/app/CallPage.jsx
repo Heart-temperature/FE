@@ -108,22 +108,9 @@ export default function CallPage() {
     };
 
     return (
-        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={6} py={10}>
-            {/* 메인 카드 */}
-
-            <Box
-                bg={isHighContrast ? '#000000' : 'white'}
-                borderRadius="20px"
-                boxShadow={
-                    isHighContrast
-                        ? '0 0 0 4px white, 0 20px 60px rgba(255,255,255,0.5)'
-                        : '0 10px 40px rgba(33, 150, 243, 0.15)'
-                }
-                p={{ base: 10, md: 14 }}
-                w="full"
-                maxW="550px"
-                border={isHighContrast ? '4px solid white' : 'none'}
-            >
+        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
+                    {/* 메인 로그인 카드 */}
+                    <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={6} align="stretch">
                     {/* 캐릭터 영역 */}
 
@@ -149,7 +136,7 @@ export default function CallPage() {
                             muted
                             playsInline
                             w="100%"
-                            h="100%"
+                            h="70%"
                             objectFit="cover"
                             onError={(e) => {
                                 console.error('Video 로드 실패:', e.target.src);
@@ -189,7 +176,6 @@ export default function CallPage() {
 
                     <Button
                         w="full"
-                        size="lg"
                         bg={isHighContrast ? '#FFD700' : '#F44336'}
                         color={isHighContrast ? '#000000' : 'white'}
                         onClick={handleEndCall}
