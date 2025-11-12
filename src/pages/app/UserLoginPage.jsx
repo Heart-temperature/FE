@@ -16,7 +16,7 @@ import {
     Image,
     Divider,
 } from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
 import DajeongLogo from '../../components/common/image.png';
 import { ROUTES } from '../../routes';
 
@@ -45,14 +45,10 @@ export default function UserLoginPage() {
     const btnH = buttonHeights[fontSizeLevel];
 
     return (
-        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={6} py={10}>
+        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={2}>
             {/* 메인 로그인 카드 */}
-            <Box
-                p={{ base: 5, md: 14 }}
-                w="full"
-                maxW="530px"
-            >
-                <VStack spacing={6} align="stretch">
+            <Box p={5} w="full" maxW="530px">
+                <VStack spacing={10} align="stretch">
                     {/* 헤더 */}
                     <Box mb={2}>
                         <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" mb={4} />
@@ -64,50 +60,12 @@ export default function UserLoginPage() {
                         <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
                             전화번호
                         </FormLabel>
-                        <Input
-                            type='number'
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            placeholder="여기에 입력"
-                            fontSize={fs}
-                            height={inputH}
-                            borderRadius="15px"
-                            bg={isHighContrast ? '#000000' : '#F0F8FF'}
-                            border="3px solid"
-                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                            fontWeight="600"
-                            _placeholder={{
-                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
-                                fontWeight: '500',
-                            }}
-                            _hover={{
-                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
-                            }}
-                            _focus={{
-                                borderWidth: '5px',
-                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                boxShadow: isHighContrast
-                                    ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
-                                outline: 'none',
-                            }}
-                            transition="all 0.2s"
-                        />
-                    </FormControl>
-
-                    {/* 비밀번호 */}
-                    <FormControl>
-                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
-                            비밀번호
-                        </FormLabel>
                         <InputGroup>
                             <Input
-                                type={show ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="여기에 입력"
+                                type="number"
+                                value={id}
+                                onChange={(e) => setId(e.target.value)}
+                                placeholder="전화번호 입력"
                                 fontSize={fs}
                                 height={inputH}
                                 borderRadius="15px"
@@ -134,6 +92,72 @@ export default function UserLoginPage() {
                                 }}
                                 transition="all 0.2s"
                             />
+                            {id && (
+                                <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
+                                    <IconButton
+                                        height={inputH}
+                                        variant="unstyled"
+                                        onClick={() => setId('')}
+                                        icon={<CloseIcon boxSize={6} color={isHighContrast ? 'white' : '#2c1026'} />}
+                                        aria-label="아이디 입력 초기화"
+                                    />
+                                </InputRightElement>
+                            )}
+                        </InputGroup>
+                    </FormControl>
+
+                    {/* 비밀번호 */}
+                    <FormControl>
+                        <FormLabel fontSize={fs} color={isHighContrast ? '#FFFFFF' : '#000000'} fontWeight="700" mb={3}>
+                            비밀번호
+                        </FormLabel>
+                        <InputGroup>
+                            <Input
+                                type={show ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="비밀번호 입력"
+                                fontSize={fs}
+                                height={inputH}
+                                borderRadius="15px"
+                                bg={isHighContrast ? '#000000' : '#F0F8FF'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                                fontWeight="600"
+                                _placeholder={{
+                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
+                                    fontWeight: '500',
+                                }}
+                                _hover={{
+                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                    boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
+                                }}
+                                _focus={{
+                                    borderWidth: '5px',
+                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                    boxShadow: isHighContrast
+                                        ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
+                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
+                                    outline: 'none',
+                                }}
+                                transition="all 0.2s"
+                            />
+                            <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
+                                <IconButton
+                                    height={inputH}
+                                    variant="unstyled"
+                                    onClick={handleShowToggle}
+                                    icon={
+                                        show ? (
+                                            <ViewOffIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
+                                        ) : (
+                                            <ViewIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
+                                        )
+                                    }
+                                    aria-label="비밀번호 보기 토글"
+                                />
+                            </InputRightElement>
                         </InputGroup>
                     </FormControl>
 
@@ -164,6 +188,7 @@ export default function UserLoginPage() {
 
                     {/* 설정 영역 */}
                     <Box mt={4} pt={6} borderTop="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
+                        {/* 글자 크기 조절 */}
                         <Text
                             fontSize={fs}
                             fontWeight="700"
@@ -171,147 +196,146 @@ export default function UserLoginPage() {
                             mb={5}
                             textAlign="center"
                         >
-                            화면 설정
+                            글자 크기
                         </Text>
-
-                        {/* 글자 크기 조절 */}
-                        <HStack spacing={2} justify="space-between" mb={5} mx={-3}>
-                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
-                                글자 크기
-                            </Text>
-                            <HStack spacing={0}>
-                                <Button
-                                    onClick={() => setFontSizeLevel(0)}
-                                    bg={
+                        <HStack spacing={0} justify="center" mb={6}>
+                            <Button
+                                onClick={() => setFontSizeLevel(0)}
+                                bg={
+                                    fontSizeLevel === 0
+                                        ? isHighContrast
+                                            ? '#FFD700'
+                                            : '#2196F3'
+                                        : isHighContrast
+                                        ? '#FFFFFF'
+                                        : '#E3F2FD'
+                                }
+                                color={
+                                    fontSizeLevel === 0
+                                        ? isHighContrast
+                                            ? '#000000'
+                                            : 'white'
+                                        : isHighContrast
+                                        ? '#000000'
+                                        : '#1976D2'
+                                }
+                                fontWeight="700"
+                                borderRadius="10px 0 0 10px"
+                                h={btnH}
+                                fontSize="1.9rem"
+                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
+                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                _hover={{
+                                    bg:
                                         fontSizeLevel === 0
                                             ? isHighContrast
                                                 ? '#FFD700'
                                                 : '#2196F3'
                                             : isHighContrast
-                                            ? '#FFFFFF'
-                                            : '#E3F2FD'
-                                    }
-                                    color={
-                                        fontSizeLevel === 0
-                                            ? isHighContrast
-                                                ? '#000000'
-                                                : 'white'
-                                            : isHighContrast
+                                            ? '#FFEB3B'
+                                            : '#64B5F6',
+                                    transform: 'scale(1.05)',
+                                }}
+                                transition="all 0.2s"
+                            >
+                                작게
+                            </Button>
+                            <Button
+                                onClick={() => setFontSizeLevel(1)}
+                                bg={
+                                    fontSizeLevel === 1
+                                        ? isHighContrast
+                                            ? '#FFD700'
+                                            : '#2196F3'
+                                        : isHighContrast
+                                        ? '#FFFFFF'
+                                        : '#E3F2FD'
+                                }
+                                color={
+                                    fontSizeLevel === 1
+                                        ? isHighContrast
                                             ? '#000000'
-                                            : '#1976D2'
-                                    }
-                                    fontWeight="700"
-                                    borderRadius="10px 0 0 10px"
-                                    h={btnH}
-                                    fontSize="1.4rem"
-                                    border={isHighContrast ? '2px solid white' : 'none'}
-                                    borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
-                                    _hover={{
-                                        bg:
-                                            fontSizeLevel === 0
-                                                ? isHighContrast
-                                                    ? '#FFD700'
-                                                    : '#2196F3'
-                                                : isHighContrast
-                                                ? '#FFEB3B'
-                                                : '#64B5F6',
-                                        transform: 'scale(1.05)',
-                                    }}
-                                    transition="all 0.2s"
-                                >
-                                    작게
-                                </Button>
-                                <Button
-                                    onClick={() => setFontSizeLevel(1)}
-                                    bg={
+                                            : 'white'
+                                        : isHighContrast
+                                        ? '#000000'
+                                        : '#1976D2'
+                                }
+                                fontWeight="700"
+                                borderRadius="0"
+                                h={btnH}
+                                fontSize="1.9rem"
+                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
+                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                _hover={{
+                                    bg:
                                         fontSizeLevel === 1
                                             ? isHighContrast
                                                 ? '#FFD700'
                                                 : '#2196F3'
                                             : isHighContrast
-                                            ? '#FFFFFF'
-                                            : '#E3F2FD'
-                                    }
-                                    color={
-                                        fontSizeLevel === 1
-                                            ? isHighContrast
-                                                ? '#000000'
-                                                : 'white'
-                                            : isHighContrast
+                                            ? '#FFEB3B'
+                                            : '#64B5F6',
+                                    transform: 'scale(1.05)',
+                                }}
+                                transition="all 0.2s"
+                            >
+                                보통
+                            </Button>
+                            <Button
+                                onClick={() => setFontSizeLevel(2)}
+                                bg={
+                                    fontSizeLevel === 2
+                                        ? isHighContrast
+                                            ? '#FFD700'
+                                            : '#2196F3'
+                                        : isHighContrast
+                                        ? '#FFFFFF'
+                                        : '#E3F2FD'
+                                }
+                                color={
+                                    fontSizeLevel === 2
+                                        ? isHighContrast
                                             ? '#000000'
-                                            : '#1976D2'
-                                    }
-                                    fontWeight="700"
-                                    borderRadius="0"
-                                    h={btnH}
-                                    fontSize="1.4rem"
-                                    border={isHighContrast ? '2px solid white' : 'none'}
-                                    borderRight={isHighContrast ? 'none' : '1px solid #90CAF9'}
-                                    borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
-                                    _hover={{
-                                        bg:
-                                            fontSizeLevel === 1
-                                                ? isHighContrast
-                                                    ? '#FFD700'
-                                                    : '#2196F3'
-                                                : isHighContrast
-                                                ? '#FFEB3B'
-                                                : '#64B5F6',
-                                        transform: 'scale(1.05)',
-                                    }}
-                                    transition="all 0.2s"
-                                >
-                                    보통
-                                </Button>
-                                <Button
-                                    onClick={() => setFontSizeLevel(2)}
-                                    bg={
+                                            : 'white'
+                                        : isHighContrast
+                                        ? '#000000'
+                                        : '#1976D2'
+                                }
+                                fontWeight="700"
+                                borderRadius="0 10px 10px 0"
+                                h={btnH}
+                                fontSize="1.9rem"
+                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
+                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                _hover={{
+                                    bg:
                                         fontSizeLevel === 2
                                             ? isHighContrast
                                                 ? '#FFD700'
                                                 : '#2196F3'
                                             : isHighContrast
-                                            ? '#FFFFFF'
-                                            : '#E3F2FD'
-                                    }
-                                    color={
-                                        fontSizeLevel === 2
-                                            ? isHighContrast
-                                                ? '#000000'
-                                                : 'white'
-                                            : isHighContrast
-                                            ? '#000000'
-                                            : '#1976D2'
-                                    }
-                                    fontWeight="700"
-                                    borderRadius="0 10px 10px 0"
-                                    h={btnH}
-                                    fontSize="1.4rem"
-                                    border={isHighContrast ? '2px solid white' : 'none'}
-                                    borderLeft={isHighContrast ? 'none' : '1px solid #90CAF9'}
-                                    _hover={{
-                                        bg:
-                                            fontSizeLevel === 2
-                                                ? isHighContrast
-                                                    ? '#FFD700'
-                                                    : '#2196F3'
-                                                : isHighContrast
-                                                ? '#FFEB3B'
-                                                : '#64B5F6',
-                                        transform: 'scale(1.05)',
-                                    }}
-                                    transition="all 0.2s"
-                                >
-                                    크게
-                                </Button>
-                            </HStack>
+                                            ? '#FFEB3B'
+                                            : '#64B5F6',
+                                    transform: 'scale(1.05)',
+                                }}
+                                transition="all 0.2s"
+                            >
+                                크게
+                            </Button>
                         </HStack>
 
                         {/* 고대비 모드 */}
-                        <HStack spacing={0} justify="space-between">
-                            <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
-                                선명한 화면
-                            </Text>
+                        <Text
+                            fontSize={fs}
+                            fontWeight="700"
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
+                            mb={5}
+                            textAlign="center"
+                        >
+                            선명한 화면
+                        </Text>
+                        <HStack justify="center" mb={1}>
                             <Button
                                 size="md"
                                 onClick={toggleHighContrast}
@@ -322,7 +346,6 @@ export default function UserLoginPage() {
                                 minW="210px"
                                 h={btnH}
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid white' : 'none'}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                                     transform: 'scale(1.05)',
