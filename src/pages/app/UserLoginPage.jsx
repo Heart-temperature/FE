@@ -50,8 +50,8 @@ export default function UserLoginPage() {
             <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={9} align="stretch">
                     {/* 헤더 */}
-                    <Box mb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto"/>
+                    <Box mb={2} pb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" />
                     </Box>
 
                     {/* 아이디 */}
@@ -176,12 +176,14 @@ export default function UserLoginPage() {
                     <Button
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
+                        w="90%"
+                        mx="auto"
                         height={inputH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
                         boxShadow="0 4px 10px rgba(33, 150, 243, 0.3)"
-                        mt={2}
+                        mt={4}
                         onClick={handleLogin}
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#1976D2',

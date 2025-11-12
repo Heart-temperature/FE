@@ -16,15 +16,21 @@ export default function MainPage() {
     const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
     const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
     const buttonHeights = ['50px', '55px', '65px'];
-    const arrowButtonSizes = ['45px', '55px', '65px']; // 화살표 버튼 크기 (직접 지정)
+    const arrowButtonSizes = ['30px', '40px', '50px']; // 화살표 버튼 크기 (직접 지정)
     const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
     const aiImageSizes = ['160px', '200px', '240px']; // AI 모델 이미지 크기
+    const imageCircleSizes = ['130', '150', '170']; // 이미지 원형 배경 크기
 
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
+    const [isPolite, setIsPolite] = useState(true); // true = 존댓말, false = 반말
 
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
+    const handleToggle = () => {
+        setIsPolite((prev) => !prev);
+        // 🔹 실제로는 여기서 tone 상태를 전역/로컬 저장소에 저장할 수도 있음
+    };
 
     const fs = fontSizes[fontSizeLevel];
     const callBtnH = callButtonHeights[fontSizeLevel];
@@ -32,6 +38,8 @@ export default function MainPage() {
     const arrowIconSize = arrowIconSizes[fontSizeLevel];
     const aiImgSize = aiImageSizes[fontSizeLevel];
     const btnH = buttonHeights[fontSizeLevel];
+    const imgCircleHeight = imageCircleSizes[fontSizeLevel];
+    const imgCircleWidth = `${imageCircleSizes[fontSizeLevel] + 5} px`;
 
     // AI 모델 데이터
     const aiModels = [
@@ -41,7 +49,7 @@ export default function MainPage() {
             image: Img2,
             characterType: 'dajeong',
             color: isHighContrast ? '#FFD700' : '#2196F3',
-            description: '친근하고 활기찬 음성',
+            description: '친근하고 활기찬 목소리',
         },
         {
             id: 2,
@@ -49,7 +57,7 @@ export default function MainPage() {
             image: Img1,
             characterType: 'dabok',
             color: isHighContrast ? '#FFD700' : '#4CAF50',
-            description: '차분하고 안정된 음성',
+            description: '차분하고 안정된 목소리',
         },
     ];
 
@@ -84,7 +92,7 @@ export default function MainPage() {
             <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={9} align="stretch">
                     {/* 헤더 */}
-                    <Box mb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
+                    <Box mb={2} pb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
                         <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" />
                     </Box>
 
@@ -101,8 +109,8 @@ export default function MainPage() {
                     </Text>
 
                     {/* AI 모델 슬라이더 */}
-                    <Box position="relative" mx="auto" my={2}>
-                        <HStack justify="space-between" align="center" spacing={4}>
+                    <Box position="relative" mx="auto">
+                        <HStack justify="space-between" align="center">
                             {/* 이전 버튼 */}
                             <IconButton
                                 icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
@@ -137,8 +145,8 @@ export default function MainPage() {
                                     <VStack spacing={4}>
                                         {/* AI 모델 이미지 */}
                                         <Box
-                                            w={aiImgSize}
-                                            h={aiImgSize}
+                                            w={imgCircleWidth}
+                                            h={imgCircleHeight}
                                             borderRadius="full"
                                             bg={isHighContrast ? '#000000' : 'white'}
                                             border={`5px solid ${currentModel.color}`}
@@ -152,11 +160,13 @@ export default function MainPage() {
                                             }
                                         >
                                             <Image
+                                                position="relative"
                                                 src={currentModel.image}
                                                 alt={currentModel.name}
                                                 w="100%"
                                                 h="100%"
                                                 objectFit="contain"
+                                                top="8px"
                                             />
                                         </Box>
 
@@ -167,15 +177,6 @@ export default function MainPage() {
                                             color={isHighContrast ? '#FFFFFF' : currentModel.color}
                                         >
                                             {currentModel.name}
-                                        </Text>
-
-                                        {/* 모델 설명 */}
-                                        <Text
-                                            fontSize={fs}
-                                            color={isHighContrast ? '#e2e2e2' : '#666666'}
-                                            fontWeight="500"
-                                        >
-                                            {currentModel.description}
                                         </Text>
                                     </VStack>
                                 </MotionBox>
@@ -203,6 +204,11 @@ export default function MainPage() {
                                 transition="all 0.2s"
                             />
                         </HStack>
+
+                        {/* 모델 설명 */}
+                        <Text fontSize={fs} color={isHighContrast ? '#e2e2e2' : '#666666'} fontWeight="500">
+                            {currentModel.description}
+                        </Text>
 
                         {/* 하단 인디케이터 */}
                         <HStack justify="center" mt={4} spacing={3}>
@@ -232,11 +238,30 @@ export default function MainPage() {
                         </HStack>
                     </Box>
 
+                    <Button
+                        onClick={() => setIsPolite(!isPolite)}
+                        bg={isHighContrast ? '#FFFFFF' : isPolite ? '#2196F3' : '#E0E0E0'}
+                        color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
+                        fontSize={fs}
+                        h={btnH}
+                        mt={3}
+                        fontWeight="600"
+                        borderRadius="10px"
+                        border={isHighContrast ? '3px solid white' : 'none'}
+                        _hover={{
+                            bg: isHighContrast ? '#FFEB3B' : isPolite ? '#1976D2' : '#BDBDBD',
+                        }}
+                        transition="all 0.2s"
+                    >
+                        {isPolite ? '존댓말 모드 ON' : '존댓말 모드 OFF'}
+                    </Button>
+
                     {/* 통화 시작 버튼 */}
                     <Button
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
-                        size="lg"
+                        w="90%"
+                        mx="auto"
                         height={callBtnH}
                         fontSize={fs}
                         fontWeight="700"
