@@ -46,9 +46,10 @@ import {
     Image
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import dajungIcon from '../../assets/dajung-icon.png';
+import { useNavigate, useLocation } from 'react-router-dom';
+import dajungIcon from '../../components/common/image.png';
 import { fetchUserList, deleteUser, addUserMemo, getLastEmotion, getLastCall } from '../../api';
+import { calculateAge } from '../../utils/dateUtils';
 import { 
     SearchIcon, 
     TimeIcon, 
@@ -66,6 +67,7 @@ import {
 
 export default function Dashboard() {
     const navigate = useNavigate();
+    const location = useLocation();
     const toast = useToast();
     const [users, setUsers] = useState([]); // API에서 받아온 사용자 목록
     const [isLoading, setIsLoading] = useState(false);
@@ -361,10 +363,27 @@ export default function Dashboard() {
                     callSummary = callData.summary || user.memo || '메모 없음';
                 }
 
+                // 생년월일로부터 나이 계산
+                // birthDate가 ISO 형식(YYYY-MM-DDTHH:mm:ss.SSS)일 수 있으므로 날짜 부분만 추출
+                const birthDateStr = user.birthDate ? 
+                    (user.birthDate.includes('T') ? user.birthDate.split('T')[0] : user.birthDate) : 
+                    null;
+                const age = birthDateStr ? calculateAge(birthDateStr) : 0;
+
+                // 성별 변환 (M -> 남성, F -> 여성)
+                let gender = '미지정';
+                if (user.sexuality === 'M') {
+                    gender = '남성';
+                } else if (user.sexuality === 'F') {
+                    gender = '여성';
+                } else if (user.sexuality === '남성' || user.sexuality === '여성') {
+                    gender = user.sexuality;
+                }
+
                 return {
                     id: user.id,
                     name: user.name,
-                    age: 0,
+                    age: age,
                     emotion: emotion,
                     desc: desc,
                     lastCall: lastCall,
@@ -372,7 +391,7 @@ export default function Dashboard() {
                     address: user.address || '',
                     joinedDate: user.birthDate || '',
                     lastActive: lastCall === '신규' ? '신규' : lastCall,
-                    gender: user.sexuality || '미지정',
+                    gender: gender,
                     callDuration: callDuration,
                     callSummary: callSummary,
                     _dbData: user
@@ -395,10 +414,11 @@ export default function Dashboard() {
         }
     };
 
-    // 컴포넌트 마운트 시 사용자 목록 받아오기
+    // 컴포넌트 마운트 시 및 경로 변경 시 사용자 목록 받아오기
+    // 사용자 정보 수정 후 대시보드로 돌아올 때 최신 정보를 가져오기 위해 location을 의존성에 추가
     useEffect(() => {
         loadUserList();
-    }, []);
+    }, [location.pathname]);
 
     // 로그아웃 함수
     const handleLogout = () => {
@@ -441,7 +461,7 @@ export default function Dashboard() {
                 <VStack spacing={3} align="stretch">
                     <Flex align="center" justify="space-between">
                         <HStack spacing={4}>
-                                <Image src={dajungIcon} alt="Dajung Icon" boxSize="24px" />
+                                <Image src={dajungIcon} alt="Dajung Icon" boxSize="60px" />
                             <VStack align="start" spacing={0}>
                                 <Heading size="lg" color="gray.800" fontWeight="600">
                                     다정이 관리 시스템
@@ -576,16 +596,6 @@ export default function Dashboard() {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => handleSort('joinedDate')}
-                                            rightIcon={sortField === 'joinedDate' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
-                                        >
-                                            가입일
-                                        </Button>
-                                    </Th>
-                                    <Th px={4} py={3}>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={sortField === 'lastCall' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
                                         >
@@ -644,9 +654,6 @@ export default function Dashboard() {
                                             >
                                                 {user.gender}
                                             </Badge>
-                                        </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">{user.joinedDate}</Text>
                                         </Td>
                                         <Td px={4} py={3}>
                                             <VStack align="start" spacing={0}>
