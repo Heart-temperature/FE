@@ -20,6 +20,7 @@ import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
 import DajeongLogo from '../../components/common/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
+import { s } from 'framer-motion/client';
 
 export default function UserLoginPage() {
     const navigate = useNavigate();
@@ -38,6 +39,9 @@ export default function UserLoginPage() {
     const handleShowToggle = () => setShow(!show);
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
     const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+
         try {
             const user = await loginUser(id, password);
             console.log('로그인 성공: ', user);
@@ -178,6 +182,20 @@ export default function UserLoginPage() {
                             </InputRightElement>
                         </InputGroup>
                     </FormControl>
+
+                    {/* ✅ 오류 메시지 표시 (비밀번호 아래, 버튼 위) */}
+                    {error && (
+                        <Text
+                            mt={2}
+                            mb={1}
+                            color={isHighContrast ? '#FF5252' : 'black'}
+                            fontWeight="600"
+                            fontSize={fs}
+                            textAlign="center"
+                        >
+                            {error}
+                        </Text>
+                    )}
 
                     {/* 로그인 버튼 */}
                     <Button
