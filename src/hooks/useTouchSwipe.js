@@ -42,3 +42,5 @@ export const useTouchSwipe = (onSwipeLeft, onSwipeRight, minSwipeDistance = 50) 
   };
 };
 
+
+
