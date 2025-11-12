@@ -4,6 +4,19 @@
  * @param {string} loginPw - 관리자 비밀번호
  * @returns {Promise<Object>} 로그인 응답 데이터
  */
+
+import axios from 'axios';
+import { base, tr } from 'framer-motion/client';
+
+const BASE_URL = 'http://localhost:8080/webkit';
+
+const api = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
 export const loginAdmin = async (loginId, loginPw) => {
     try {
         const response = await fetch('http://localhost:8080/webkit/admin/auth/login', {
@@ -75,3 +88,32 @@ export const signUpAdmin = async (userData) => {
     }
 };
 
+//사용자 로그인 API
+export const loginUser = async (loginId, loginPw) => {
+    try {
+        const response = await api.post('/auth/login', { loginId, loginPw });
+        const data = response.data;
+
+        if (data.token) {
+            localStorage.setItem('userToken', data.token);
+        }
+
+        return data;
+    } catch (error) {
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.error || "로그인 실패");
+        } else {
+            throw new Error("네트워크 오류");
+        }
+    }
+};
+
+// 로그아웃
+export const logoutUser = () => {
+    localStorage.removeItem('userToken');
+};
+
+//로그인 상태 확인
+export const getToken = () => {
+    return localStorage.getItem('userToken');
+};

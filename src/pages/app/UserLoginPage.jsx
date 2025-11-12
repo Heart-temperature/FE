@@ -19,6 +19,7 @@ import {
 import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
 import DajeongLogo from '../../components/common/image.png';
 import { ROUTES } from '../../routes';
+import { loginUser } from '../../api/authAPI';
 
 export default function UserLoginPage() {
     const navigate = useNavigate();
@@ -29,15 +30,21 @@ export default function UserLoginPage() {
 
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const [show, setShow] = useState(false);
     const [fontSizeLevel, setFontSizeLevel] = useState(1);
     const [isHighContrast, setIsHighContrast] = useState(false);
 
     const handleShowToggle = () => setShow(!show);
     const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
-    const handleLogin = () => {
-        // TODO: 실제 로그인 로직 추가
-        navigate(ROUTES.USER_APP_HOME);
+    const handleLogin = async (e) => {
+        try {
+            const user = await loginUser(id, password);
+            console.log('로그인 성공: ', user);
+            navigate(ROUTES.USER_APP_HOME);
+        } catch (err) {
+            setError(err.message || '로그인 중 오류가 발생했습니다.');
+        }
     };
 
     const fs = fontSizes[fontSizeLevel];
@@ -67,7 +74,7 @@ export default function UserLoginPage() {
                         </FormLabel>
                         <InputGroup>
                             <Input
-                                type="number"
+                                type="text"
                                 value={id}
                                 onChange={(e) => setId(e.target.value)}
                                 placeholder="전화번호 입력"
@@ -174,6 +181,7 @@ export default function UserLoginPage() {
 
                     {/* 로그인 버튼 */}
                     <Button
+                        type="submit"
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
                         w="90%"
