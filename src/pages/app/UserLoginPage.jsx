@@ -51,7 +51,7 @@ export default function UserLoginPage() {
                 <VStack spacing={9} align="stretch">
                     {/* 헤더 */}
                     <Box mb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" mb={4} />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto"/>
                     </Box>
 
                     {/* 아이디 */}

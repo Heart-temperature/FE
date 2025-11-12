@@ -85,153 +85,151 @@ export default function MainPage() {
                 <VStack spacing={9} align="stretch">
                     {/* 헤더 */}
                     <Box mb={2} borderBottom="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" mb={4} />
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" />
                     </Box>
 
                     {/* AI 모델 선택 섹션 */}
-                    <Box>
-                        <Text
-                            fontSize={fs}
-                            fontWeight="700"
-                            color={isHighContrast ? '#FFFFFF' : '#000000'}
-                            mb={4}
-                            textAlign="center"
-                        >
-                            통화할 상대를 선택하세요
-                        </Text>
+                    <Text
+                        fontSize={fs}
+                        fontWeight="700"
+                        color={isHighContrast ? '#FFFFFF' : '#000000'}
+                        textAlign="left"
+                        w="fit-content"
+                        mx="auto"
+                    >
+                        통화할 상대를 선택하세요
+                    </Text>
 
-                        {/* AI 모델 슬라이더 */}
-                        <Box position="relative" my={6}>
-                            <HStack justify="space-between" align="center" spacing={4}>
-                                {/* 이전 버튼 */}
-                                <IconButton
-                                    icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
-                                    aria-label="이전 모델"
-                                    onClick={handlePrevModel}
-                                    w={arrowBtnSize}
-                                    h={arrowBtnSize}
-                                    minW={arrowBtnSize}
-                                    bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
-                                    color={isHighContrast ? '#000000' : '#2196F3'}
-                                    borderRadius="50%"
-                                    border={isHighContrast ? '3px solid white' : 'none'}
-                                    _hover={{
-                                        bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
-                                        transform: 'scale(1.1)',
-                                    }}
-                                    _active={{
-                                        transform: 'scale(0.95)',
-                                    }}
+                    {/* AI 모델 슬라이더 */}
+                    <Box position="relative" mx="auto" my={2}>
+                        <HStack justify="space-between" align="center" spacing={4}>
+                            {/* 이전 버튼 */}
+                            <IconButton
+                                icon={<ChevronLeftIcon boxSize={arrowIconSize} />}
+                                aria-label="이전 모델"
+                                onClick={handlePrevModel}
+                                w={arrowBtnSize}
+                                h={arrowBtnSize}
+                                minW={arrowBtnSize}
+                                bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
+                                color={isHighContrast ? '#000000' : '#2196F3'}
+                                borderRadius="50%"
+                                border={isHighContrast ? '3px solid white' : 'none'}
+                                _hover={{
+                                    bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
+                                    transform: 'scale(1.1)',
+                                }}
+                                _active={{
+                                    transform: 'scale(0.95)',
+                                }}
+                                transition="all 0.2s"
+                            />
+
+                            {/* AI 모델 표시 영역 */}
+                            <Box textAlign="center" py={8} w="70%">
+                                <MotionBox
+                                    key={currentModel.id}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <VStack spacing={4}>
+                                        {/* AI 모델 이미지 */}
+                                        <Box
+                                            w={aiImgSize}
+                                            h={aiImgSize}
+                                            borderRadius="full"
+                                            bg={isHighContrast ? '#000000' : 'white'}
+                                            border={`5px solid ${currentModel.color}`}
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            boxShadow={
+                                                isHighContrast
+                                                    ? '0 0 20px rgba(255, 215, 0, 0.5)'
+                                                    : '0 8px 20px rgba(0, 0, 0, 0.1)'
+                                            }
+                                        >
+                                            <Image
+                                                src={currentModel.image}
+                                                alt={currentModel.name}
+                                                w="100%"
+                                                h="100%"
+                                                objectFit="contain"
+                                            />
+                                        </Box>
+
+                                        {/* 모델 이름 */}
+                                        <Text
+                                            fontSize={fs}
+                                            fontWeight="700"
+                                            color={isHighContrast ? '#FFFFFF' : currentModel.color}
+                                        >
+                                            {currentModel.name}
+                                        </Text>
+
+                                        {/* 모델 설명 */}
+                                        <Text
+                                            fontSize={fs}
+                                            color={isHighContrast ? '#e2e2e2' : '#666666'}
+                                            fontWeight="500"
+                                        >
+                                            {currentModel.description}
+                                        </Text>
+                                    </VStack>
+                                </MotionBox>
+                            </Box>
+
+                            {/* 다음 버튼 */}
+                            <IconButton
+                                icon={<ChevronRightIcon boxSize={arrowIconSize} />}
+                                aria-label="다음 모델"
+                                onClick={handleNextModel}
+                                w={arrowBtnSize}
+                                h={arrowBtnSize}
+                                minW={arrowBtnSize}
+                                bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
+                                color={isHighContrast ? '#000000' : '#2196F3'}
+                                borderRadius="50%"
+                                border={isHighContrast ? '3px solid white' : 'none'}
+                                _hover={{
+                                    bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
+                                    transform: 'scale(1.1)',
+                                }}
+                                _active={{
+                                    transform: 'scale(0.95)',
+                                }}
+                                transition="all 0.2s"
+                            />
+                        </HStack>
+
+                        {/* 하단 인디케이터 */}
+                        <HStack justify="center" mt={4} spacing={3}>
+                            {aiModels.map((model, index) => (
+                                <Box
+                                    key={model.id}
+                                    w={index === currentModelIndex ? '12px' : '8px'}
+                                    h={index === currentModelIndex ? '12px' : '8px'}
+                                    borderRadius="full"
+                                    bg={
+                                        index === currentModelIndex
+                                            ? isHighContrast
+                                                ? '#FFD700'
+                                                : '#2196F3'
+                                            : isHighContrast
+                                            ? '#666666'
+                                            : '#BDBDBD'
+                                    }
+                                    cursor="pointer"
+                                    onClick={() => setCurrentModelIndex(index)}
                                     transition="all 0.2s"
-                                />
-
-                                {/* AI 모델 표시 영역 */}
-                                <Box flex="1" textAlign="center" py={8}>
-                                    <MotionBox
-                                        key={currentModel.id}
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <VStack spacing={4}>
-                                            {/* AI 모델 이미지 */}
-                                            <Box
-                                                w={aiImgSize}
-                                                h={aiImgSize}
-                                                borderRadius="full"
-                                                bg={isHighContrast ? '#000000' : 'white'}
-                                                border={`5px solid ${currentModel.color}`}
-                                                display="flex"
-                                                alignItems="center"
-                                                justifyContent="center"
-                                                boxShadow={
-                                                    isHighContrast
-                                                        ? '0 0 20px rgba(255, 215, 0, 0.5)'
-                                                        : '0 8px 20px rgba(0, 0, 0, 0.1)'
-                                                }
-                                                overflow="hidden"
-                                            >
-                                                <Image
-                                                    src={currentModel.image}
-                                                    alt={currentModel.name}
-                                                    w="100%"
-                                                    h="100%"
-                                                    objectFit="contain"
-                                                />
-                                            </Box>
-
-                                            {/* 모델 이름 */}
-                                            <Text
-                                                fontSize={fs}
-                                                fontWeight="700"
-                                                color={isHighContrast ? '#FFFFFF' : currentModel.color}
-                                            >
-                                                {currentModel.name}
-                                            </Text>
-
-                                            {/* 모델 설명 */}
-                                            <Text
-                                                fontSize={fs}
-                                                color={isHighContrast ? '#e2e2e2' : '#666666'}
-                                                fontWeight="500"
-                                            >
-                                                {currentModel.description}
-                                            </Text>
-                                        </VStack>
-                                    </MotionBox>
-                                </Box>
-
-                                {/* 다음 버튼 */}
-                                <IconButton
-                                    icon={<ChevronRightIcon boxSize={arrowIconSize} />}
-                                    aria-label="다음 모델"
-                                    onClick={handleNextModel}
-                                    w={arrowBtnSize}
-                                    h={arrowBtnSize}
-                                    minW={arrowBtnSize}
-                                    bg={isHighContrast ? '#FFFFFF' : '#E3F2FD'}
-                                    color={isHighContrast ? '#000000' : '#2196F3'}
-                                    borderRadius="50%"
-                                    border={isHighContrast ? '3px solid white' : 'none'}
                                     _hover={{
-                                        bg: isHighContrast ? '#FFEB3B' : '#64B5F6',
-                                        transform: 'scale(1.1)',
+                                        transform: 'scale(1.2)',
                                     }}
-                                    _active={{
-                                        transform: 'scale(0.95)',
-                                    }}
-                                    transition="all 0.2s"
                                 />
-                            </HStack>
-
-                            {/* 하단 인디케이터 */}
-                            <HStack justify="center" mt={4} spacing={3}>
-                                {aiModels.map((model, index) => (
-                                    <Box
-                                        key={model.id}
-                                        w={index === currentModelIndex ? '12px' : '8px'}
-                                        h={index === currentModelIndex ? '12px' : '8px'}
-                                        borderRadius="full"
-                                        bg={
-                                            index === currentModelIndex
-                                                ? isHighContrast
-                                                    ? '#FFD700'
-                                                    : '#2196F3'
-                                                : isHighContrast
-                                                ? '#666666'
-                                                : '#BDBDBD'
-                                        }
-                                        cursor="pointer"
-                                        onClick={() => setCurrentModelIndex(index)}
-                                        transition="all 0.2s"
-                                        _hover={{
-                                            transform: 'scale(1.2)',
-                                        }}
-                                    />
-                                ))}
-                            </HStack>
-                        </Box>
+                            ))}
+                        </HStack>
                     </Box>
 
                     {/* 통화 시작 버튼 */}
