@@ -7,39 +7,31 @@ import DajeongLogo from '../../components/common/image.png';
 import Img1 from '../../components/common/img1.png';
 import Img2 from '../../components/common/img2.png';
 import { ROUTES } from '../../routes';
+import usePersistentSettings from '../../hooks/usePersistentSettings';
 
 const MotionBox = motion(Box);
 
 export default function MainPage() {
     const navigate = useNavigate();
-    const fontSizeLevels = ['작게', '보통', '크게'];
-    const fontSizes = ['1.5rem', '1.9rem', '2.5rem']; // 로그인 페이지와 동일
-    const callButtonHeights = ['70px', '85px', '110px']; // 통화 시작 버튼 (로그인 페이지 inputHeights와 동일)
-    const buttonHeights = ['50px', '55px', '65px'];
-    const arrowButtonSizes = ['30px', '40px', '50px']; // 화살표 버튼 크기 (직접 지정)
-    const arrowIconSizes = [6, 8, 10]; // 화살표 아이콘 크기
-    const aiImageSizes = ['160px', '200px', '240px']; // AI 모델 이미지 크기
-    const imageCircleSizes = ['130', '150', '170']; // 이미지 원형 배경 크기
+    const {
+        fontSizeLevel,
+        setFontSizeLevel,
+        isHighContrast,
+        toggleHighContrast,
+        fs,
+        callBtnH,
+        arrowBtnSize,
+        arrowIconSize,
+        aiImgSize,
+        btnH,
+        imgCircleHeight,
+        imgCircleWidth,
+    } = usePersistentSettings();
 
-    const [fontSizeLevel, setFontSizeLevel] = useState(1);
-    const [isHighContrast, setIsHighContrast] = useState(false);
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
-    const [isPolite, setIsPolite] = useState(true); // true = 존댓말, false = 반말
+    const [isPolite, setIsPolite] = useState(true);
 
-    const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
-    const handleToggle = () => {
-        setIsPolite((prev) => !prev);
-        // 🔹 실제로는 여기서 tone 상태를 전역/로컬 저장소에 저장할 수도 있음
-    };
-
-    const fs = fontSizes[fontSizeLevel];
-    const callBtnH = callButtonHeights[fontSizeLevel];
-    const arrowBtnSize = arrowButtonSizes[fontSizeLevel];
-    const arrowIconSize = arrowIconSizes[fontSizeLevel];
-    const aiImgSize = aiImageSizes[fontSizeLevel];
-    const btnH = buttonHeights[fontSizeLevel];
-    const imgCircleHeight = imageCircleSizes[fontSizeLevel];
-    const imgCircleWidth = `${imageCircleSizes[fontSizeLevel] + 5} px`;
+    const handleToggle = () => setIsPolite((prev) => !prev);
 
     // AI 모델 데이터
     const aiModels = [
@@ -145,7 +137,6 @@ export default function MainPage() {
                                     <VStack spacing={4}>
                                         {/* AI 모델 이미지 */}
                                         <Box
-                                            w={imgCircleWidth}
                                             h={imgCircleHeight}
                                             borderRadius="full"
                                             bg={isHighContrast ? '#000000' : 'white'}

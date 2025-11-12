@@ -21,23 +21,19 @@ import DajeongLogo from '../../components/common/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
 import { s } from 'framer-motion/client';
+import usePersistentSettings from '../../hooks/usePersistentSettings';
 
 export default function UserLoginPage() {
     const navigate = useNavigate();
-    const fontSizeLevels = ['작게', '보통', '크게'];
-    const fontSizes = ['1.5rem', '1.9rem', '2.5rem'];
-    const inputHeights = ['70px', '85px', '110px'];
-    const buttonHeights = ['50px', '55px', '65px'];
+    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, inputH, btnH } =
+        usePersistentSettings();
 
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [show, setShow] = useState(false);
-    const [fontSizeLevel, setFontSizeLevel] = useState(1);
-    const [isHighContrast, setIsHighContrast] = useState(false);
 
     const handleShowToggle = () => setShow(!show);
-    const toggleHighContrast = () => setIsHighContrast((prev) => !prev);
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -50,10 +46,6 @@ export default function UserLoginPage() {
             setError(err.message || '로그인 중 오류가 발생했습니다.');
         }
     };
-
-    const fs = fontSizes[fontSizeLevel];
-    const inputH = inputHeights[fontSizeLevel];
-    const btnH = buttonHeights[fontSizeLevel];
 
     return (
         <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
