@@ -48,22 +48,14 @@ export default function UserLoginPage() {
         <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : '#F5F7FA'} px={6} py={10}>
             {/* 메인 로그인 카드 */}
             <Box
-                bg={isHighContrast ? '#000000' : 'white'}
-                borderRadius="20px"
-                boxShadow={
-                    isHighContrast
-                        ? '0 0 0 4px white, 0 20px 60px rgba(255,255,255,0.5)'
-                        : '0 10px 40px rgba(33, 150, 243, 0.15)'
-                }
-                p={{ base: 10, md: 14 }}
+                p={{ base: 5, md: 14 }}
                 w="full"
-                maxW="550px"
-                border={isHighContrast ? '4px solid white' : 'none'}
+                maxW="530px"
             >
                 <VStack spacing={6} align="stretch">
                     {/* 헤더 */}
-                    <Box textAlign="center" mb={2}>
-                        <Image src={DajeongLogo} alt="다정이 로고" maxW="300px" mx="auto" mb={4} />
+                    <Box mb={2}>
+                        <Image src={DajeongLogo} alt="다정이 로고" maxW="200px" mx="auto" mb={4} />
                         <Divider borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'} borderWidth="2px solid" mb={2} />
                     </Box>
 
@@ -73,10 +65,10 @@ export default function UserLoginPage() {
                             전화번호
                         </FormLabel>
                         <Input
+                            type='number'
                             value={id}
                             onChange={(e) => setId(e.target.value)}
                             placeholder="여기에 입력"
-                            size="lg"
                             fontSize={fs}
                             height={inputH}
                             borderRadius="15px"
@@ -116,7 +108,6 @@ export default function UserLoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="여기에 입력"
-                                size="lg"
                                 fontSize={fs}
                                 height={inputH}
                                 borderRadius="15px"
@@ -150,13 +141,11 @@ export default function UserLoginPage() {
                     <Button
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
-                        size="lg"
                         height={inputH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
-                        boxShadow="0 4px 14px rgba(33, 150, 243, 0.3)"
-                        border={isHighContrast ? '3px solid white' : 'none'}
+                        boxShadow="0 4px 10px rgba(33, 150, 243, 0.3)"
                         mt={2}
                         onClick={handleLogin}
                         _hover={{
@@ -186,13 +175,12 @@ export default function UserLoginPage() {
                         </Text>
 
                         {/* 글자 크기 조절 */}
-                        <HStack justify="space-between" mb={5}>
+                        <HStack spacing={2} justify="space-between" mb={5} mx={-3}>
                             <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                 글자 크기
                             </Text>
                             <HStack spacing={0}>
                                 <Button
-                                    size="md"
                                     onClick={() => setFontSizeLevel(0)}
                                     bg={
                                         fontSizeLevel === 0
@@ -214,7 +202,6 @@ export default function UserLoginPage() {
                                     }
                                     fontWeight="700"
                                     borderRadius="10px 0 0 10px"
-                                    minW="70px"
                                     h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
@@ -235,7 +222,6 @@ export default function UserLoginPage() {
                                     작게
                                 </Button>
                                 <Button
-                                    size="md"
                                     onClick={() => setFontSizeLevel(1)}
                                     bg={
                                         fontSizeLevel === 1
@@ -257,7 +243,6 @@ export default function UserLoginPage() {
                                     }
                                     fontWeight="700"
                                     borderRadius="0"
-                                    minW="70px"
                                     h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
@@ -279,7 +264,6 @@ export default function UserLoginPage() {
                                     보통
                                 </Button>
                                 <Button
-                                    size="md"
                                     onClick={() => setFontSizeLevel(2)}
                                     bg={
                                         fontSizeLevel === 2
@@ -301,7 +285,6 @@ export default function UserLoginPage() {
                                     }
                                     fontWeight="700"
                                     borderRadius="0 10px 10px 0"
-                                    minW="70px"
                                     h={btnH}
                                     fontSize="1.4rem"
                                     border={isHighContrast ? '2px solid white' : 'none'}
@@ -325,7 +308,7 @@ export default function UserLoginPage() {
                         </HStack>
 
                         {/* 고대비 모드 */}
-                        <HStack justify="space-between">
+                        <HStack spacing={0} justify="space-between">
                             <Text fontSize={fs} fontWeight="700" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                 선명한 화면
                             </Text>
