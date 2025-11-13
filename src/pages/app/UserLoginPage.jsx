@@ -7,16 +7,11 @@ import {
     FormControl,
     FormLabel,
     Input,
-    InputGroup,
-    InputRightElement,
     Text,
-    IconButton,
     VStack,
     HStack,
     Image,
-    Divider,
 } from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
 import DajeongLogo from '../../assets/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
@@ -31,9 +26,7 @@ export default function UserLoginPage() {
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [show, setShow] = useState(false);
 
-    const handleShowToggle = () => setShow(!show);
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -117,54 +110,38 @@ export default function UserLoginPage() {
                         >
                             비밀번호
                         </FormLabel>
-                        <InputGroup>
-                            <Input
-                                type={show ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="비밀번호 입력"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="15px"
-                                bg={isHighContrast ? '#000000' : '#F0F8FF'}
-                                border="3px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                                fontWeight="600"
-                                _placeholder={{
-                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
-                                    fontWeight: '500',
-                                }}
-                                _hover={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
-                                }}
-                                _focus={{
-                                    borderWidth: '5px',
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: isHighContrast
-                                        ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
-                                    outline: 'none',
-                                }}
-                                transition="all 0.2s"
-                            />
-                            <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
-                                <IconButton
-                                    height={inputH}
-                                    variant="unstyled"
-                                    onClick={handleShowToggle}
-                                    icon={
-                                        show ? (
-                                            <ViewOffIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
-                                        ) : (
-                                            <ViewIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
-                                        )
-                                    }
-                                    aria-label="비밀번호 보기 토글"
-                                />
-                            </InputRightElement>
-                        </InputGroup>
+                        <Input
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="비밀번호 입력"
+                            fontSize={fs}
+                            height={inputH}
+                            borderRadius="15px"
+                            bg={isHighContrast ? '#000000' : '#F0F8FF'}
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                            fontWeight="600"
+                            textAlign="center"
+                            _placeholder={{
+                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
+                                fontWeight: '500',
+                            }}
+                            _hover={{
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
+                            }}
+                            _focus={{
+                                borderWidth: '5px',
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: isHighContrast
+                                    ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
+                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
+                                outline: 'none',
+                            }}
+                            transition="all 0.2s"
+                        />
                     </FormControl>
 
                     {/* ✅ 오류 메시지 표시 (비밀번호 아래, 버튼 위) */}
