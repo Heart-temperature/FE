@@ -192,7 +192,8 @@ export default function UserLoginPage() {
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
-                        boxShadow="0 4px 10px rgba(33, 150, 243, 0.3)"
+                        border="3px solid"
+                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                         mt={4}
                         onClick={handleLogin}
                         _hover={{
@@ -221,7 +222,7 @@ export default function UserLoginPage() {
                         >
                             글자 크기
                         </Text>
-                        <HStack spacing={0} justify="center" mb={6}>
+                        <HStack spacing={0} justify="center" mb={6} w="100%">
                             <Button
                                 onClick={() => setFontSizeLevel(0)}
                                 bg={
@@ -243,22 +244,28 @@ export default function UserLoginPage() {
                                         : '#1976D2'
                                 }
                                 fontWeight="700"
-                                borderRadius="10px 0 0 10px"
+                                borderRadius="15px 0 0 15px"
                                 h={inputH}
-                                w="30%"
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 0
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -287,21 +294,27 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={inputH}
-                                w="30%"
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 1
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -328,22 +341,28 @@ export default function UserLoginPage() {
                                         : '#1976D2'
                                 }
                                 fontWeight="700"
-                                borderRadius="0 10px 10px 0"
+                                borderRadius="0 15px 15px 0"
                                 h={inputH}
-                                w="30%"
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 2
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -368,13 +387,20 @@ export default function UserLoginPage() {
                                 bg={isHighContrast ? '#FFD700' : '#2196F3'}
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
-                                borderRadius="10px"
+                                borderRadius="15px"
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                                 w="100%"
                                 h={inputH}
                                 fontSize={fs}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
-                                    transform: 'scale(1.05)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
