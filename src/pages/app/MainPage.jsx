@@ -235,6 +235,8 @@ export default function MainPage() {
                         color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
                         fontSize={fs}
                         h={btnH}
+                        w="90%"
+                        mx="auto"
                         mt={3}
                         fontWeight="600"
                         borderRadius="10px"
