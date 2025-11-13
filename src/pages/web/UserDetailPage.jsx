@@ -34,7 +34,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useNavigation } from '../../hooks';
 import { useState, useEffect } from 'react';
-import { ArrowBackIcon, WarningIcon, EditIcon, CalendarIcon, ChatIcon, InfoIcon, CloseIcon } from '@chakra-ui/icons';
+import { WarningIcon, EditIcon, CalendarIcon, ChatIcon, InfoIcon, CloseIcon } from '@chakra-ui/icons';
 import { getUserInfo, getEmotionGraph, getCallDetail, getUserMemos, addUserMemo, updateUserMemo, deleteUserMemo, getLastEmotion } from '../../api';
 import { CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts';
 
@@ -57,6 +57,7 @@ export default function UserDetail() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [memoToDelete, setMemoToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [joinedDate, setJoinedDate] = useState('신규 회원');
 
     // 컴포넌트 마운트 시 데이터 로드
     useEffect(() => {
@@ -69,7 +70,26 @@ export default function UserDetail() {
                 
                 if (userInfo) {
                     setUser(userInfo);
-                    
+
+                    // 가입일 처리 (localStorage에서 가져오기, 없으면 현재 시간으로 저장)
+                    const storageKey = `user_joined_${id}`;
+                    const storedDate = localStorage.getItem(storageKey);
+
+                    if (storedDate) {
+                        // localStorage에 저장된 날짜가 있으면 사용
+                        setJoinedDate(storedDate);
+                    } else {
+                        // 없으면 현재 날짜로 저장
+                        const now = new Date();
+                        const formattedDate = now.toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        });
+                        localStorage.setItem(storageKey, formattedDate);
+                        setJoinedDate(formattedDate);
+                    }
+
                     // userInfo의 loginId를 사용하여 나머지 API 호출 (병렬 처리)
                     const [emotionGraph, callDetail, userMemos, lastEmotionData] = await Promise.all([
                         getEmotionGraph(id),
@@ -77,7 +97,7 @@ export default function UserDetail() {
                         getUserMemos(id),
                         getLastEmotion(userInfo.loginId || userInfo.phoneNum),
                     ]);
-                    
+
                     setEmotionData(emotionGraph || []);
                     setCallData(callDetail || []);
                     setMemos(userMemos || []);
@@ -323,7 +343,6 @@ export default function UserDetail() {
             <Box bg="white" shadow="sm" borderBottom="1px" borderColor="gray.200">
                 <Container maxW="7xl" py={4}>
                     <HStack spacing={4}>
-                        <IconButton icon={<ArrowBackIcon />} variant="ghost" onClick={goBack} aria-label="뒤로가기" />
                         <Avatar size="md" name={user.name} />
                         <VStack align="start" spacing={0}>
                             <Heading size="md" color="#1B9A59">
@@ -493,6 +512,12 @@ export default function UserDetail() {
                                         <Badge colorScheme={user.sexuality === 'M' || user.sexuality === '남성' ? 'blue' : 'pink'}>
                                             {user.sexuality === 'M' ? '남성' : user.sexuality === 'F' ? '여성' : user.sexuality || '성별 정보 없음'}
                                         </Badge>
+                                    </Box>
+                                    <Box>
+                                        <Text fontSize="sm" color="gray.600" mb={1}>
+                                            가입일
+                                        </Text>
+                                        <Text>{joinedDate}</Text>
                                     </Box>
                                     <Box>
                                         <Text fontSize="sm" color="gray.600" mb={1}>
