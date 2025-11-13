@@ -316,15 +316,15 @@ export default function Dashboard() {
     const getEmotionColor = (emotion) => {
         switch (emotion) {
             case 'urgent':
-                return '#EF4444'; // 빨강 - 긴급 (Tailwind red-500)
+                return '#D93025'; // 빨강 - 긴급
             case 'caution':
-                return '#F59E0B'; // 주황 - 주의 (Tailwind amber-500)
+                return '#F9AB00'; // 주황 - 주의
             case 'normal':
-                return '#10B981'; // 초록 - 정상 (Tailwind emerald-500)
+                return '#1B9A59'; // 초록 - 정상
             case 'new':
-                return '#3B82F6'; // 파랑 - 신규 회원 (Tailwind blue-500)
+                return '#718096'; // 회색 - 신규 회원
             default:
-                return '#6B7280'; // 회색 - 알 수 없음 (Tailwind gray-500)
+                return '#718096'; // 회색 - 알 수 없음
         }
     };
 
@@ -523,7 +523,7 @@ export default function Dashboard() {
                         <HStack spacing={4}>
                             <Image src={dajungIcon} alt="Dajung Icon" boxSize="50px" />
                             <VStack align="start" spacing={0}>
-                                <Heading size="lg" color="gray.900" fontWeight="700">
+                                <Heading size="xl" color="gray.900" fontWeight="700">
                                     관리자 대시보드
                                 </Heading>
                             </VStack>
@@ -533,8 +533,9 @@ export default function Dashboard() {
                             <Button
                                 leftIcon={<AddIcon />}
                                 colorScheme="blue"
-                                size="sm"
+                                size="md"
                                 variant="solid"
+                                fontSize="md"
                                 onClick={() => handleAction('사용자 추가', { name: '새 사용자' })}
                             >
                                 사용자 추가
@@ -542,8 +543,9 @@ export default function Dashboard() {
                             <Button
                                 leftIcon={<DeleteIcon />}
                                 colorScheme="red"
-                                size="sm"
+                                size="md"
                                 variant="outline"
+                                fontSize="md"
                                 onClick={handleDeleteClick}
                                 isDisabled={selectedRows.length === 0}
                             >
@@ -558,14 +560,14 @@ export default function Dashboard() {
                                 border="1px"
                                 borderColor="gray.200"
                             >
-                                <Text fontSize="sm" fontWeight="600" color="gray.700">
+                                <Text fontSize="md" fontWeight="600" color="gray.700">
                                     김관리
                                 </Text>
-                                <Text fontSize="xs" color="gray.500">
+                                <Text fontSize="sm" color="gray.500">
                                     관리자
                                 </Text>
                             </HStack>
-                            <Button size="sm" variant="ghost" colorScheme="gray" onClick={handleLogout}>
+                            <Button size="md" variant="ghost" colorScheme="gray" fontSize="md" onClick={handleLogout}>
                                 로그아웃
                             </Button>
                         </HStack>
@@ -584,6 +586,7 @@ export default function Dashboard() {
                                 bg="gray.50"
                                 border="1px"
                                 borderColor="gray.200"
+                                fontSize="md"
                                 _hover={{ borderColor: 'gray.300' }}
                                 _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
@@ -595,6 +598,7 @@ export default function Dashboard() {
                             maxW="140px"
                             bg="gray.50"
                             borderColor="gray.200"
+                            fontSize="md"
                             _hover={{ borderColor: 'gray.300' }}
                             _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                         >
@@ -624,7 +628,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -632,12 +636,12 @@ export default function Dashboard() {
                                     >
                                         총 사용자
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.total}
                                     </Heading>
                                 </Box>
                                 <Box bg="blue.50" p={2} borderRadius="md">
-                                    <Icon as={FiUsers} boxSize={5} color="blue.600" />
+                                    <Icon as={FiUsers} boxSize={6} color="blue.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -657,7 +661,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -665,12 +669,12 @@ export default function Dashboard() {
                                     >
                                         긴급 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.urgent}
                                     </Heading>
                                 </Box>
                                 <Box bg="red.50" p={2} borderRadius="md">
-                                    <Icon as={FiAlertCircle} boxSize={5} color="red.600" />
+                                    <Icon as={FiAlertCircle} boxSize={6} color="red.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -690,7 +694,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -698,12 +702,12 @@ export default function Dashboard() {
                                     >
                                         주의 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.caution}
                                     </Heading>
                                 </Box>
                                 <Box bg="orange.50" p={2} borderRadius="md">
-                                    <Icon as={FiAlertTriangle} boxSize={5} color="orange.600" />
+                                    <Icon as={FiAlertTriangle} boxSize={6} color="orange.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -723,7 +727,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -731,12 +735,12 @@ export default function Dashboard() {
                                     >
                                         정상 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.normal}
                                     </Heading>
                                 </Box>
                                 <Box bg="green.50" p={2} borderRadius="md">
-                                    <Icon as={FiCheckCircle} boxSize={5} color="green.600" />
+                                    <Icon as={FiCheckCircle} boxSize={6} color="green.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -748,10 +752,10 @@ export default function Dashboard() {
             <Container maxW="full" px={6} pb={8}>
                 <Box bg="white" borderRadius="lg" border="1px" borderColor="gray.200" overflow="hidden">
                     <Box px={6} py={4} borderBottom="1px" borderColor="gray.200">
-                        <Heading size="md" color="gray.900" fontWeight="700">
+                        <Heading size="lg" color="gray.900" fontWeight="700">
                             사용자 목록
                         </Heading>
-                        <Text fontSize="sm" color="gray.500" mt={1}>
+                        <Text fontSize="md" color="gray.500" mt={1}>
                             등록된 모든 사용자를 관리하고 모니터링합니다
                         </Text>
                     </Box>
@@ -759,7 +763,7 @@ export default function Dashboard() {
                         <Table variant="simple" size="md">
                             <Thead bg="gray.50" borderBottom="2px" borderColor="gray.200">
                                 <Tr>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Checkbox
                                             isChecked={
                                                 selectedRows.length === paginatedUsers.length &&
@@ -771,10 +775,11 @@ export default function Dashboard() {
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                         />
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('name')}
                                             rightIcon={
                                                 sortField === 'name' ? (
@@ -789,16 +794,17 @@ export default function Dashboard() {
                                             이름
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         연락처
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         주소
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('emotion')}
                                             rightIcon={
                                                 sortField === 'emotion' ? (
@@ -813,10 +819,11 @@ export default function Dashboard() {
                                             감정상태
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('gender')}
                                             rightIcon={
                                                 sortField === 'gender' ? (
@@ -831,10 +838,11 @@ export default function Dashboard() {
                                             성별
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('joinedDate')}
                                             rightIcon={
                                                 sortField === 'joinedDate' ? (
@@ -849,10 +857,11 @@ export default function Dashboard() {
                                             가입일
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={
                                                 sortField === 'lastCall' ? (
@@ -867,7 +876,7 @@ export default function Dashboard() {
                                             마지막 통화
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         액션
                                     </Th>
                                 </Tr>
@@ -880,7 +889,7 @@ export default function Dashboard() {
                                         borderBottom="1px"
                                         borderColor="gray.100"
                                     >
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Checkbox
                                                 isChecked={selectedRows.includes(user.id)}
                                                 onChange={(e) => {
@@ -889,68 +898,70 @@ export default function Dashboard() {
                                                 }}
                                             />
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <HStack spacing={3}>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <HStack spacing={3} justify="center">
                                                 <Avatar size="sm" name={user.name} />
                                                 <VStack align="start" spacing={0}>
-                                                    <Text fontWeight="medium">{user.name}</Text>
-                                                    <Text fontSize="sm" color="gray.500">
+                                                    <Text fontWeight="medium" fontSize="lg">
+                                                        {user.name}
+                                                    </Text>
+                                                    <Text fontSize="lg" color="gray.500">
                                                         {user.age}세
                                                     </Text>
                                                 </VStack>
                                             </HStack>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm">{user.phone}</Text>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="lg">{user.phone}</Text>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="lg" color="gray.600">
                                                 {user.address}
                                             </Text>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Badge
                                                 bg={getEmotionColor(user.emotion)}
                                                 color="white"
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="xs"
+                                                fontSize="md"
                                                 fontWeight="600"
                                             >
                                                 {getEmotionText(user.emotion)}
                                             </Badge>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Badge
                                                 colorScheme={user.gender === '남성' ? 'blue' : 'pink'}
                                                 variant="subtle"
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="xs"
+                                                fontSize="md"
                                                 fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="lg" color="gray.600">
                                                 {user.joinedDate}
                                             </Text>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <VStack align="start" spacing={0}>
-                                                <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <VStack align="center" spacing={0}>
+                                                <Text fontSize="lg" color="gray.600">
                                                     {user.lastCall}
                                                 </Text>
-                                                <Text fontSize="xs" color="gray.500">
+                                                <Text fontSize="md" color="gray.500">
                                                     통화시간: {user.callDuration}
                                                 </Text>
                                             </VStack>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <HStack spacing={1}>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <HStack spacing={1} justify="center">
                                                 <Tooltip label="메모 작성" placement="top" hasArrow>
                                                     <IconButton
                                                         icon={<Icon as={FiMessageSquare} boxSize={4} />}
@@ -1045,19 +1056,21 @@ export default function Dashboard() {
             <Modal isOpen={isMemoModalOpen} onClose={handleMemoCancel} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>메모 추가 - {selectedUserForMemo?.name}님</ModalHeader>
+                    <ModalHeader fontSize="xl">메모 추가 - {selectedUserForMemo?.name}님</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
                             <Box>
-                                <Text fontSize="sm" color="gray.600" mb={2}>
+                                <Text fontSize="md" color="gray.600" mb={2}>
                                     사용자 정보
                                 </Text>
                                 <HStack spacing={3}>
                                     <Avatar size="sm" name={selectedUserForMemo?.name} />
                                     <VStack align="start" spacing={0}>
-                                        <Text fontWeight="bold">{selectedUserForMemo?.name}</Text>
-                                        <Text fontSize="sm" color="gray.500">
+                                        <Text fontWeight="bold" fontSize="md">
+                                            {selectedUserForMemo?.name}
+                                        </Text>
+                                        <Text fontSize="md" color="gray.500">
                                             {selectedUserForMemo?.age}세 • {selectedUserForMemo?.address}
                                         </Text>
                                     </VStack>
@@ -1065,7 +1078,7 @@ export default function Dashboard() {
                             </Box>
 
                             <Box>
-                                <Text fontSize="sm" color="gray.600" mb={2}>
+                                <Text fontSize="md" color="gray.600" mb={2}>
                                     메모 내용
                                 </Text>
                                 <Textarea
@@ -1074,15 +1087,16 @@ export default function Dashboard() {
                                     onChange={(e) => setMemoText(e.target.value)}
                                     rows={4}
                                     resize="vertical"
+                                    fontSize="md"
                                 />
                             </Box>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="ghost" mr={3} onClick={handleMemoCancel}>
+                        <Button variant="ghost" mr={3} onClick={handleMemoCancel} fontSize="md">
                             취소
                         </Button>
-                        <Button colorScheme="blue" onClick={handleMemoSave}>
+                        <Button colorScheme="blue" onClick={handleMemoSave} fontSize="md">
                             저장
                         </Button>
                     </ModalFooter>
@@ -1093,19 +1107,19 @@ export default function Dashboard() {
             <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>사용자 삭제 확인</ModalHeader>
+                    <ModalHeader fontSize="xl">사용자 삭제 확인</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
                             <Box>
-                                <Text fontSize="sm" color="gray.700" mb={2}>
+                                <Text fontSize="md" color="gray.700" mb={2}>
                                     선택된 사용자 ({selectedRows.length}명):
                                 </Text>
                                 <VStack spacing={2} align="stretch" ml={4}>
                                     {paginatedUsers
                                         .filter((user) => selectedRows.includes(user.id))
                                         .map((user) => (
-                                            <Text key={user.id} fontSize="sm">
+                                            <Text key={user.id} fontSize="md">
                                                 • {user.name} ({user.phone})
                                             </Text>
                                         ))}
@@ -1113,17 +1127,23 @@ export default function Dashboard() {
                             </Box>
 
                             <Box bg="red.50" p={3} borderRadius="md" borderLeft="4px" borderColor="red.500">
-                                <Text fontSize="sm" color="red.700">
+                                <Text fontSize="md" color="red.700">
                                     ⚠️ 삭제된 사용자는 복구할 수 없습니다. 정말로 삭제하시겠습니까?
                                 </Text>
                             </Box>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="ghost" mr={3} onClick={handleCancelDelete} isDisabled={isDeleting}>
+                        <Button
+                            variant="ghost"
+                            mr={3}
+                            onClick={handleCancelDelete}
+                            isDisabled={isDeleting}
+                            fontSize="md"
+                        >
                             취소
                         </Button>
-                        <Button colorScheme="red" onClick={handleConfirmDelete} isLoading={isDeleting}>
+                        <Button colorScheme="red" onClick={handleConfirmDelete} isLoading={isDeleting} fontSize="md">
                             삭제
                         </Button>
                     </ModalFooter>
