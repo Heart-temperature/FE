@@ -24,6 +24,7 @@ export default function MainPage() {
         arrowIconSize,
         aiImgSize,
         btnH,
+        inputH,
         imgCircleHeight,
         imgCircleWidth,
     } = usePersistentSettings();
@@ -234,15 +235,22 @@ export default function MainPage() {
                         bg={isPolite ? (isHighContrast ? '#FFD700' : '#2196F3') : '#E0E0E0'}
                         color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
                         fontSize={fs}
-                        h={btnH}
-                        w="90%"
+                        h={inputH}
+                        w="100%"
                         mx="auto"
                         mt={3}
-                        fontWeight="600"
-                        borderRadius="10px"
-                        border={isHighContrast ? '3px solid white' : 'none'}
+                        fontWeight="700"
+                        borderRadius="15px"
+                        border="3px solid"
+                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                         _hover={{
                             bg: isPolite ? (isHighContrast ? '#FFEB3B' : '#1976D2') : '#BDBDBD',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                        }}
+                        _active={{
+                            bg: isPolite ? (isHighContrast ? '#FFC107' : '#1565C0') : '#9E9E9E',
+                            transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
                     >
@@ -253,14 +261,14 @@ export default function MainPage() {
                     <Button
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
-                        w="90%"
+                        w="100%"
                         mx="auto"
-                        height={callBtnH}
+                        height={inputH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
-                        boxShadow="0 4px 14px rgba(33, 150, 243, 0.3)"
-                        border={isHighContrast ? '3px solid white' : 'none'}
+                        border="3px solid"
+                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                         mt={2}
                         onClick={handleStartCall}
                         _hover={{
@@ -288,7 +296,7 @@ export default function MainPage() {
                         >
                             글자 크기
                         </Text>
-                        <HStack spacing={0} justify="center" mb={6}>
+                        <HStack spacing={0} justify="center" mb={6} w="100%">
                             <Button
                                 onClick={() => setFontSizeLevel(0)}
                                 bg={
@@ -310,22 +318,28 @@ export default function MainPage() {
                                         : '#1976D2'
                                 }
                                 fontWeight="700"
-                                borderRadius="10px 0 0 10px"
-                                h={btnH}
-                                w="30%"
-                                fontSize="1.9rem"
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                borderRadius="15px 0 0 15px"
+                                h={inputH}
+                                flex="1"
+                                fontSize={fs}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 0
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -353,22 +367,28 @@ export default function MainPage() {
                                 }
                                 fontWeight="700"
                                 borderRadius="0"
-                                h={btnH}
-                                w="30%"
-                                fontSize="1.9rem"
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                h={inputH}
+                                flex="1"
+                                fontSize={fs}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 1
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -395,22 +415,28 @@ export default function MainPage() {
                                         : '#1976D2'
                                 }
                                 fontWeight="700"
-                                borderRadius="0 10px 10px 0"
-                                h={btnH}
-                                w="30%"
-                                fontSize="1.9rem"
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                borderRadius="0 15px 15px 0"
+                                h={inputH}
+                                flex="1"
+                                fontSize={fs}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 2
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -435,14 +461,20 @@ export default function MainPage() {
                                 bg={isHighContrast ? '#FFD700' : '#2196F3'}
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
-                                borderRadius="10px"
-                                minW="210px"
-                                h={btnH}
-                                w="90%"
+                                borderRadius="15px"
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                h={inputH}
+                                w="100%"
                                 fontSize={fs}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
-                                    transform: 'scale(1.05)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
