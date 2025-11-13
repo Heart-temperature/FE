@@ -3,9 +3,9 @@ import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } f
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import DajeongLogo from '../../components/common/image.png';
-import Img1 from '../../components/common/img1.png';
-import Img2 from '../../components/common/img2.png';
+import DajeongLogo from '../../assets/image.png';
+import Img1 from '../../assets/img1.png';
+import Img2 from '../../assets/img2.png';
 import { ROUTES } from '../../routes';
 import usePersistentSettings from '../../hooks/usePersistentSettings';
 
