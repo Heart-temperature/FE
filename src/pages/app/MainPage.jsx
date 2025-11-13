@@ -310,6 +310,7 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="10px 0 0 10px"
                                 h={btnH}
+                                w="30%"
                                 fontSize="1.9rem"
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
@@ -351,6 +352,7 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={btnH}
+                                w="30%"
                                 fontSize="1.9rem"
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
@@ -393,6 +395,7 @@ export default function MainPage() {
                                 fontWeight="700"
                                 borderRadius="0 10px 10px 0"
                                 h={btnH}
+                                w="30%"
                                 fontSize="1.9rem"
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
@@ -433,6 +436,7 @@ export default function MainPage() {
                                 borderRadius="10px"
                                 minW="210px"
                                 h={btnH}
+                                w="90%"
                                 fontSize={fs}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
