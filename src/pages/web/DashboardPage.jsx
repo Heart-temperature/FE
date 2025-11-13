@@ -942,83 +942,54 @@ export default function Dashboard() {
                     </TableContainer>
 
                     {/* Pagination */}
-                    <Flex align="center" justify="space-between" px={6} py={4} borderTop="1px" borderColor="gray.200">
-                        <HStack spacing={4}>
-                            <HStack spacing={2}>
-                                <Text fontSize="sm" color="gray.600">페이지당 행 수:</Text>
-                                <NumberInput
-                                    size="sm"
-                                    maxW="70px"
-                                    value={rowsPerPage}
-                                    onChange={(value) => {
-                                        setRowsPerPage(parseInt(value));
-                                        setCurrentPage(1);
-                                    }}
-                                    min={5}
-                                    max={50}
-                                >
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
-                            </HStack>
-                            <Text fontSize="sm" color="gray.600">
-                                총 {sortedUsers.length}개 행 중 {startIndex + 1}-{Math.min(endIndex, sortedUsers.length)}개 표시
-                            </Text>
-                        </HStack>
-
+                    <Flex justify="center" px={6} py={6} borderTop="1px" borderColor="gray.200">
                         <HStack spacing={2}>
                             <IconButton
                                 icon={<ChevronLeftIcon />}
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setCurrentPage(1)}
-                                isDisabled={currentPage === 1}
-                                aria-label="첫 페이지"
-                            />
-                            <IconButton
-                                icon={<ChevronLeftIcon />}
-                                size="sm"
+                                size="md"
                                 variant="outline"
                                 onClick={() => setCurrentPage(currentPage - 1)}
                                 isDisabled={currentPage === 1}
                                 aria-label="이전 페이지"
+                                _hover={{
+                                    bg: "blue.50",
+                                    borderColor: "blue.500"
+                                }}
                             />
-                            
+
                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                 const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                                 if (pageNum > totalPages) return null;
-                                
+
                                 return (
                                     <Button
                                         key={pageNum}
-                                        size="sm"
+                                        size="md"
                                         variant={pageNum === currentPage ? "solid" : "outline"}
                                         colorScheme={pageNum === currentPage ? "blue" : "gray"}
                                         onClick={() => setCurrentPage(pageNum)}
+                                        minW="40px"
+                                        _hover={{
+                                            bg: pageNum === currentPage ? "blue.600" : "blue.50",
+                                            borderColor: "blue.500"
+                                        }}
                                     >
                                         {pageNum}
                                     </Button>
                                 );
                             })}
-                            
+
                             <IconButton
                                 icon={<ChevronRightIcon />}
-                                size="sm"
+                                size="md"
                                 variant="outline"
                                 onClick={() => setCurrentPage(currentPage + 1)}
                                 isDisabled={currentPage === totalPages}
                                 aria-label="다음 페이지"
-                            />
-                            <IconButton
-                                icon={<ChevronRightIcon />}
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setCurrentPage(totalPages)}
-                                isDisabled={currentPage === totalPages}
-                                aria-label="마지막 페이지"
+                                _hover={{
+                                    bg: "blue.50",
+                                    borderColor: "blue.500"
+                                }}
                             />
                         </HStack>
                     </Flex>
