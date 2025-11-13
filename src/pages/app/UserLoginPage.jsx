@@ -69,61 +69,41 @@ export default function UserLoginPage() {
                             전화번호
                         </FormLabel>
 
-                        <InputGroup>
-                            {/* 고정된 010 입력칸 */}
-                            <Input
-                                value="010"
-                                isReadOnly
-                                p={1}
-                                width="40%"
-                                textAlign="center"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="15px 0 0 15px"
-                                bg={isHighContrast ? '#000000' : '#FFFFFF'}
-                                border="3px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#000000'}
-                                fontWeight="600"
-                            />
-
-                            {/* 8자리 숫자 입력칸 */}
-                            <Input
-                                type="number"
-                                value={id}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, '').slice(0, 8); // 숫자만, 최대 8자리
-                                    setId(value);
-                                }}
-                                placeholder="8자리 입력"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="0 15px 15px 0"
-                                bg={isHighContrast ? '#000000' : '#F0F8FF'}
-                                border="3px solid"
-                                borderLeft="1px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                                fontWeight="600"
-                                _placeholder={{
-                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
-                                    fontWeight: '500',
-                                }}
-                                _hover={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
-                                }}
-                                _focus={{
-                                    borderWidth: '5px',
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: isHighContrast
-                                        ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
-                                    outline: 'none',
-                                }}
-                                transition="all 0.2s"
-                            />
-                        </InputGroup>
+                        <Input
+                            type="tel"
+                            value={id}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 11); // 숫자만, 최대 11자리
+                                setId(value);
+                            }}
+                            placeholder="01012345678"
+                            fontSize={fs}
+                            height={inputH}
+                            borderRadius="15px"
+                            bg={isHighContrast ? '#000000' : '#F0F8FF'}
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                            fontWeight="600"
+                            textAlign="center"
+                            _placeholder={{
+                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
+                                fontWeight: '500',
+                            }}
+                            _hover={{
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
+                            }}
+                            _focus={{
+                                borderWidth: '5px',
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: isHighContrast
+                                    ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
+                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
+                                outline: 'none',
+                            }}
+                            transition="all 0.2s"
+                        />
                     </FormControl>
 
                     {/* 비밀번호 */}
@@ -206,9 +186,9 @@ export default function UserLoginPage() {
                         type="submit"
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
-                        w="90%"
+                        w="100%"
                         mx="auto"
-                        height={inputH}
+                        height={btnH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
@@ -389,7 +369,7 @@ export default function UserLoginPage() {
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
                                 borderRadius="10px"
-                                w="90%"
+                                w="100%"
                                 h={btnH}
                                 fontSize={fs}
                                 _hover={{
