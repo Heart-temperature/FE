@@ -206,8 +206,8 @@ export default function MainPage() {
                             {aiModels.map((model, index) => (
                                 <Box
                                     key={model.id}
-                                    w={index === currentModelIndex ? '12px' : '8px'}
-                                    h={index === currentModelIndex ? '12px' : '8px'}
+                                    w={index === currentModelIndex ? '20px' : '20px'}
+                                    h={index === currentModelIndex ? '20px' : '12px'}
                                     borderRadius="full"
                                     bg={
                                         index === currentModelIndex
