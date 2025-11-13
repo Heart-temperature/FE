@@ -759,7 +759,7 @@ export default function Dashboard() {
                         <Table variant="simple" size="md">
                             <Thead bg="gray.50" borderBottom="2px" borderColor="gray.200">
                                 <Tr>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Checkbox
                                             isChecked={
                                                 selectedRows.length === paginatedUsers.length &&
@@ -771,11 +771,11 @@ export default function Dashboard() {
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                         />
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
                                             size="md"
-                                            fontSize="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('name')}
                                             rightIcon={
                                                 sortField === 'name' ? (
@@ -790,17 +790,17 @@ export default function Dashboard() {
                                             이름
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         연락처
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         주소
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
                                             size="md"
-                                            fontSize="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('emotion')}
                                             rightIcon={
                                                 sortField === 'emotion' ? (
@@ -815,11 +815,11 @@ export default function Dashboard() {
                                             감정상태
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
                                             size="md"
-                                            fontSize="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('gender')}
                                             rightIcon={
                                                 sortField === 'gender' ? (
@@ -834,11 +834,11 @@ export default function Dashboard() {
                                             성별
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
                                             size="md"
-                                            fontSize="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('joinedDate')}
                                             rightIcon={
                                                 sortField === 'joinedDate' ? (
@@ -853,11 +853,11 @@ export default function Dashboard() {
                                             가입일
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         <Button
                                             variant="ghost"
                                             size="md"
-                                            fontSize="md"
+                                            fontSize="lg"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={
                                                 sortField === 'lastCall' ? (
@@ -872,7 +872,7 @@ export default function Dashboard() {
                                             마지막 통화
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
+                                    <Th px={4} py={3} textAlign="center" fontSize="lg" fontWeight="600">
                                         액션
                                     </Th>
                                 </Tr>
@@ -898,20 +898,20 @@ export default function Dashboard() {
                                             <HStack spacing={3} justify="center">
                                                 <Avatar size="sm" name={user.name} />
                                                 <VStack align="start" spacing={0}>
-                                                    <Text fontWeight="medium" fontSize="md">
+                                                    <Text fontWeight="medium" fontSize="lg">
                                                         {user.name}
                                                     </Text>
-                                                    <Text fontSize="md" color="gray.500">
+                                                    <Text fontSize="lg" color="gray.500">
                                                         {user.age}세
                                                     </Text>
                                                 </VStack>
                                             </HStack>
                                         </Td>
                                         <Td px={4} py={3} textAlign="center">
-                                            <Text fontSize="md">{user.phone}</Text>
+                                            <Text fontSize="lg">{user.phone}</Text>
                                         </Td>
                                         <Td px={4} py={3} textAlign="center">
-                                            <Text fontSize="md" color="gray.600">
+                                            <Text fontSize="lg" color="gray.600">
                                                 {user.address}
                                             </Text>
                                         </Td>
@@ -922,7 +922,7 @@ export default function Dashboard() {
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="sm"
+                                                fontSize="md"
                                                 fontWeight="600"
                                             >
                                                 {getEmotionText(user.emotion)}
@@ -935,23 +935,23 @@ export default function Dashboard() {
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="sm"
+                                                fontSize="md"
                                                 fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
                                         </Td>
                                         <Td px={4} py={3} textAlign="center">
-                                            <Text fontSize="md" color="gray.600">
+                                            <Text fontSize="lg" color="gray.600">
                                                 {user.joinedDate}
                                             </Text>
                                         </Td>
                                         <Td px={4} py={3} textAlign="center">
                                             <VStack align="center" spacing={0}>
-                                                <Text fontSize="md" color="gray.600">
+                                                <Text fontSize="lg" color="gray.600">
                                                     {user.lastCall}
                                                 </Text>
-                                                <Text fontSize="sm" color="gray.500">
+                                                <Text fontSize="md" color="gray.500">
                                                     통화시간: {user.callDuration}
                                                 </Text>
                                             </VStack>
