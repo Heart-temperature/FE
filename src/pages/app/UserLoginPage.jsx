@@ -199,7 +199,9 @@ export default function UserLoginPage() {
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                            boxShadow: isHighContrast
+                                ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                : '0 6px 20px rgba(33, 150, 243, 0.4)',
                         }}
                         _active={{
                             bg: isHighContrast ? '#FFC107' : '#1565C0',
@@ -239,9 +241,7 @@ export default function UserLoginPage() {
                                         ? isHighContrast
                                             ? '#000000'
                                             : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
+                                        : '#000000'
                                 }
                                 fontWeight="700"
                                 borderRadius="15px 0 0 15px"
@@ -261,7 +261,9 @@ export default function UserLoginPage() {
                                             ? '#FFD700'
                                             : '#2196F3',
                                     transform: 'translateY(-2px)',
-                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
                                 }}
                                 _active={{
                                     bg: isHighContrast ? '#FFC107' : '#1565C0',
@@ -287,9 +289,7 @@ export default function UserLoginPage() {
                                         ? isHighContrast
                                             ? '#000000'
                                             : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
+                                        : '#000000'
                                 }
                                 fontWeight="700"
                                 borderRadius="0"
@@ -310,7 +310,9 @@ export default function UserLoginPage() {
                                             ? '#FFD700'
                                             : '#2196F3',
                                     transform: 'translateY(-2px)',
-                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
                                 }}
                                 _active={{
                                     bg: isHighContrast ? '#FFC107' : '#1565C0',
@@ -336,9 +338,7 @@ export default function UserLoginPage() {
                                         ? isHighContrast
                                             ? '#000000'
                                             : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
+                                        : '#000000'
                                 }
                                 fontWeight="700"
                                 borderRadius="0 15px 15px 0"
@@ -358,7 +358,9 @@ export default function UserLoginPage() {
                                             ? '#FFD700'
                                             : '#2196F3',
                                     transform: 'translateY(-2px)',
-                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
                                 }}
                                 _active={{
                                     bg: isHighContrast ? '#FFC107' : '#1565C0',
@@ -396,7 +398,9 @@ export default function UserLoginPage() {
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                                     transform: 'translateY(-2px)',
-                                    boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
                                 }}
                                 _active={{
                                     bg: isHighContrast ? '#FFC107' : '#1565C0',
