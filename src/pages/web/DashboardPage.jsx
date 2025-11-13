@@ -583,6 +583,8 @@ export default function Dashboard() {
                             p={5}
                             border="1px"
                             borderColor="gray.200"
+                            borderTop="3px"
+                            borderTopColor="blue.500"
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
@@ -612,6 +614,8 @@ export default function Dashboard() {
                             p={5}
                             border="1px"
                             borderColor="gray.200"
+                            borderTop="3px"
+                            borderTopColor="red.500"
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
@@ -641,6 +645,8 @@ export default function Dashboard() {
                             p={5}
                             border="1px"
                             borderColor="gray.200"
+                            borderTop="3px"
+                            borderTopColor="orange.500"
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
@@ -670,6 +676,8 @@ export default function Dashboard() {
                             p={5}
                             border="1px"
                             borderColor="gray.200"
+                            borderTop="3px"
+                            borderTopColor="green.500"
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
