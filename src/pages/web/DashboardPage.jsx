@@ -316,15 +316,15 @@ export default function Dashboard() {
     const getEmotionColor = (emotion) => {
         switch (emotion) {
             case 'urgent':
-                return '#EF4444'; // 빨강 - 긴급 (Tailwind red-500)
+                return '#D93025'; // 빨강 - 긴급
             case 'caution':
-                return '#F59E0B'; // 주황 - 주의 (Tailwind amber-500)
+                return '#F9AB00'; // 주황 - 주의
             case 'normal':
-                return '#10B981'; // 초록 - 정상 (Tailwind emerald-500)
+                return '#1B9A59'; // 초록 - 정상
             case 'new':
-                return '#6B7280'; // 회색 - 신규 회원 (Tailwind gray-500)
+                return '#718096'; // 회색 - 신규 회원
             default:
-                return '#6B7280'; // 회색 - 알 수 없음 (Tailwind gray-500)
+                return '#718096'; // 회색 - 알 수 없음
         }
     };
 
