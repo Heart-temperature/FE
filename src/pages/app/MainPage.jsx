@@ -231,7 +231,7 @@ export default function MainPage() {
 
                     <Button
                         onClick={() => setIsPolite(!isPolite)}
-                        bg={isHighContrast ? '#FFFFFF' : isPolite ? '#2196F3' : '#E0E0E0'}
+                        bg={isPolite ? (isHighContrast ? '#FFD700' : '#2196F3') : '#E0E0E0'}
                         color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
                         fontSize={fs}
                         h={btnH}
@@ -240,11 +240,11 @@ export default function MainPage() {
                         borderRadius="10px"
                         border={isHighContrast ? '3px solid white' : 'none'}
                         _hover={{
-                            bg: isHighContrast ? '#FFEB3B' : isPolite ? '#1976D2' : '#BDBDBD',
+                            bg: isPolite ? (isHighContrast ? '#FFEB3B' : '#1976D2') : '#BDBDBD',
                         }}
                         transition="all 0.2s"
                     >
-                        {isPolite ? '존댓말 모드 켜기' : '존댓말 모드 끄기'}
+                        {isPolite ? '존댓말 모드 켜짐' : '존댓말 모드 꺼짐'}
                     </Button>
 
                     {/* 통화 시작 버튼 */}
