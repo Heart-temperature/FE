@@ -50,7 +50,7 @@ import {
     Stat,
     StatLabel,
     StatNumber,
-    StatHelpText
+    StatHelpText,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -72,9 +72,17 @@ import {
     DeleteIcon,
     InfoIcon,
     CheckCircleIcon,
-    StarIcon
+    StarIcon,
 } from '@chakra-ui/icons';
-import { FiUsers, FiAlertTriangle, FiAlertCircle, FiCheckCircle, FiMessageSquare, FiEdit2, FiEye } from 'react-icons/fi';
+import {
+    FiUsers,
+    FiAlertTriangle,
+    FiAlertCircle,
+    FiCheckCircle,
+    FiMessageSquare,
+    FiEdit2,
+    FiEye,
+} from 'react-icons/fi';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -102,7 +110,7 @@ export default function Dashboard() {
         const parts = timeStr.split(' ');
         const value = parseInt(parts[0]);
         const unit = parts[1];
-        
+
         if (unit === '분') return value;
         if (unit === '시간') return value * 60;
         if (unit === '일') return value * 24 * 60;
@@ -113,12 +121,13 @@ export default function Dashboard() {
     };
 
     // 필터링된 사용자 목록
-    const filteredUsers = users.filter(user => {
+    const filteredUsers = users.filter((user) => {
         const matchesEmotion = filterEmotion === 'all' || user.emotion === filterEmotion;
-        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             user.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             (user.phone && user.phone.includes(searchTerm)) ||
-                             (user.phoneNum && user.phoneNum.includes(searchTerm));
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (user.phone && user.phone.includes(searchTerm)) ||
+            (user.phoneNum && user.phoneNum.includes(searchTerm));
         return matchesEmotion && matchesSearch;
     });
 
@@ -126,7 +135,7 @@ export default function Dashboard() {
     const sortedUsers = [...filteredUsers].sort((a, b) => {
         let aValue = a[sortField];
         let bValue = b[sortField];
-        
+
         if (sortField === 'emotion') {
             const emotionOrder = { urgent: 0, caution: 1, normal: 2 };
             aValue = emotionOrder[aValue] ?? 3;
@@ -135,12 +144,12 @@ export default function Dashboard() {
             aValue = convertTimeToMinutes(aValue);
             bValue = convertTimeToMinutes(bValue);
         }
-        
+
         if (typeof aValue === 'string') {
             aValue = aValue.toLowerCase();
             bValue = bValue.toLowerCase();
         }
-        
+
         if (sortDirection === 'asc') {
             return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
         } else {
@@ -153,7 +162,6 @@ export default function Dashboard() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     const paginatedUsers = sortedUsers.slice(startIndex, endIndex);
-
 
     const handleMemoClick = (user) => {
         setSelectedUserForMemo(user);
@@ -184,7 +192,7 @@ export default function Dashboard() {
                 duration: 2000,
                 isClosable: true,
             });
-            
+
             setIsMemoModalOpen(false);
             setMemoText('');
             setSelectedUserForMemo(null);
@@ -238,10 +246,10 @@ export default function Dashboard() {
     const handleConfirmDelete = async () => {
         try {
             setIsDeleting(true);
-            
+
             // 선택된 사용자 정보 가져오기
-            const selectedUsers = paginatedUsers.filter(user => selectedRows.includes(user.id));
-            const userNames = selectedUsers.map(u => u.name).join(', ');
+            const selectedUsers = paginatedUsers.filter((user) => selectedRows.includes(user.id));
+            const userNames = selectedUsers.map((u) => u.name).join(', ');
 
             // 선택된 사용자 삭제
             for (const userId of selectedRows) {
@@ -259,7 +267,7 @@ export default function Dashboard() {
             // 선택 초기화 및 목록 새로고침
             setSelectedRows([]);
             setIsDeleteModalOpen(false);
-            
+
             // 목록 다시 불러오기
             await loadUserList();
         } catch (error) {
@@ -291,7 +299,7 @@ export default function Dashboard() {
 
     const handleSelectAll = (checked) => {
         if (checked) {
-            setSelectedRows(paginatedUsers.map(user => user.id));
+            setSelectedRows(paginatedUsers.map((user) => user.id));
         } else {
             setSelectedRows([]);
         }
@@ -301,17 +309,22 @@ export default function Dashboard() {
         if (checked) {
             setSelectedRows([...selectedRows, userId]);
         } else {
-            setSelectedRows(selectedRows.filter(id => id !== userId));
+            setSelectedRows(selectedRows.filter((id) => id !== userId));
         }
     };
 
     const getEmotionColor = (emotion) => {
         switch (emotion) {
-            case 'urgent': return '#EF4444';       // 빨강 - 긴급 (Tailwind red-500)
-            case 'caution': return '#F59E0B';      // 주황 - 주의 (Tailwind amber-500)
-            case 'normal': return '#10B981';       // 초록 - 정상 (Tailwind emerald-500)
-            case 'new': return '#3B82F6';          // 파랑 - 신규 회원 (Tailwind blue-500)
-            default: return '#6B7280';             // 회색 - 알 수 없음 (Tailwind gray-500)
+            case 'urgent':
+                return '#EF4444'; // 빨강 - 긴급 (Tailwind red-500)
+            case 'caution':
+                return '#F59E0B'; // 주황 - 주의 (Tailwind amber-500)
+            case 'normal':
+                return '#10B981'; // 초록 - 정상 (Tailwind emerald-500)
+            case 'new':
+                return '#3B82F6'; // 파랑 - 신규 회원 (Tailwind blue-500)
+            default:
+                return '#6B7280'; // 회색 - 알 수 없음 (Tailwind gray-500)
         }
     };
 
@@ -319,7 +332,7 @@ export default function Dashboard() {
     const loadUserList = async () => {
         try {
             setIsLoading(true);
-            
+
             const adminId = localStorage.getItem('adminId');
 
             if (!adminId) {
@@ -337,96 +350,100 @@ export default function Dashboard() {
             const dbUsers = await fetchUserList(adminId);
 
             // DB 데이터를 MOCK 형식으로 변환하고 감정상태, 통화 정보 조회
-            const userList = await Promise.all(dbUsers.map(async (user) => {
-                // 감정상태 조회 (에러 발생 시 null 반환)
-                // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
-                let emotionData = null;
-                try {
-                    emotionData = await getLastEmotion(user.loginId || user.phoneNum);
-                } catch (error) {
-                    emotionData = null;
-                }
+            const userList = await Promise.all(
+                dbUsers.map(async (user) => {
+                    // 감정상태 조회 (에러 발생 시 null 반환)
+                    // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
+                    let emotionData = null;
+                    try {
+                        emotionData = await getLastEmotion(user.loginId || user.phoneNum);
+                    } catch (error) {
+                        emotionData = null;
+                    }
 
-                // 통화 정보 조회 (에러 발생 시 null 반환)
-                // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
-                let callData = null;
-                try {
-                    callData = await getLastCall(user.loginId || user.phoneNum);
-                } catch (error) {
-                    callData = null;
-                }
+                    // 통화 정보 조회 (에러 발생 시 null 반환)
+                    // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
+                    let callData = null;
+                    try {
+                        callData = await getLastCall(user.loginId || user.phoneNum);
+                    } catch (error) {
+                        callData = null;
+                    }
 
-                // 감정상태 결정 (API 데이터 있으면 사용, 없으면 'new')
-                let emotion = 'new';
-                let desc = '신규 회원';
-                if (emotionData) {
-                    emotion = emotionData.emotion || 'new';
-                    desc = emotionData.description || '신규 회원';
-                }
+                    // 감정상태 결정 (API 데이터 있으면 사용, 없으면 'new')
+                    let emotion = 'new';
+                    let desc = '신규 회원';
+                    if (emotionData) {
+                        emotion = emotionData.emotion || 'new';
+                        desc = emotionData.description || '신규 회원';
+                    }
 
-                // 통화 정보 결정 (API 데이터 있으면 사용, 없으면 '신규')
-                let lastCall = '신규';
-                let callDuration = '-';
-                let callSummary = user.memo || '메모 없음';
-                if (callData) {
-                    lastCall = callData.lastCall || '신규';
-                    callDuration = callData.duration || '-';
-                    callSummary = callData.summary || user.memo || '메모 없음';
-                }
+                    // 통화 정보 결정 (API 데이터 있으면 사용, 없으면 '신규')
+                    let lastCall = '신규';
+                    let callDuration = '-';
+                    let callSummary = user.memo || '메모 없음';
+                    if (callData) {
+                        lastCall = callData.lastCall || '신규';
+                        callDuration = callData.duration || '-';
+                        callSummary = callData.summary || user.memo || '메모 없음';
+                    }
 
-                // 생년월일로부터 나이 계산
-                // birthDate가 ISO 형식(YYYY-MM-DDTHH:mm:ss.SSS)일 수 있으므로 날짜 부분만 추출
-                const birthDateStr = user.birthDate ? 
-                    (user.birthDate.includes('T') ? user.birthDate.split('T')[0] : user.birthDate) : 
-                    null;
-                const age = birthDateStr ? calculateAge(birthDateStr) : 0;
+                    // 생년월일로부터 나이 계산
+                    // birthDate가 ISO 형식(YYYY-MM-DDTHH:mm:ss.SSS)일 수 있으므로 날짜 부분만 추출
+                    const birthDateStr = user.birthDate
+                        ? user.birthDate.includes('T')
+                            ? user.birthDate.split('T')[0]
+                            : user.birthDate
+                        : null;
+                    const age = birthDateStr ? calculateAge(birthDateStr) : 0;
 
-                // 성별 변환 (M -> 남성, F -> 여성)
-                let gender = '미지정';
-                if (user.sexuality === 'M') {
-                    gender = '남성';
-                } else if (user.sexuality === 'F') {
-                    gender = '여성';
-                } else if (user.sexuality === '남성' || user.sexuality === '여성') {
-                    gender = user.sexuality;
-                }
+                    // 성별 변환 (M -> 남성, F -> 여성)
+                    let gender = '미지정';
+                    if (user.sexuality === 'M') {
+                        gender = '남성';
+                    } else if (user.sexuality === 'F') {
+                        gender = '여성';
+                    } else if (user.sexuality === '남성' || user.sexuality === '여성') {
+                        gender = user.sexuality;
+                    }
 
-                // 가입일 처리 (localStorage에서 가져오기, 없으면 현재 시간으로 저장)
-                let joinedDate = '신규 회원';
-                const storageKey = `user_joined_${user.id}`;
-                const storedDate = localStorage.getItem(storageKey);
+                    // 가입일 처리 (localStorage에서 가져오기, 없으면 현재 시간으로 저장)
+                    let joinedDate = '신규 회원';
+                    const storageKey = `user_joined_${user.id}`;
+                    const storedDate = localStorage.getItem(storageKey);
 
-                if (storedDate) {
-                    // localStorage에 저장된 날짜가 있으면 사용
-                    joinedDate = storedDate;
-                } else {
-                    // 없으면 현재 날짜로 저장
-                    const now = new Date();
-                    joinedDate = now.toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    });
-                    localStorage.setItem(storageKey, joinedDate);
-                }
+                    if (storedDate) {
+                        // localStorage에 저장된 날짜가 있으면 사용
+                        joinedDate = storedDate;
+                    } else {
+                        // 없으면 현재 날짜로 저장
+                        const now = new Date();
+                        joinedDate = now.toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        });
+                        localStorage.setItem(storageKey, joinedDate);
+                    }
 
-                return {
-                    id: user.id,
-                    name: user.name,
-                    age: age,
-                    emotion: emotion,
-                    desc: desc,
-                    lastCall: lastCall,
-                    phone: user.phoneNum,
-                    address: user.address || '',
-                    joinedDate: joinedDate,
-                    lastActive: lastCall === '신규' ? '신규' : lastCall,
-                    gender: gender,
-                    callDuration: callDuration,
-                    callSummary: callSummary,
-                    _dbData: user
-                };
-            }));
+                    return {
+                        id: user.id,
+                        name: user.name,
+                        age: age,
+                        emotion: emotion,
+                        desc: desc,
+                        lastCall: lastCall,
+                        phone: user.phoneNum,
+                        address: user.address || '',
+                        joinedDate: joinedDate,
+                        lastActive: lastCall === '신규' ? '신규' : lastCall,
+                        gender: gender,
+                        callDuration: callDuration,
+                        callSummary: callSummary,
+                        _dbData: user,
+                    };
+                })
+            );
 
             setUsers(userList);
         } catch (error) {
@@ -473,11 +490,16 @@ export default function Dashboard() {
 
     const getEmotionText = (emotion) => {
         switch (emotion) {
-            case 'urgent': return '긴급';
-            case 'caution': return '주의';
-            case 'normal': return '정상';
-            case 'new': return '신규';
-            default: return '알 수 없음';
+            case 'urgent':
+                return '긴급';
+            case 'caution':
+                return '주의';
+            case 'normal':
+                return '정상';
+            case 'new':
+                return '신규';
+            default:
+                return '알 수 없음';
         }
     };
 
@@ -487,32 +509,23 @@ export default function Dashboard() {
     // 통계 데이터 계산
     const stats = {
         total: users.length,
-        urgent: users.filter(u => u.emotion === 'urgent').length,
-        caution: users.filter(u => u.emotion === 'caution').length,
-        normal: users.filter(u => u.emotion === 'normal').length
+        urgent: users.filter((u) => u.emotion === 'urgent').length,
+        caution: users.filter((u) => u.emotion === 'caution').length,
+        normal: users.filter((u) => u.emotion === 'normal').length,
     };
 
     return (
         <Box bg={bgColor} minH="100vh">
             {/* Header */}
-            <Box
-                bg="white"
-                borderBottom="1px"
-                borderColor="gray.200"
-                px={8}
-                py={5}
-            >
+            <Box bg="white" borderBottom="1px" borderColor="gray.200" px={8} py={5}>
                 <VStack spacing={4} align="stretch">
                     <Flex align="center" justify="space-between">
                         <HStack spacing={4}>
                             <Image src={dajungIcon} alt="Dajung Icon" boxSize="50px" />
                             <VStack align="start" spacing={0}>
                                 <Heading size="lg" color="gray.900" fontWeight="700">
-                                    다정이 관리 시스템
+                                    관리자 대시보드
                                 </Heading>
-                                <Text fontSize="sm" color="gray.600">
-                                    사용자 현황 및 관리
-                                </Text>
                             </VStack>
                         </HStack>
 
@@ -536,7 +549,15 @@ export default function Dashboard() {
                             >
                                 {selectedRows.length > 0 ? `삭제 (${selectedRows.length})` : '삭제'}
                             </Button>
-                            <HStack spacing={2} bg="gray.50" px={4} py={2} borderRadius="md" border="1px" borderColor="gray.200">
+                            <HStack
+                                spacing={2}
+                                bg="gray.50"
+                                px={4}
+                                py={2}
+                                borderRadius="md"
+                                border="1px"
+                                borderColor="gray.200"
+                            >
                                 <Text fontSize="sm" fontWeight="600" color="gray.700">
                                     김관리
                                 </Text>
@@ -544,12 +565,7 @@ export default function Dashboard() {
                                     관리자
                                 </Text>
                             </HStack>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                colorScheme="gray"
-                                onClick={handleLogout}
-                            >
+                            <Button size="sm" variant="ghost" colorScheme="gray" onClick={handleLogout}>
                                 로그아웃
                             </Button>
                         </HStack>
@@ -568,8 +584,8 @@ export default function Dashboard() {
                                 bg="gray.50"
                                 border="1px"
                                 borderColor="gray.200"
-                                _hover={{ borderColor: "gray.300" }}
-                                _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce", bg: "white" }}
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
                         </InputGroup>
 
@@ -579,8 +595,8 @@ export default function Dashboard() {
                             maxW="140px"
                             bg="gray.50"
                             borderColor="gray.200"
-                            _hover={{ borderColor: "gray.300" }}
-                            _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce", bg: "white" }}
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                         >
                             <option value="all">전체 상태</option>
                             <option value="urgent">긴급</option>
@@ -607,18 +623,20 @@ export default function Dashboard() {
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
-                                    <Text fontSize="xs" color="gray.500" fontWeight="600" mb={2} textTransform="uppercase">
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
                                         총 사용자
                                     </Text>
                                     <Heading size="xl" color="gray.900" mb={1}>
                                         {stats.total}
                                     </Heading>
                                 </Box>
-                                <Box
-                                    bg="blue.50"
-                                    p={2}
-                                    borderRadius="md"
-                                >
+                                <Box bg="blue.50" p={2} borderRadius="md">
                                     <Icon as={FiUsers} boxSize={5} color="blue.600" />
                                 </Box>
                             </Flex>
@@ -638,18 +656,20 @@ export default function Dashboard() {
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
-                                    <Text fontSize="xs" color="gray.500" fontWeight="600" mb={2} textTransform="uppercase">
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
                                         긴급 상태
                                     </Text>
                                     <Heading size="xl" color="gray.900" mb={1}>
                                         {stats.urgent}
                                     </Heading>
                                 </Box>
-                                <Box
-                                    bg="red.50"
-                                    p={2}
-                                    borderRadius="md"
-                                >
+                                <Box bg="red.50" p={2} borderRadius="md">
                                     <Icon as={FiAlertCircle} boxSize={5} color="red.600" />
                                 </Box>
                             </Flex>
@@ -669,18 +689,20 @@ export default function Dashboard() {
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
-                                    <Text fontSize="xs" color="gray.500" fontWeight="600" mb={2} textTransform="uppercase">
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
                                         주의 상태
                                     </Text>
                                     <Heading size="xl" color="gray.900" mb={1}>
                                         {stats.caution}
                                     </Heading>
                                 </Box>
-                                <Box
-                                    bg="orange.50"
-                                    p={2}
-                                    borderRadius="md"
-                                >
+                                <Box bg="orange.50" p={2} borderRadius="md">
                                     <Icon as={FiAlertTriangle} boxSize={5} color="orange.600" />
                                 </Box>
                             </Flex>
@@ -700,18 +722,20 @@ export default function Dashboard() {
                         >
                             <Flex justify="space-between" align="start">
                                 <Box>
-                                    <Text fontSize="xs" color="gray.500" fontWeight="600" mb={2} textTransform="uppercase">
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
                                         정상 상태
                                     </Text>
                                     <Heading size="xl" color="gray.900" mb={1}>
                                         {stats.normal}
                                     </Heading>
                                 </Box>
-                                <Box
-                                    bg="green.50"
-                                    p={2}
-                                    borderRadius="md"
-                                >
+                                <Box bg="green.50" p={2} borderRadius="md">
                                     <Icon as={FiCheckCircle} boxSize={5} color="green.600" />
                                 </Box>
                             </Flex>
@@ -737,8 +761,13 @@ export default function Dashboard() {
                                 <Tr>
                                     <Th px={4} py={3}>
                                         <Checkbox
-                                            isChecked={selectedRows.length === paginatedUsers.length && paginatedUsers.length > 0}
-                                            isIndeterminate={selectedRows.length > 0 && selectedRows.length < paginatedUsers.length}
+                                            isChecked={
+                                                selectedRows.length === paginatedUsers.length &&
+                                                paginatedUsers.length > 0
+                                            }
+                                            isIndeterminate={
+                                                selectedRows.length > 0 && selectedRows.length < paginatedUsers.length
+                                            }
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                         />
                                     </Th>
@@ -747,19 +776,39 @@ export default function Dashboard() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleSort('name')}
-                                            rightIcon={sortField === 'name' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                            rightIcon={
+                                                sortField === 'name' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
                                         >
                                             이름
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>연락처</Th>
-                                    <Th px={4} py={3}>주소</Th>
+                                    <Th px={4} py={3}>
+                                        연락처
+                                    </Th>
+                                    <Th px={4} py={3}>
+                                        주소
+                                    </Th>
                                     <Th px={4} py={3}>
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleSort('emotion')}
-                                            rightIcon={sortField === 'emotion' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                            rightIcon={
+                                                sortField === 'emotion' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
                                         >
                                             감정상태
                                         </Button>
@@ -769,7 +818,15 @@ export default function Dashboard() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleSort('gender')}
-                                            rightIcon={sortField === 'gender' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                            rightIcon={
+                                                sortField === 'gender' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
                                         >
                                             성별
                                         </Button>
@@ -779,7 +836,15 @@ export default function Dashboard() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleSort('joinedDate')}
-                                            rightIcon={sortField === 'joinedDate' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                            rightIcon={
+                                                sortField === 'joinedDate' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
                                         >
                                             가입일
                                         </Button>
@@ -789,12 +854,22 @@ export default function Dashboard() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleSort('lastCall')}
-                                            rightIcon={sortField === 'lastCall' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                            rightIcon={
+                                                sortField === 'lastCall' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
                                         >
                                             마지막 통화
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>액션</Th>
+                                    <Th px={4} py={3}>
+                                        액션
+                                    </Th>
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -819,7 +894,9 @@ export default function Dashboard() {
                                                 <Avatar size="sm" name={user.name} />
                                                 <VStack align="start" spacing={0}>
                                                     <Text fontWeight="medium">{user.name}</Text>
-                                                    <Text fontSize="sm" color="gray.500">{user.age}세</Text>
+                                                    <Text fontSize="sm" color="gray.500">
+                                                        {user.age}세
+                                                    </Text>
                                                 </VStack>
                                             </HStack>
                                         </Td>
@@ -827,7 +904,9 @@ export default function Dashboard() {
                                             <Text fontSize="sm">{user.phone}</Text>
                                         </Td>
                                         <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">{user.address}</Text>
+                                            <Text fontSize="sm" color="gray.600">
+                                                {user.address}
+                                            </Text>
                                         </Td>
                                         <Td px={4} py={3}>
                                             <Badge
@@ -862,8 +941,12 @@ export default function Dashboard() {
                                         </Td>
                                         <Td px={4} py={3}>
                                             <VStack align="start" spacing={0}>
-                                                <Text fontSize="sm" color="gray.600">{user.lastCall}</Text>
-                                                <Text fontSize="xs" color="gray.500">통화시간: {user.callDuration}</Text>
+                                                <Text fontSize="sm" color="gray.600">
+                                                    {user.lastCall}
+                                                </Text>
+                                                <Text fontSize="xs" color="gray.500">
+                                                    통화시간: {user.callDuration}
+                                                </Text>
                                             </VStack>
                                         </Td>
                                         <Td px={4} py={3}>
@@ -874,7 +957,7 @@ export default function Dashboard() {
                                                         size="sm"
                                                         variant="ghost"
                                                         color="gray.600"
-                                                        _hover={{ bg: "blue.50", color: "blue.600" }}
+                                                        _hover={{ bg: 'blue.50', color: 'blue.600' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleMemoClick(user);
@@ -887,7 +970,7 @@ export default function Dashboard() {
                                                         size="sm"
                                                         variant="ghost"
                                                         color="gray.600"
-                                                        _hover={{ bg: "orange.50", color: "orange.600" }}
+                                                        _hover={{ bg: 'orange.50', color: 'orange.600' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}/edit`);
@@ -900,7 +983,7 @@ export default function Dashboard() {
                                                         size="sm"
                                                         variant="ghost"
                                                         color="gray.600"
-                                                        _hover={{ bg: "gray.100", color: "gray.900" }}
+                                                        _hover={{ bg: 'gray.100', color: 'gray.900' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}`);
@@ -935,7 +1018,7 @@ export default function Dashboard() {
                                     <Button
                                         key={pageNum}
                                         size="sm"
-                                        variant={pageNum === currentPage ? "solid" : "ghost"}
+                                        variant={pageNum === currentPage ? 'solid' : 'ghost'}
                                         colorScheme="blue"
                                         onClick={() => setCurrentPage(pageNum)}
                                         minW="32px"
@@ -962,9 +1045,7 @@ export default function Dashboard() {
             <Modal isOpen={isMemoModalOpen} onClose={handleMemoCancel} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>
-                        메모 추가 - {selectedUserForMemo?.name}님
-                    </ModalHeader>
+                    <ModalHeader>메모 추가 - {selectedUserForMemo?.name}님</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
@@ -982,7 +1063,7 @@ export default function Dashboard() {
                                     </VStack>
                                 </HStack>
                             </Box>
-                            
+
                             <Box>
                                 <Text fontSize="sm" color="gray.600" mb={2}>
                                     메모 내용
@@ -1012,9 +1093,7 @@ export default function Dashboard() {
             <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>
-                        사용자 삭제 확인
-                    </ModalHeader>
+                    <ModalHeader>사용자 삭제 확인</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
@@ -1024,15 +1103,15 @@ export default function Dashboard() {
                                 </Text>
                                 <VStack spacing={2} align="stretch" ml={4}>
                                     {paginatedUsers
-                                        .filter(user => selectedRows.includes(user.id))
-                                        .map(user => (
+                                        .filter((user) => selectedRows.includes(user.id))
+                                        .map((user) => (
                                             <Text key={user.id} fontSize="sm">
                                                 • {user.name} ({user.phone})
                                             </Text>
                                         ))}
                                 </VStack>
                             </Box>
-                            
+
                             <Box bg="red.50" p={3} borderRadius="md" borderLeft="4px" borderColor="red.500">
                                 <Text fontSize="sm" color="red.700">
                                     ⚠️ 삭제된 사용자는 복구할 수 없습니다. 정말로 삭제하시겠습니까?
@@ -1041,25 +1120,15 @@ export default function Dashboard() {
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button 
-                            variant="ghost" 
-                            mr={3} 
-                            onClick={handleCancelDelete}
-                            isDisabled={isDeleting}
-                        >
+                        <Button variant="ghost" mr={3} onClick={handleCancelDelete} isDisabled={isDeleting}>
                             취소
                         </Button>
-                        <Button 
-                            colorScheme="red" 
-                            onClick={handleConfirmDelete}
-                            isLoading={isDeleting}
-                        >
+                        <Button colorScheme="red" onClick={handleConfirmDelete} isLoading={isDeleting}>
                             삭제
                         </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-
         </Box>
     );
 }
