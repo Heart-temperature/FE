@@ -74,7 +74,7 @@ import {
     CheckCircleIcon,
     StarIcon
 } from '@chakra-ui/icons';
-import { FiUsers, FiAlertTriangle, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiUsers, FiAlertTriangle, FiAlertCircle, FiCheckCircle, FiMessageSquare, FiEdit2, FiEye } from 'react-icons/fi';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -307,11 +307,11 @@ export default function Dashboard() {
 
     const getEmotionColor = (emotion) => {
         switch (emotion) {
-            case 'urgent': return '#D93025';       // 빨강 - 긴급
-            case 'caution': return '#F9AB00';      // 노랑 - 주의
-            case 'normal': return '#1B9A59';       // 초록 - 정상
-            case 'new': return '#5B7EBD';          // 파랑 - 신규 회원
-            default: return '#718096';             // 회색 - 알 수 없음
+            case 'urgent': return '#EF4444';       // 빨강 - 긴급 (Tailwind red-500)
+            case 'caution': return '#F59E0B';      // 주황 - 주의 (Tailwind amber-500)
+            case 'normal': return '#10B981';       // 초록 - 정상 (Tailwind emerald-500)
+            case 'new': return '#3B82F6';          // 파랑 - 신규 회원 (Tailwind blue-500)
+            default: return '#6B7280';             // 회색 - 알 수 없음 (Tailwind gray-500)
         }
     };
 
@@ -765,8 +765,10 @@ export default function Dashboard() {
                                     <Tr
                                         key={user.id}
                                         _hover={{ bg: 'gray.50' }}
+                                        borderBottom="1px"
+                                        borderColor="gray.100"
                                     >
-                                        <Td px={4} py={4}>
+                                        <Td px={4} py={3}>
                                             <Checkbox
                                                 isChecked={selectedRows.includes(user.id)}
                                                 onChange={(e) => {
@@ -796,9 +798,9 @@ export default function Dashboard() {
                                                 color="white"
                                                 px={3}
                                                 py={1}
-                                                borderRadius="md"
+                                                borderRadius="full"
                                                 fontSize="xs"
-                                                fontWeight="500"
+                                                fontWeight="600"
                                             >
                                                 {getEmotionText(user.emotion)}
                                             </Badge>
@@ -809,8 +811,9 @@ export default function Dashboard() {
                                                 variant="subtle"
                                                 px={3}
                                                 py={1}
-                                                borderRadius="md"
+                                                borderRadius="full"
                                                 fontSize="xs"
+                                                fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
@@ -821,38 +824,41 @@ export default function Dashboard() {
                                                 <Text fontSize="xs" color="gray.500">통화시간: {user.callDuration}</Text>
                                             </VStack>
                                         </Td>
-                                        <Td px={4} py={4}>
+                                        <Td px={4} py={3}>
                                             <HStack spacing={1}>
-                                                <Tooltip label="메모 추가" placement="top">
+                                                <Tooltip label="메모 작성" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<EditIcon />}
+                                                        icon={<Icon as={FiMessageSquare} boxSize={4} />}
                                                         size="sm"
                                                         variant="ghost"
-                                                        colorScheme="blue"
+                                                        color="gray.600"
+                                                        _hover={{ bg: "blue.50", color: "blue.600" }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleMemoClick(user);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="정보 수정" placement="top">
+                                                <Tooltip label="정보 수정" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<EditIcon />}
+                                                        icon={<Icon as={FiEdit2} boxSize={4} />}
                                                         size="sm"
                                                         variant="ghost"
-                                                        colorScheme="purple"
+                                                        color="gray.600"
+                                                        _hover={{ bg: "orange.50", color: "orange.600" }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}/edit`);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="상세보기" placement="top">
+                                                <Tooltip label="상세 보기" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<ViewIcon />}
+                                                        icon={<Icon as={FiEye} boxSize={4} />}
                                                         size="sm"
                                                         variant="ghost"
-                                                        colorScheme="green"
+                                                        color="gray.600"
+                                                        _hover={{ bg: "gray.100", color: "gray.900" }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}`);
