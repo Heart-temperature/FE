@@ -68,17 +68,39 @@ export default function UserLoginPage() {
                         >
                             전화번호
                         </FormLabel>
+
                         <InputGroup>
+                            {/* 고정된 010 입력칸 */}
+                            <Input
+                                value="010"
+                                isReadOnly
+                                width="30%"
+                                textAlign="center"
+                                fontSize={fs}
+                                height={inputH}
+                                borderRadius="15px 0 0 15px"
+                                bg={isHighContrast ? '#000000' : '#FFFFFF'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                color={isHighContrast ? '#FFFFFF' : '#000000'}
+                                fontWeight="600"
+                            />
+
+                            {/* 8자리 숫자 입력칸 */}
                             <Input
                                 type="text"
                                 value={id}
-                                onChange={(e) => setId(e.target.value)}
-                                placeholder="전화번호 입력"
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, '').slice(0, 8); // 숫자만, 최대 8자리
+                                    setId(value);
+                                }}
+                                placeholder="8자리 입력"
                                 fontSize={fs}
                                 height={inputH}
-                                borderRadius="15px"
+                                borderRadius="0 15px 15px 0"
                                 bg={isHighContrast ? '#000000' : '#F0F8FF'}
                                 border="3px solid"
+                                borderLeft="1px solid"
                                 borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                                 color={isHighContrast ? '#FFFFFF' : '#1976D2'}
                                 fontWeight="600"
@@ -100,17 +122,6 @@ export default function UserLoginPage() {
                                 }}
                                 transition="all 0.2s"
                             />
-                            {id && (
-                                <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
-                                    <IconButton
-                                        height={inputH}
-                                        variant="unstyled"
-                                        onClick={() => setId('')}
-                                        icon={<CloseIcon boxSize={6} color={isHighContrast ? 'white' : '#2c1026'} />}
-                                        aria-label="아이디 입력 초기화"
-                                    />
-                                </InputRightElement>
-                            )}
                         </InputGroup>
                     </FormControl>
 
