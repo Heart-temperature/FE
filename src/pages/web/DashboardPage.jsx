@@ -391,16 +391,23 @@ export default function Dashboard() {
                     gender = user.sexuality;
                 }
 
-                // 가입일 처리 (createdAt이 있으면 사용, 없으면 "신규 회원")
+                // 가입일 처리 (localStorage에서 가져오기, 없으면 현재 시간으로 저장)
                 let joinedDate = '신규 회원';
-                if (user.createdAt || user.created_at) {
-                    const dateStr = user.createdAt || user.created_at;
-                    const date = new Date(dateStr);
-                    joinedDate = date.toLocaleDateString('ko-KR', {
+                const storageKey = `user_joined_${user.id}`;
+                const storedDate = localStorage.getItem(storageKey);
+
+                if (storedDate) {
+                    // localStorage에 저장된 날짜가 있으면 사용
+                    joinedDate = storedDate;
+                } else {
+                    // 없으면 현재 날짜로 저장
+                    const now = new Date();
+                    joinedDate = now.toLocaleDateString('ko-KR', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit'
                     });
+                    localStorage.setItem(storageKey, joinedDate);
                 }
 
                 return {
