@@ -253,7 +253,7 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="10px 0 0 10px"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 _hover={{
@@ -294,7 +294,7 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
@@ -336,7 +336,7 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="0 10px 10px 0"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 _hover={{
@@ -374,7 +374,7 @@ export default function UserLoginPage() {
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
                                 borderRadius="10px"
-                                minW="210px"
+                                w={`${50 + fontSizeLevel * 10}%`}
                                 h={btnH}
                                 fontSize={fs}
                                 _hover={{
