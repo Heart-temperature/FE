@@ -91,8 +91,8 @@ export const signUpAdmin = async (userData) => {
 // 사용자 로그인 API
 export const loginUser = async (phoneNum, loginPw) => {
     try {
-        // 8자리 숫자를 '010-xxxx-xxxx' 형식으로 변환
-        const formattedPhone = `010-${phoneNum.slice(0, 4)}-${phoneNum.slice(4)}`;
+        // 11자리 숫자를 '010-xxxx-xxxx' 형식으로 변환
+        const formattedPhone = `${phoneNum.slice(0, 3)}-${phoneNum.slice(3, 7)}-${phoneNum.slice(7)}`;
 
         const response = await api.post('/auth/login', {
             loginId: formattedPhone,
