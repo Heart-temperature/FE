@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Box,
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Input,
-    Text,
-    VStack,
-    HStack,
-    Image,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Text, VStack, HStack, Image } from '@chakra-ui/react';
 import DajeongLogo from '../../assets/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
@@ -76,9 +65,8 @@ export default function UserLoginPage() {
                             bg={isHighContrast ? '#000000' : '#F0F8FF'}
                             border="3px solid"
                             borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
                             fontWeight="600"
-                            textAlign="center"
                             _placeholder={{
                                 color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
                                 fontWeight: '500',
@@ -121,9 +109,8 @@ export default function UserLoginPage() {
                             bg={isHighContrast ? '#000000' : '#F0F8FF'}
                             border="3px solid"
                             borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                            color={isHighContrast ? '#FFFFFF' : '#1976D2'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
                             fontWeight="600"
-                            textAlign="center"
                             _placeholder={{
                                 color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
                                 fontWeight: '500',
@@ -213,13 +200,7 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 0
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 0 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="15px 0 0 15px"
                                 h={inputH}
@@ -261,13 +242,7 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 1
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 1 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={inputH}
@@ -310,13 +285,7 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 2
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 2 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="0 15px 15px 0"
                                 h={inputH}
