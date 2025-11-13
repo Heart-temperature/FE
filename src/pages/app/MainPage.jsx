@@ -3,9 +3,9 @@ import { Box, Button, Flex, Text, VStack, HStack, Image, Divider, IconButton } f
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import DajeongLogo from '../../components/common/image.png';
-import Img1 from '../../components/common/img1.png';
-import Img2 from '../../components/common/img2.png';
+import DajeongLogo from '../../assets/image.png';
+import Img1 from '../../assets/img1.png';
+import Img2 from '../../assets/img2.png';
 import { ROUTES } from '../../routes';
 import usePersistentSettings from '../../hooks/usePersistentSettings';
 
@@ -206,8 +206,8 @@ export default function MainPage() {
                             {aiModels.map((model, index) => (
                                 <Box
                                     key={model.id}
-                                    w={index === currentModelIndex ? '12px' : '8px'}
-                                    h={index === currentModelIndex ? '12px' : '8px'}
+                                    w={index === currentModelIndex ? '20px' : '20px'}
+                                    h={index === currentModelIndex ? '20px' : '12px'}
                                     borderRadius="full"
                                     bg={
                                         index === currentModelIndex
@@ -231,7 +231,7 @@ export default function MainPage() {
 
                     <Button
                         onClick={() => setIsPolite(!isPolite)}
-                        bg={isHighContrast ? '#FFFFFF' : isPolite ? '#2196F3' : '#E0E0E0'}
+                        bg={isPolite ? (isHighContrast ? '#FFD700' : '#2196F3') : '#E0E0E0'}
                         color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
                         fontSize={fs}
                         h={btnH}
@@ -240,11 +240,11 @@ export default function MainPage() {
                         borderRadius="10px"
                         border={isHighContrast ? '3px solid white' : 'none'}
                         _hover={{
-                            bg: isHighContrast ? '#FFEB3B' : isPolite ? '#1976D2' : '#BDBDBD',
+                            bg: isPolite ? (isHighContrast ? '#FFEB3B' : '#1976D2') : '#BDBDBD',
                         }}
                         transition="all 0.2s"
                     >
-                        {isPolite ? '존댓말 모드 켜기' : '존댓말 모드 끄기'}
+                        {isPolite ? '존댓말 모드 켜짐' : '존댓말 모드 꺼짐'}
                     </Button>
 
                     {/* 통화 시작 버튼 */}

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import DajeongLogo from '../../components/common/image.png';
+import DajeongLogo from '../../assets/image.png';
 
 import DabokVideo from '../../video/dabok.webm';
 

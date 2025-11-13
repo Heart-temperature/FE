@@ -47,7 +47,7 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import dajungIcon from '../../components/common/image.png';
+import dajungIcon from '../../assets/image.png';
 import { fetchUserList, deleteUser, addUserMemo, getLastEmotion, getLastCall } from '../../api';
 import { calculateAge } from '../../utils/dateUtils';
 import { 

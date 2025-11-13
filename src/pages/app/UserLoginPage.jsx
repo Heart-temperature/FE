@@ -17,7 +17,7 @@ import {
     Divider,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
-import DajeongLogo from '../../components/common/image.png';
+import DajeongLogo from '../../assets/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
 import { s } from 'framer-motion/client';
