@@ -331,7 +331,7 @@ export default function MainPage() {
 
                     {/* 통화 시작 버튼 */}
                     <Button
-                        bg={isHighContrast ? '#76FF03' : '#4CAF50'}
+                        bg={isHighContrast ? '#FFD700' : '#4CAF50'}
                         color={isHighContrast ? '#000000' : 'white'}
                         w="100%"
                         mx="auto"
@@ -340,16 +340,18 @@ export default function MainPage() {
                         fontWeight="700"
                         borderRadius="15px"
                         border="3px solid"
-                        borderColor={isHighContrast ? '#76FF03' : '#2E7D32'}
+                        borderColor={isHighContrast ? '#FFFFFF' : '#2E7D32'}
                         mt={2}
                         onClick={handleStartCall}
                         _hover={{
-                            bg: isHighContrast ? '#CCFF90' : '#388E3C',
+                            bg: isHighContrast ? '#FFEB3B' : '#388E3C',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(76, 175, 80, 0.4)',
+                            boxShadow: isHighContrast
+                                ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                : '0 6px 20px rgba(76, 175, 80, 0.4)',
                         }}
                         _active={{
-                            bg: isHighContrast ? '#B2FF59' : '#2E7D32',
+                            bg: isHighContrast ? '#FFC107' : '#2E7D32',
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
