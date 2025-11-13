@@ -391,6 +391,18 @@ export default function Dashboard() {
                     gender = user.sexuality;
                 }
 
+                // 가입일 처리 (createdAt이 있으면 사용, 없으면 "신규 회원")
+                let joinedDate = '신규 회원';
+                if (user.createdAt || user.created_at) {
+                    const dateStr = user.createdAt || user.created_at;
+                    const date = new Date(dateStr);
+                    joinedDate = date.toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                }
+
                 return {
                     id: user.id,
                     name: user.name,
@@ -400,7 +412,7 @@ export default function Dashboard() {
                     lastCall: lastCall,
                     phone: user.phoneNum,
                     address: user.address || '',
-                    joinedDate: user.birthDate || '',
+                    joinedDate: joinedDate,
                     lastActive: lastCall === '신규' ? '신규' : lastCall,
                     gender: gender,
                     callDuration: callDuration,
@@ -759,6 +771,16 @@ export default function Dashboard() {
                                         <Button
                                             variant="ghost"
                                             size="sm"
+                                            onClick={() => handleSort('joinedDate')}
+                                            rightIcon={sortField === 'joinedDate' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
+                                        >
+                                            가입일
+                                        </Button>
+                                    </Th>
+                                    <Th px={4} py={3}>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={sortField === 'lastCall' ? (sortDirection === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />) : null}
                                         >
@@ -825,6 +847,11 @@ export default function Dashboard() {
                                             >
                                                 {user.gender}
                                             </Badge>
+                                        </Td>
+                                        <Td px={4} py={3}>
+                                            <Text fontSize="sm" color="gray.600">
+                                                {user.joinedDate}
+                                            </Text>
                                         </Td>
                                         <Td px={4} py={3}>
                                             <VStack align="start" spacing={0}>
