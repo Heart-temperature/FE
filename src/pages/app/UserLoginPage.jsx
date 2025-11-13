@@ -1,22 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Box,
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Input,
-    InputGroup,
-    InputRightElement,
-    Text,
-    IconButton,
-    VStack,
-    HStack,
-    Image,
-    Divider,
-} from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon, CloseIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Text, VStack, HStack, Image } from '@chakra-ui/react';
 import DajeongLogo from '../../assets/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
@@ -31,9 +15,7 @@ export default function UserLoginPage() {
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [show, setShow] = useState(false);
 
-    const handleShowToggle = () => setShow(!show);
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -69,61 +51,40 @@ export default function UserLoginPage() {
                             전화번호
                         </FormLabel>
 
-                        <InputGroup>
-                            {/* 고정된 010 입력칸 */}
-                            <Input
-                                value="010"
-                                isReadOnly
-                                p={1}
-                                width="40%"
-                                textAlign="center"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="15px 0 0 15px"
-                                bg={isHighContrast ? '#000000' : '#FFFFFF'}
-                                border="3px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#000000'}
-                                fontWeight="600"
-                            />
-
-                            {/* 8자리 숫자 입력칸 */}
-                            <Input
-                                type="number"
-                                value={id}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, '').slice(0, 8); // 숫자만, 최대 8자리
-                                    setId(value);
-                                }}
-                                placeholder="8자리 입력"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="0 15px 15px 0"
-                                bg={isHighContrast ? '#000000' : '#F0F8FF'}
-                                border="3px solid"
-                                borderLeft="1px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                                fontWeight="600"
-                                _placeholder={{
-                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
-                                    fontWeight: '500',
-                                }}
-                                _hover={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
-                                }}
-                                _focus={{
-                                    borderWidth: '5px',
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: isHighContrast
-                                        ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
-                                    outline: 'none',
-                                }}
-                                transition="all 0.2s"
-                            />
-                        </InputGroup>
+                        <Input
+                            type="tel"
+                            value={id}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 11); // 숫자만, 최대 11자리
+                                setId(value);
+                            }}
+                            placeholder="01012345678"
+                            fontSize={fs}
+                            height={inputH}
+                            borderRadius="15px"
+                            bg={isHighContrast ? '#000000' : '#F0F8FF'}
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
+                            fontWeight="600"
+                            _placeholder={{
+                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
+                                fontWeight: '500',
+                            }}
+                            _hover={{
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
+                            }}
+                            _focus={{
+                                borderWidth: '5px',
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: isHighContrast
+                                    ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
+                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
+                                outline: 'none',
+                            }}
+                            transition="all 0.2s"
+                        />
                     </FormControl>
 
                     {/* 비밀번호 */}
@@ -137,54 +98,37 @@ export default function UserLoginPage() {
                         >
                             비밀번호
                         </FormLabel>
-                        <InputGroup>
-                            <Input
-                                type={show ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="비밀번호 입력"
-                                fontSize={fs}
-                                height={inputH}
-                                borderRadius="15px"
-                                bg={isHighContrast ? '#000000' : '#F0F8FF'}
-                                border="3px solid"
-                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                                color={isHighContrast ? '#FFFFFF' : '#1976D2'}
-                                fontWeight="600"
-                                _placeholder={{
-                                    color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
-                                    fontWeight: '500',
-                                }}
-                                _hover={{
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
-                                }}
-                                _focus={{
-                                    borderWidth: '5px',
-                                    borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
-                                    boxShadow: isHighContrast
-                                        ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
-                                        : '0 0 0 4px rgba(33, 150, 243, 0.25)',
-                                    outline: 'none',
-                                }}
-                                transition="all 0.2s"
-                            />
-                            <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
-                                <IconButton
-                                    height={inputH}
-                                    variant="unstyled"
-                                    onClick={handleShowToggle}
-                                    icon={
-                                        show ? (
-                                            <ViewOffIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
-                                        ) : (
-                                            <ViewIcon boxSize={5} color={isHighContrast ? 'white' : '#2c1026'} />
-                                        )
-                                    }
-                                    aria-label="비밀번호 보기 토글"
-                                />
-                            </InputRightElement>
-                        </InputGroup>
+                        <Input
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="비밀번호 입력"
+                            fontSize={fs}
+                            height={inputH}
+                            borderRadius="15px"
+                            bg={isHighContrast ? '#000000' : '#F0F8FF'}
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            color={isHighContrast ? '#FFFFFF' : '#000000ff'}
+                            fontWeight="600"
+                            _placeholder={{
+                                color: isHighContrast ? '#e2e2e2ff' : '#797979ff',
+                                fontWeight: '500',
+                            }}
+                            _hover={{
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: '0 0 0 3px rgba(33, 150, 243, 0.1)',
+                            }}
+                            _focus={{
+                                borderWidth: '5px',
+                                borderColor: isHighContrast ? '#FFFF00' : '#2196F3',
+                                boxShadow: isHighContrast
+                                    ? '0 0 0 4px rgba(255, 255, 0, 0.3)'
+                                    : '0 0 0 4px rgba(33, 150, 243, 0.25)',
+                                outline: 'none',
+                            }}
+                            transition="all 0.2s"
+                        />
                     </FormControl>
 
                     {/* ✅ 오류 메시지 표시 (비밀번호 아래, 버튼 위) */}
@@ -206,19 +150,22 @@ export default function UserLoginPage() {
                         type="submit"
                         bg={isHighContrast ? '#FFD700' : '#2196F3'}
                         color={isHighContrast ? '#000000' : 'white'}
-                        w="90%"
+                        w="100%"
                         mx="auto"
                         height={inputH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
-                        boxShadow="0 4px 10px rgba(33, 150, 243, 0.3)"
+                        border="3px solid"
+                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                         mt={4}
                         onClick={handleLogin}
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#1976D2',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                            boxShadow: isHighContrast
+                                ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                : '0 6px 20px rgba(33, 150, 243, 0.4)',
                         }}
                         _active={{
                             bg: isHighContrast ? '#FFC107' : '#1565C0',
@@ -241,7 +188,7 @@ export default function UserLoginPage() {
                         >
                             글자 크기
                         </Text>
-                        <HStack spacing={0} justify="center" mb={6}>
+                        <HStack spacing={0} justify="center" mb={6} w="100%">
                             <Button
                                 onClick={() => setFontSizeLevel(0)}
                                 bg={
@@ -253,32 +200,32 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 0
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
-                                }
+                                color={fontSizeLevel === 0 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
-                                borderRadius="10px 0 0 10px"
-                                h={btnH}
-                                w="30%"
+                                borderRadius="15px 0 0 15px"
+                                h={inputH}
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 0
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -295,33 +242,33 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 1
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
-                                }
+                                color={fontSizeLevel === 1 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="0"
-                                h={btnH}
-                                w="30%"
+                                h={inputH}
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderRight="none"
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 1
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -338,32 +285,32 @@ export default function UserLoginPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 2
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : isHighContrast
-                                        ? '#000000'
-                                        : '#1976D2'
-                                }
+                                color={fontSizeLevel === 2 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
-                                borderRadius="0 10px 10px 0"
-                                h={btnH}
-                                w="30%"
+                                borderRadius="0 15px 15px 0"
+                                h={inputH}
+                                flex="1"
                                 fontSize={fs}
-                                border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
-                                borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                borderLeft="none"
                                 _hover={{
                                     bg:
                                         fontSizeLevel === 2
                                             ? isHighContrast
-                                                ? '#FFD700'
-                                                : '#2196F3'
+                                                ? '#FFEB3B'
+                                                : '#1976D2'
                                             : isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#64B5F6',
-                                    transform: 'scale(1.05)',
+                                            ? '#FFD700'
+                                            : '#2196F3',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
@@ -388,13 +335,22 @@ export default function UserLoginPage() {
                                 bg={isHighContrast ? '#FFD700' : '#2196F3'}
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
-                                borderRadius="10px"
-                                w="90%"
-                                h={btnH}
+                                borderRadius="15px"
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                w="100%"
+                                h={inputH}
                                 fontSize={fs}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
-                                    transform: 'scale(1.05)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: isHighContrast
+                                        ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                        : '0 6px 20px rgba(33, 150, 243, 0.4)',
+                                }}
+                                _active={{
+                                    bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                    transform: 'translateY(0)',
                                 }}
                                 transition="all 0.2s"
                             >
