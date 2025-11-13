@@ -88,10 +88,17 @@ export const signUpAdmin = async (userData) => {
     }
 };
 
-//사용자 로그인 API
-export const loginUser = async (loginId, loginPw) => {
+// 사용자 로그인 API
+export const loginUser = async (phoneNum, loginPw) => {
     try {
-        const response = await api.post('/auth/login', { loginId, loginPw });
+        // 8자리 숫자를 '010-xxxx-xxxx' 형식으로 변환
+        const formattedPhone = `010-${phoneNum.slice(0, 4)}-${phoneNum.slice(4)}`;
+
+        const response = await api.post('/auth/login', {
+            loginId: formattedPhone,
+            loginPw,
+        });
+
         const data = response.data;
 
         if (data.token) {
@@ -107,6 +114,7 @@ export const loginUser = async (loginId, loginPw) => {
         }
     }
 };
+
 
 // 로그아웃
 export const logoutUser = () => {
