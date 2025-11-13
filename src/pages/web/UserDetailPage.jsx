@@ -31,7 +31,7 @@ import {
     Alert,
     AlertIcon,
 } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useNavigation } from '../../hooks';
 import { useState, useEffect } from 'react';
 import { ArrowBackIcon, WarningIcon, EditIcon, CalendarIcon, ChatIcon, InfoIcon, CloseIcon } from '@chakra-ui/icons';
@@ -41,6 +41,7 @@ import { CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YA
 export default function UserDetail() {
     const { id } = useParams();
     const { goBack } = useNavigation();
+    const navigate = useNavigate();
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
@@ -343,6 +344,13 @@ export default function UserDetail() {
                         >
                             {getEmotionText(lastEmotion?.emotion || 'new')}
                         </Badge>
+                        <Button
+                            colorScheme="blue"
+                            size="md"
+                            onClick={() => navigate('/dashboard')}
+                        >
+                            대시보드로 이동
+                        </Button>
                     </HStack>
                 </Container>
             </Box>
