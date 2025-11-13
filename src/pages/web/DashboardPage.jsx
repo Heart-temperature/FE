@@ -759,7 +759,7 @@ export default function Dashboard() {
                         <Table variant="simple" size="md">
                             <Thead bg="gray.50" borderBottom="2px" borderColor="gray.200">
                                 <Tr>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Checkbox
                                             isChecked={
                                                 selectedRows.length === paginatedUsers.length &&
@@ -771,10 +771,11 @@ export default function Dashboard() {
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                         />
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="md"
                                             onClick={() => handleSort('name')}
                                             rightIcon={
                                                 sortField === 'name' ? (
@@ -789,16 +790,17 @@ export default function Dashboard() {
                                             이름
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         연락처
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         주소
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="md"
                                             onClick={() => handleSort('emotion')}
                                             rightIcon={
                                                 sortField === 'emotion' ? (
@@ -813,10 +815,11 @@ export default function Dashboard() {
                                             감정상태
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="md"
                                             onClick={() => handleSort('gender')}
                                             rightIcon={
                                                 sortField === 'gender' ? (
@@ -831,10 +834,11 @@ export default function Dashboard() {
                                             성별
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="md"
                                             onClick={() => handleSort('joinedDate')}
                                             rightIcon={
                                                 sortField === 'joinedDate' ? (
@@ -849,10 +853,11 @@ export default function Dashboard() {
                                             가입일
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="md"
+                                            fontSize="md"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={
                                                 sortField === 'lastCall' ? (
@@ -867,7 +872,7 @@ export default function Dashboard() {
                                             마지막 통화
                                         </Button>
                                     </Th>
-                                    <Th px={4} py={3}>
+                                    <Th px={4} py={3} textAlign="center" fontSize="md" fontWeight="600">
                                         액션
                                     </Th>
                                 </Tr>
@@ -880,7 +885,7 @@ export default function Dashboard() {
                                         borderBottom="1px"
                                         borderColor="gray.100"
                                     >
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Checkbox
                                                 isChecked={selectedRows.includes(user.id)}
                                                 onChange={(e) => {
@@ -889,68 +894,70 @@ export default function Dashboard() {
                                                 }}
                                             />
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <HStack spacing={3}>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <HStack spacing={3} justify="center">
                                                 <Avatar size="sm" name={user.name} />
                                                 <VStack align="start" spacing={0}>
-                                                    <Text fontWeight="medium">{user.name}</Text>
-                                                    <Text fontSize="sm" color="gray.500">
+                                                    <Text fontWeight="medium" fontSize="md">
+                                                        {user.name}
+                                                    </Text>
+                                                    <Text fontSize="md" color="gray.500">
                                                         {user.age}세
                                                     </Text>
                                                 </VStack>
                                             </HStack>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm">{user.phone}</Text>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="md">{user.phone}</Text>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="md" color="gray.600">
                                                 {user.address}
                                             </Text>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Badge
                                                 bg={getEmotionColor(user.emotion)}
                                                 color="white"
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="xs"
+                                                fontSize="sm"
                                                 fontWeight="600"
                                             >
                                                 {getEmotionText(user.emotion)}
                                             </Badge>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={3} textAlign="center">
                                             <Badge
                                                 colorScheme={user.gender === '남성' ? 'blue' : 'pink'}
                                                 variant="subtle"
                                                 px={3}
                                                 py={1}
                                                 borderRadius="full"
-                                                fontSize="xs"
+                                                fontSize="sm"
                                                 fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <Text fontSize="md" color="gray.600">
                                                 {user.joinedDate}
                                             </Text>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <VStack align="start" spacing={0}>
-                                                <Text fontSize="sm" color="gray.600">
+                                        <Td px={4} py={3} textAlign="center">
+                                            <VStack align="center" spacing={0}>
+                                                <Text fontSize="md" color="gray.600">
                                                     {user.lastCall}
                                                 </Text>
-                                                <Text fontSize="xs" color="gray.500">
+                                                <Text fontSize="sm" color="gray.500">
                                                     통화시간: {user.callDuration}
                                                 </Text>
                                             </VStack>
                                         </Td>
-                                        <Td px={4} py={3}>
-                                            <HStack spacing={1}>
+                                        <Td px={4} py={3} textAlign="center">
+                                            <HStack spacing={1} justify="center">
                                                 <Tooltip label="메모 작성" placement="top" hasArrow>
                                                     <IconButton
                                                         icon={<Icon as={FiMessageSquare} boxSize={4} />}
