@@ -523,7 +523,7 @@ export default function Dashboard() {
                         <HStack spacing={4}>
                             <Image src={dajungIcon} alt="Dajung Icon" boxSize="50px" />
                             <VStack align="start" spacing={0}>
-                                <Heading size="lg" color="gray.900" fontWeight="700">
+                                <Heading size="xl" color="gray.900" fontWeight="700">
                                     관리자 대시보드
                                 </Heading>
                             </VStack>
@@ -533,8 +533,9 @@ export default function Dashboard() {
                             <Button
                                 leftIcon={<AddIcon />}
                                 colorScheme="blue"
-                                size="sm"
+                                size="md"
                                 variant="solid"
+                                fontSize="md"
                                 onClick={() => handleAction('사용자 추가', { name: '새 사용자' })}
                             >
                                 사용자 추가
@@ -542,8 +543,9 @@ export default function Dashboard() {
                             <Button
                                 leftIcon={<DeleteIcon />}
                                 colorScheme="red"
-                                size="sm"
+                                size="md"
                                 variant="outline"
+                                fontSize="md"
                                 onClick={handleDeleteClick}
                                 isDisabled={selectedRows.length === 0}
                             >
@@ -558,14 +560,14 @@ export default function Dashboard() {
                                 border="1px"
                                 borderColor="gray.200"
                             >
-                                <Text fontSize="sm" fontWeight="600" color="gray.700">
+                                <Text fontSize="md" fontWeight="600" color="gray.700">
                                     김관리
                                 </Text>
-                                <Text fontSize="xs" color="gray.500">
+                                <Text fontSize="sm" color="gray.500">
                                     관리자
                                 </Text>
                             </HStack>
-                            <Button size="sm" variant="ghost" colorScheme="gray" onClick={handleLogout}>
+                            <Button size="md" variant="ghost" colorScheme="gray" fontSize="md" onClick={handleLogout}>
                                 로그아웃
                             </Button>
                         </HStack>
@@ -584,6 +586,7 @@ export default function Dashboard() {
                                 bg="gray.50"
                                 border="1px"
                                 borderColor="gray.200"
+                                fontSize="md"
                                 _hover={{ borderColor: 'gray.300' }}
                                 _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                             />
@@ -595,6 +598,7 @@ export default function Dashboard() {
                             maxW="140px"
                             bg="gray.50"
                             borderColor="gray.200"
+                            fontSize="md"
                             _hover={{ borderColor: 'gray.300' }}
                             _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
                         >
@@ -624,7 +628,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -632,12 +636,12 @@ export default function Dashboard() {
                                     >
                                         총 사용자
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.total}
                                     </Heading>
                                 </Box>
                                 <Box bg="blue.50" p={2} borderRadius="md">
-                                    <Icon as={FiUsers} boxSize={5} color="blue.600" />
+                                    <Icon as={FiUsers} boxSize={6} color="blue.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -657,7 +661,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -665,12 +669,12 @@ export default function Dashboard() {
                                     >
                                         긴급 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.urgent}
                                     </Heading>
                                 </Box>
                                 <Box bg="red.50" p={2} borderRadius="md">
-                                    <Icon as={FiAlertCircle} boxSize={5} color="red.600" />
+                                    <Icon as={FiAlertCircle} boxSize={6} color="red.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -690,7 +694,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -698,12 +702,12 @@ export default function Dashboard() {
                                     >
                                         주의 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.caution}
                                     </Heading>
                                 </Box>
                                 <Box bg="orange.50" p={2} borderRadius="md">
-                                    <Icon as={FiAlertTriangle} boxSize={5} color="orange.600" />
+                                    <Icon as={FiAlertTriangle} boxSize={6} color="orange.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -723,7 +727,7 @@ export default function Dashboard() {
                             <Flex justify="space-between" align="start">
                                 <Box>
                                     <Text
-                                        fontSize="xs"
+                                        fontSize="sm"
                                         color="gray.500"
                                         fontWeight="600"
                                         mb={2}
@@ -731,12 +735,12 @@ export default function Dashboard() {
                                     >
                                         정상 상태
                                     </Text>
-                                    <Heading size="xl" color="gray.900" mb={1}>
+                                    <Heading size="2xl" color="gray.900" mb={1}>
                                         {stats.normal}
                                     </Heading>
                                 </Box>
                                 <Box bg="green.50" p={2} borderRadius="md">
-                                    <Icon as={FiCheckCircle} boxSize={5} color="green.600" />
+                                    <Icon as={FiCheckCircle} boxSize={6} color="green.600" />
                                 </Box>
                             </Flex>
                         </Box>
@@ -748,10 +752,10 @@ export default function Dashboard() {
             <Container maxW="full" px={6} pb={8}>
                 <Box bg="white" borderRadius="lg" border="1px" borderColor="gray.200" overflow="hidden">
                     <Box px={6} py={4} borderBottom="1px" borderColor="gray.200">
-                        <Heading size="md" color="gray.900" fontWeight="700">
+                        <Heading size="lg" color="gray.900" fontWeight="700">
                             사용자 목록
                         </Heading>
-                        <Text fontSize="sm" color="gray.500" mt={1}>
+                        <Text fontSize="md" color="gray.500" mt={1}>
                             등록된 모든 사용자를 관리하고 모니터링합니다
                         </Text>
                     </Box>
@@ -1052,19 +1056,21 @@ export default function Dashboard() {
             <Modal isOpen={isMemoModalOpen} onClose={handleMemoCancel} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>메모 추가 - {selectedUserForMemo?.name}님</ModalHeader>
+                    <ModalHeader fontSize="xl">메모 추가 - {selectedUserForMemo?.name}님</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
                             <Box>
-                                <Text fontSize="sm" color="gray.600" mb={2}>
+                                <Text fontSize="md" color="gray.600" mb={2}>
                                     사용자 정보
                                 </Text>
                                 <HStack spacing={3}>
                                     <Avatar size="sm" name={selectedUserForMemo?.name} />
                                     <VStack align="start" spacing={0}>
-                                        <Text fontWeight="bold">{selectedUserForMemo?.name}</Text>
-                                        <Text fontSize="sm" color="gray.500">
+                                        <Text fontWeight="bold" fontSize="md">
+                                            {selectedUserForMemo?.name}
+                                        </Text>
+                                        <Text fontSize="md" color="gray.500">
                                             {selectedUserForMemo?.age}세 • {selectedUserForMemo?.address}
                                         </Text>
                                     </VStack>
@@ -1072,7 +1078,7 @@ export default function Dashboard() {
                             </Box>
 
                             <Box>
-                                <Text fontSize="sm" color="gray.600" mb={2}>
+                                <Text fontSize="md" color="gray.600" mb={2}>
                                     메모 내용
                                 </Text>
                                 <Textarea
@@ -1081,15 +1087,16 @@ export default function Dashboard() {
                                     onChange={(e) => setMemoText(e.target.value)}
                                     rows={4}
                                     resize="vertical"
+                                    fontSize="md"
                                 />
                             </Box>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="ghost" mr={3} onClick={handleMemoCancel}>
+                        <Button variant="ghost" mr={3} onClick={handleMemoCancel} fontSize="md">
                             취소
                         </Button>
-                        <Button colorScheme="blue" onClick={handleMemoSave}>
+                        <Button colorScheme="blue" onClick={handleMemoSave} fontSize="md">
                             저장
                         </Button>
                     </ModalFooter>
@@ -1100,19 +1107,19 @@ export default function Dashboard() {
             <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete} size="md">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>사용자 삭제 확인</ModalHeader>
+                    <ModalHeader fontSize="xl">사용자 삭제 확인</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <VStack spacing={4} align="stretch">
                             <Box>
-                                <Text fontSize="sm" color="gray.700" mb={2}>
+                                <Text fontSize="md" color="gray.700" mb={2}>
                                     선택된 사용자 ({selectedRows.length}명):
                                 </Text>
                                 <VStack spacing={2} align="stretch" ml={4}>
                                     {paginatedUsers
                                         .filter((user) => selectedRows.includes(user.id))
                                         .map((user) => (
-                                            <Text key={user.id} fontSize="sm">
+                                            <Text key={user.id} fontSize="md">
                                                 • {user.name} ({user.phone})
                                             </Text>
                                         ))}
@@ -1120,17 +1127,23 @@ export default function Dashboard() {
                             </Box>
 
                             <Box bg="red.50" p={3} borderRadius="md" borderLeft="4px" borderColor="red.500">
-                                <Text fontSize="sm" color="red.700">
+                                <Text fontSize="md" color="red.700">
                                     ⚠️ 삭제된 사용자는 복구할 수 없습니다. 정말로 삭제하시겠습니까?
                                 </Text>
                             </Box>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button variant="ghost" mr={3} onClick={handleCancelDelete} isDisabled={isDeleting}>
+                        <Button
+                            variant="ghost"
+                            mr={3}
+                            onClick={handleCancelDelete}
+                            isDisabled={isDeleting}
+                            fontSize="md"
+                        >
                             취소
                         </Button>
-                        <Button colorScheme="red" onClick={handleConfirmDelete} isLoading={isDeleting}>
+                        <Button colorScheme="red" onClick={handleConfirmDelete} isLoading={isDeleting} fontSize="md">
                             삭제
                         </Button>
                     </ModalFooter>
