@@ -480,9 +480,19 @@ export default function UserDetail() {
                         {/* 개인정보 카드 */}
                         <Card>
                             <CardHeader>
-                                <HStack>
-                                    <InfoIcon color="purple.500" />
-                                    <Heading size="md">개인정보</Heading>
+                                <HStack justify="space-between">
+                                    <HStack>
+                                        <InfoIcon color="purple.500" />
+                                        <Heading size="md">개인정보</Heading>
+                                    </HStack>
+                                    <IconButton
+                                        icon={<EditIcon />}
+                                        size="sm"
+                                        variant="ghost"
+                                        colorScheme="purple"
+                                        aria-label="정보 수정"
+                                        onClick={() => navigate(`/user/${id}/edit`)}
+                                    />
                                 </HStack>
                             </CardHeader>
                             <CardBody>
