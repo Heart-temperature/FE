@@ -230,32 +230,104 @@ export default function MainPage() {
                         </HStack>
                     </Box>
 
-                    <Button
-                        onClick={() => setIsPolite(!isPolite)}
-                        bg={isPolite ? (isHighContrast ? '#FFD700' : '#2196F3') : '#E0E0E0'}
-                        color={isHighContrast ? '#000000' : isPolite ? 'white' : '#333'}
-                        fontSize={fs}
-                        h={inputH}
-                        w="100%"
-                        mx="auto"
-                        mt={3}
-                        fontWeight="700"
-                        borderRadius="15px"
-                        border="3px solid"
-                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
-                        _hover={{
-                            bg: isPolite ? (isHighContrast ? '#FFEB3B' : '#1976D2') : '#BDBDBD',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
-                        }}
-                        _active={{
-                            bg: isPolite ? (isHighContrast ? '#FFC107' : '#1565C0') : '#9E9E9E',
-                            transform: 'translateY(0)',
-                        }}
-                        transition="all 0.2s"
-                    >
-                        {isPolite ? '존댓말 모드 켜짐' : '존댓말 모드 꺼짐'}
-                    </Button>
+                    <HStack spacing={0} justify="center" w="100%" mt={3}>
+                        <Button
+                            onClick={() => setIsPolite(true)}
+                            bg={
+                                isPolite
+                                    ? isHighContrast
+                                        ? '#FFD700'
+                                        : '#2196F3'
+                                    : isHighContrast
+                                    ? '#FFFFFF'
+                                    : '#E3F2FD'
+                            }
+                            color={
+                                isPolite
+                                    ? isHighContrast
+                                        ? '#000000'
+                                        : 'white'
+                                    : isHighContrast
+                                    ? '#000000'
+                                    : '#1976D2'
+                            }
+                            fontSize={fs}
+                            h={inputH}
+                            flex="1"
+                            fontWeight="700"
+                            borderRadius="15px 0 0 15px"
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            borderRight="none"
+                            _hover={{
+                                bg:
+                                    isPolite
+                                        ? isHighContrast
+                                            ? '#FFEB3B'
+                                            : '#1976D2'
+                                        : isHighContrast
+                                        ? '#FFD700'
+                                        : '#2196F3',
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                            }}
+                            _active={{
+                                bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                transform: 'translateY(0)',
+                            }}
+                            transition="all 0.2s"
+                        >
+                            존댓말
+                        </Button>
+                        <Button
+                            onClick={() => setIsPolite(false)}
+                            bg={
+                                !isPolite
+                                    ? isHighContrast
+                                        ? '#FFD700'
+                                        : '#2196F3'
+                                    : isHighContrast
+                                    ? '#FFFFFF'
+                                    : '#E3F2FD'
+                            }
+                            color={
+                                !isPolite
+                                    ? isHighContrast
+                                        ? '#000000'
+                                        : 'white'
+                                    : isHighContrast
+                                    ? '#000000'
+                                    : '#1976D2'
+                            }
+                            fontSize={fs}
+                            h={inputH}
+                            flex="1"
+                            fontWeight="700"
+                            borderRadius="0 15px 15px 0"
+                            border="3px solid"
+                            borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                            borderLeft="none"
+                            _hover={{
+                                bg:
+                                    !isPolite
+                                        ? isHighContrast
+                                            ? '#FFEB3B'
+                                            : '#1976D2'
+                                        : isHighContrast
+                                        ? '#FFD700'
+                                        : '#2196F3',
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+                            }}
+                            _active={{
+                                bg: isHighContrast ? '#FFC107' : '#1565C0',
+                                transform: 'translateY(0)',
+                            }}
+                            transition="all 0.2s"
+                        >
+                            반말
+                        </Button>
+                    </HStack>
 
                     {/* 통화 시작 버튼 */}
                     <Button
