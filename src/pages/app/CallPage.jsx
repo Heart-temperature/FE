@@ -11,6 +11,7 @@ import DajeongLogo from '../../assets/image.png';
 import DabokVideo from '../../video/dabok.webm';
 
 import DajeongVideo from '../../video/dajeung.webm';
+import usePersistentSettings from '../../hooks/usePersistentSettings';
 
 const MotionBox = motion(Flex);
 
@@ -18,8 +19,10 @@ const MotionText = motion(Text);
 
 export default function CallPage() {
     const navigate = useNavigate();
-
     const location = useLocation();
+
+    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } =
+        usePersistentSettings();
 
     const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
 
@@ -38,8 +41,6 @@ export default function CallPage() {
 
         color: '#2196F3',
     };
-
-    const isHighContrast = location.state?.isHighContrast || false;
 
     // isTalking 상태에 따라 video 재생/정지
 
@@ -109,8 +110,8 @@ export default function CallPage() {
 
     return (
         <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
-                    {/* 메인 로그인 카드 */}
-                    <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
+            {/* 메인 로그인 카드 */}
+            <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={6} align="stretch">
                     {/* 캐릭터 영역 */}
 
@@ -154,11 +155,10 @@ export default function CallPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
-                                fontSize="1.9rem"
+                                fontSize={fs}
                                 fontWeight="700"
                                 color={isHighContrast ? '#FFFFFF' : '#000000'}
                                 textAlign="center"
-                                px={6}
                                 py={5}
                                 borderRadius="15px"
                                 minH="90px"
@@ -179,9 +179,9 @@ export default function CallPage() {
                         bg={isHighContrast ? '#FFD700' : '#F44336'}
                         color={isHighContrast ? '#000000' : 'white'}
                         onClick={handleEndCall}
-                        fontSize="1.9rem"
+                        fontSize={fs}
                         fontWeight="700"
-                        height="85px"
+                        height={callBtnH}
                         borderRadius="15px"
                         border={isHighContrast ? '3px solid white' : 'none'}
                         boxShadow="0 4px 14px rgba(244, 67, 54, 0.3)"

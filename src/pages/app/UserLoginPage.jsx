@@ -68,17 +68,40 @@ export default function UserLoginPage() {
                         >
                             전화번호
                         </FormLabel>
+
                         <InputGroup>
+                            {/* 고정된 010 입력칸 */}
                             <Input
-                                type="text"
-                                value={id}
-                                onChange={(e) => setId(e.target.value)}
-                                placeholder="전화번호 입력"
+                                value="010"
+                                isReadOnly
+                                p={1}
+                                width="40%"
+                                textAlign="center"
                                 fontSize={fs}
                                 height={inputH}
-                                borderRadius="15px"
+                                borderRadius="15px 0 0 15px"
+                                bg={isHighContrast ? '#000000' : '#FFFFFF'}
+                                border="3px solid"
+                                borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                                color={isHighContrast ? '#FFFFFF' : '#000000'}
+                                fontWeight="600"
+                            />
+
+                            {/* 8자리 숫자 입력칸 */}
+                            <Input
+                                type="number"
+                                value={id}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, '').slice(0, 8); // 숫자만, 최대 8자리
+                                    setId(value);
+                                }}
+                                placeholder="8자리 입력"
+                                fontSize={fs}
+                                height={inputH}
+                                borderRadius="0 15px 15px 0"
                                 bg={isHighContrast ? '#000000' : '#F0F8FF'}
                                 border="3px solid"
+                                borderLeft="1px solid"
                                 borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                                 color={isHighContrast ? '#FFFFFF' : '#1976D2'}
                                 fontWeight="600"
@@ -100,17 +123,6 @@ export default function UserLoginPage() {
                                 }}
                                 transition="all 0.2s"
                             />
-                            {id && (
-                                <InputRightElement top="50%" transform="translateY(-50%)" pr={3}>
-                                    <IconButton
-                                        height={inputH}
-                                        variant="unstyled"
-                                        onClick={() => setId('')}
-                                        icon={<CloseIcon boxSize={6} color={isHighContrast ? 'white' : '#2c1026'} />}
-                                        aria-label="아이디 입력 초기화"
-                                    />
-                                </InputRightElement>
-                            )}
                         </InputGroup>
                     </FormControl>
 
@@ -253,7 +265,8 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="10px 0 0 10px"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                w="30%"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 _hover={{
@@ -294,7 +307,8 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                w="30%"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderRight={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
@@ -336,7 +350,8 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="0 10px 10px 0"
                                 h={btnH}
-                                fontSize="1.9rem"
+                                w="30%"
+                                fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
                                 borderLeft={isHighContrast ? '1px solid black' : '1px solid #90CAF9'}
                                 _hover={{
@@ -374,7 +389,7 @@ export default function UserLoginPage() {
                                 color={isHighContrast ? '#000000' : 'white'}
                                 fontWeight="700"
                                 borderRadius="10px"
-                                minW="210px"
+                                w="90%"
                                 h={btnH}
                                 fontSize={fs}
                                 _hover={{
