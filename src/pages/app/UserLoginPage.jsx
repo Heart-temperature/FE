@@ -188,7 +188,7 @@ export default function UserLoginPage() {
                         color={isHighContrast ? '#000000' : 'white'}
                         w="100%"
                         mx="auto"
-                        height={btnH}
+                        height={inputH}
                         fontSize={fs}
                         fontWeight="700"
                         borderRadius="15px"
@@ -244,7 +244,7 @@ export default function UserLoginPage() {
                                 }
                                 fontWeight="700"
                                 borderRadius="10px 0 0 10px"
-                                h={btnH}
+                                h={inputH}
                                 w="30%"
                                 fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
@@ -286,7 +286,7 @@ export default function UserLoginPage() {
                                 }
                                 fontWeight="700"
                                 borderRadius="0"
-                                h={btnH}
+                                h={inputH}
                                 w="30%"
                                 fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
@@ -329,7 +329,7 @@ export default function UserLoginPage() {
                                 }
                                 fontWeight="700"
                                 borderRadius="0 10px 10px 0"
-                                h={btnH}
+                                h={inputH}
                                 w="30%"
                                 fontSize={fs}
                                 border={isHighContrast ? '2px solid black' : '2px solid #90CAF9'}
@@ -370,7 +370,7 @@ export default function UserLoginPage() {
                                 fontWeight="700"
                                 borderRadius="10px"
                                 w="100%"
-                                h={btnH}
+                                h={inputH}
                                 fontSize={fs}
                                 _hover={{
                                     bg: isHighContrast ? '#FFEB3B' : '#1976D2',
