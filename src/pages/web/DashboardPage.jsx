@@ -1,12 +1,12 @@
-import { 
-    Box, 
-    Flex, 
-    Heading, 
-    Button, 
-    Text, 
-    Badge, 
-    Input, 
-    InputGroup, 
+import {
+    Box,
+    Flex,
+    Heading,
+    Button,
+    Text,
+    Badge,
+    Input,
+    InputGroup,
     InputLeftElement,
     Select,
     VStack,
@@ -43,16 +43,23 @@ import {
     ModalBody,
     ModalCloseButton,
     Textarea,
-    Image
+    Image,
+    Grid,
+    GridItem,
+    Icon,
+    Stat,
+    StatLabel,
+    StatNumber,
+    StatHelpText
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import dajungIcon from '../../assets/image.png';
 import { fetchUserList, deleteUser, addUserMemo, getLastEmotion, getLastCall } from '../../api';
 import { calculateAge } from '../../utils/dateUtils';
-import { 
-    SearchIcon, 
-    TimeIcon, 
+import {
+    SearchIcon,
+    TimeIcon,
     ChevronDownIcon,
     ChevronUpIcon,
     ChevronLeftIcon,
@@ -62,8 +69,12 @@ import {
     EditIcon,
     ViewIcon,
     WarningIcon,
-    DeleteIcon
+    DeleteIcon,
+    InfoIcon,
+    CheckCircleIcon,
+    StarIcon
 } from '@chakra-ui/icons';
+import { FiUsers, FiAlertTriangle, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -454,53 +465,77 @@ export default function Dashboard() {
     const bgColor = useColorModeValue('#F5F7FB', 'gray.800');
     const cardBg = useColorModeValue('white', 'gray.700');
 
+    // 통계 데이터 계산
+    const stats = {
+        total: users.length,
+        urgent: users.filter(u => u.emotion === 'urgent').length,
+        caution: users.filter(u => u.emotion === 'caution').length,
+        normal: users.filter(u => u.emotion === 'normal').length
+    };
+
     return (
         <Box bg={bgColor} minH="100vh">
             {/* Header */}
-            <Box bg="white" shadow="md" px={8} py={4} borderBottom="2px" borderColor="gray.100">
+            <Box
+                bgGradient="linear(to-r, blue.600, blue.500, purple.500)"
+                shadow="2xl"
+                px={8}
+                py={6}
+            >
                 <VStack spacing={3} align="stretch">
                     <Flex align="center" justify="space-between">
                         <HStack spacing={4}>
-                                <Image src={dajungIcon} alt="Dajung Icon" boxSize="60px" />
+                            <Image src={dajungIcon} alt="Dajung Icon" boxSize="60px" />
                             <VStack align="start" spacing={0}>
-                                <Heading size="lg" color="gray.800" fontWeight="600">
+                                <Heading size="lg" color="white" fontWeight="700" letterSpacing="tight">
                                     다정이 관리 시스템
                                 </Heading>
+                                <Text fontSize="sm" color="whiteAlpha.800">
+                                    사용자 현황 및 관리
+                                </Text>
                             </VStack>
                         </HStack>
-                        
+
                         <HStack spacing={6}>
-                            
                             <HStack spacing={3}>
-                                <Button 
-                                    leftIcon={<AddIcon />} 
-                                    colorScheme="blue"
+                                <Button
+                                    leftIcon={<AddIcon />}
+                                    bg="white"
+                                    color="blue.600"
                                     size="sm"
+                                    _hover={{ bg: 'whiteAlpha.900', transform: 'translateY(-2px)', shadow: 'lg' }}
+                                    transition="all 0.2s"
                                     onClick={() => handleAction('사용자 추가', { name: '새 사용자' })}
                                 >
                                     사용자 추가
                                 </Button>
-                                <Button 
-                                    leftIcon={<DeleteIcon />} 
-                                    colorScheme="red"
+                                <Button
+                                    leftIcon={<DeleteIcon />}
+                                    bg="red.500"
+                                    color="white"
                                     size="sm"
+                                    _hover={{ bg: 'red.600', transform: 'translateY(-2px)', shadow: 'lg' }}
+                                    transition="all 0.2s"
                                     onClick={handleDeleteClick}
                                     isDisabled={selectedRows.length === 0}
                                 >
                                     {selectedRows.length > 0 ? `사용자 삭제 (${selectedRows.length})` : '사용자 삭제'}
                                 </Button>
-                                <HStack spacing={2} bg="blue.50" px={3} py={2} borderRadius="md">
-                                    <Text fontSize="sm" fontWeight="500" color="gray.800">
+                                <HStack spacing={2} bg="whiteAlpha.200" px={4} py={2} borderRadius="lg" backdropFilter="blur(10px)">
+                                    <Text fontSize="sm" fontWeight="600" color="white">
                                         김관리
                                     </Text>
-                                    <Text fontSize="xs" color="gray.500">
+                                    <Text fontSize="xs" color="whiteAlpha.800">
                                         시스템 관리자
                                     </Text>
                                 </HStack>
                                 <Button
-                                    colorScheme="orange"
+                                    colorScheme="whiteAlpha"
                                     size="sm"
                                     variant="outline"
+                                    color="white"
+                                    borderColor="whiteAlpha.400"
+                                    _hover={{ bg: 'whiteAlpha.200', borderColor: 'white' }}
                                     onClick={handleLogout}
                                 >
                                     로그아웃
@@ -510,34 +545,38 @@ export default function Dashboard() {
                     </Flex>
 
                     {/* Action Bar */}
-                    <Flex align="center" justify="space-between" wrap="wrap" gap={4} bg="gray.50" p={4} borderRadius="lg">
+                    <Flex align="center" justify="space-between" wrap="wrap" gap={4} bg="whiteAlpha.200" p={4} borderRadius="lg" backdropFilter="blur(10px)">
                         <HStack spacing={3} flex="1" minW="300px">
                             <InputGroup maxW="320px">
                                 <InputLeftElement pointerEvents="none">
-                                    <SearchIcon color="gray.400" />
+                                    <SearchIcon color="whiteAlpha.700" />
                                 </InputLeftElement>
                                 <Input
                                     placeholder="이름, 주소, 전화번호 검색"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    bg="white"
+                                    bg="whiteAlpha.300"
                                     border="1px"
-                                    borderColor="gray.200"
-                                    _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px #3182ce" }}
+                                    borderColor="whiteAlpha.400"
+                                    color="white"
+                                    _placeholder={{ color: 'whiteAlpha.700' }}
+                                    _focus={{ borderColor: "white", boxShadow: "0 0 0 1px white", bg: "whiteAlpha.400" }}
                                 />
                             </InputGroup>
 
-                            <Select 
-                                value={filterEmotion} 
-                                onChange={(e) => setFilterEmotion(e.target.value)} 
+                            <Select
+                                value={filterEmotion}
+                                onChange={(e) => setFilterEmotion(e.target.value)}
                                 maxW="140px"
-                                bg="white"
-                                borderColor="gray.200"
+                                bg="whiteAlpha.300"
+                                borderColor="whiteAlpha.400"
+                                color="white"
+                                _focus={{ borderColor: "white", boxShadow: "0 0 0 1px white" }}
                             >
-                                <option value="all">전체 상태</option>
-                                <option value="urgent">긴급</option>
-                                <option value="caution">주의</option>
-                                <option value="normal">정상</option>
+                                <option value="all" style={{ color: 'black' }}>전체 상태</option>
+                                <option value="urgent" style={{ color: 'black' }}>긴급</option>
+                                <option value="caution" style={{ color: 'black' }}>주의</option>
+                                <option value="normal" style={{ color: 'black' }}>정상</option>
                             </Select>
 
                         </HStack>
@@ -546,12 +585,165 @@ export default function Dashboard() {
                 </VStack>
             </Box>
 
+            {/* Statistics Cards */}
+            <Container maxW="full" px={6} py={8}>
+                <Grid templateColumns="repeat(4, 1fr)" gap={6} mb={6}>
+                    {/* Total Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="2xl"
+                            p={6}
+                            boxShadow="lg"
+                            borderTop="4px"
+                            borderColor="blue.500"
+                            transition="all 0.3s"
+                            _hover={{ transform: 'translateY(-4px)', boxShadow: '2xl' }}
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text fontSize="sm" color="gray.600" fontWeight="500" mb={2}>
+                                        총 사용자
+                                    </Text>
+                                    <Heading size="2xl" color="blue.600" mb={1}>
+                                        {stats.total}
+                                    </Heading>
+                                    <Text fontSize="xs" color="gray.500">
+                                        전체 등록 사용자
+                                    </Text>
+                                </Box>
+                                <Box
+                                    bg="blue.50"
+                                    p={3}
+                                    borderRadius="xl"
+                                >
+                                    <Icon as={FiUsers} boxSize={6} color="blue.500" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Urgent Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="2xl"
+                            p={6}
+                            boxShadow="lg"
+                            borderTop="4px"
+                            borderColor="red.500"
+                            transition="all 0.3s"
+                            _hover={{ transform: 'translateY(-4px)', boxShadow: '2xl' }}
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text fontSize="sm" color="gray.600" fontWeight="500" mb={2}>
+                                        긴급 상태
+                                    </Text>
+                                    <Heading size="2xl" color="red.600" mb={1}>
+                                        {stats.urgent}
+                                    </Heading>
+                                    <Text fontSize="xs" color="gray.500">
+                                        즉시 관리 필요
+                                    </Text>
+                                </Box>
+                                <Box
+                                    bg="red.50"
+                                    p={3}
+                                    borderRadius="xl"
+                                >
+                                    <Icon as={FiAlertCircle} boxSize={6} color="red.500" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Caution Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="2xl"
+                            p={6}
+                            boxShadow="lg"
+                            borderTop="4px"
+                            borderColor="orange.400"
+                            transition="all 0.3s"
+                            _hover={{ transform: 'translateY(-4px)', boxShadow: '2xl' }}
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text fontSize="sm" color="gray.600" fontWeight="500" mb={2}>
+                                        주의 상태
+                                    </Text>
+                                    <Heading size="2xl" color="orange.500" mb={1}>
+                                        {stats.caution}
+                                    </Heading>
+                                    <Text fontSize="xs" color="gray.500">
+                                        정기 모니터링 필요
+                                    </Text>
+                                </Box>
+                                <Box
+                                    bg="orange.50"
+                                    p={3}
+                                    borderRadius="xl"
+                                >
+                                    <Icon as={FiAlertTriangle} boxSize={6} color="orange.500" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Normal Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="2xl"
+                            p={6}
+                            boxShadow="lg"
+                            borderTop="4px"
+                            borderColor="green.500"
+                            transition="all 0.3s"
+                            _hover={{ transform: 'translateY(-4px)', boxShadow: '2xl' }}
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text fontSize="sm" color="gray.600" fontWeight="500" mb={2}>
+                                        정상 상태
+                                    </Text>
+                                    <Heading size="2xl" color="green.600" mb={1}>
+                                        {stats.normal}
+                                    </Heading>
+                                    <Text fontSize="xs" color="gray.500">
+                                        안정적 상태 유지
+                                    </Text>
+                                </Box>
+                                <Box
+                                    bg="green.50"
+                                    p={3}
+                                    borderRadius="xl"
+                                >
+                                    <Icon as={FiCheckCircle} boxSize={6} color="green.500" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+                </Grid>
+            </Container>
+
             {/* Main Content - Table */}
-            <Container maxW="full" px={6} py={6}>
-                <Box bg="white" borderRadius="xl" boxShadow="sm" overflow="hidden">
+            <Container maxW="full" px={6} pb={8}>
+                <Box bg="white" borderRadius="2xl" boxShadow="xl" overflow="hidden">
+                    <Box bg="gradient.100" px={6} py={4} borderBottom="1px" borderColor="gray.100">
+                        <Heading size="md" color="gray.800" fontWeight="600">
+                            사용자 목록
+                        </Heading>
+                        <Text fontSize="sm" color="gray.600" mt={1}>
+                            등록된 모든 사용자를 관리하고 모니터링합니다
+                        </Text>
+                    </Box>
                     <TableContainer>
                         <Table variant="simple" size="md">
-                            <Thead bg="gray.50">
+                            <Thead bg="gray.50" borderBottom="2px" borderColor="gray.200">
                                 <Tr>
                                     <Th px={4} py={3}>
                                         <Checkbox
@@ -607,8 +799,16 @@ export default function Dashboard() {
                             </Thead>
                             <Tbody>
                                 {paginatedUsers.map((user) => (
-                                    <Tr key={user.id} _hover={{ bg: 'gray.50' }}>
-                                        <Td px={4} py={3}>
+                                    <Tr
+                                        key={user.id}
+                                        _hover={{
+                                            bg: 'blue.50',
+                                            transform: 'scale(1.001)',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        transition="all 0.2s"
+                                    >
+                                        <Td px={4} py={4}>
                                             <Checkbox
                                                 isChecked={selectedRows.includes(user.id)}
                                                 onChange={(e) => {
@@ -632,25 +832,29 @@ export default function Dashboard() {
                                         <Td px={4} py={3}>
                                             <Text fontSize="sm" color="gray.600">{user.address}</Text>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={4}>
                                             <Badge
                                                 bg={getEmotionColor(user.emotion)}
                                                 color="white"
-                                                px={3}
-                                                py={1}
+                                                px={4}
+                                                py={2}
                                                 borderRadius="full"
                                                 fontSize="xs"
+                                                fontWeight="700"
+                                                textTransform="uppercase"
+                                                letterSpacing="wider"
                                             >
                                                 {getEmotionText(user.emotion)}
                                             </Badge>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={4}>
                                             <Badge
                                                 colorScheme={user.gender === '남성' ? 'blue' : 'pink'}
                                                 variant="subtle"
-                                                px={2}
-                                                py={1}
-                                                borderRadius="md"
+                                                px={3}
+                                                py={2}
+                                                borderRadius="lg"
+                                                fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
@@ -661,59 +865,68 @@ export default function Dashboard() {
                                                 <Text fontSize="xs" color="gray.500">통화시간: {user.callDuration}</Text>
                                             </VStack>
                                         </Td>
-                                        <Td px={4} py={3}>
+                                        <Td px={4} py={4}>
                                             <HStack spacing={2}>
-                                                <Tooltip label="메모 추가" placement="top">
+                                                <Tooltip label="메모 추가" placement="top" hasArrow>
                                                     <IconButton
                                                         icon={<EditIcon />}
                                                         size="sm"
-                                                        bg="blue.50"
-                                                        color="blue.600"
-                                                        border="1px"
-                                                        borderColor="blue.200"
-                                                        _hover={{ 
-                                                            bg: "blue.100", 
-                                                            borderColor: "blue.300",
-                                                            transform: "scale(1.05)"
+                                                        bg="blue.500"
+                                                        color="white"
+                                                        borderRadius="lg"
+                                                        _hover={{
+                                                            bg: "blue.600",
+                                                            transform: "translateY(-2px) scale(1.05)",
+                                                            shadow: "md"
                                                         }}
+                                                        _active={{
+                                                            transform: "scale(0.95)"
+                                                        }}
+                                                        transition="all 0.2s"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleMemoClick(user);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="정보 수정" placement="top">
+                                                <Tooltip label="정보 수정" placement="top" hasArrow>
                                                     <IconButton
                                                         icon={<EditIcon />}
                                                         size="sm"
-                                                        bg="purple.50"
-                                                        color="purple.600"
-                                                        border="1px"
-                                                        borderColor="purple.200"
-                                                        _hover={{ 
-                                                            bg: "purple.100", 
-                                                            borderColor: "purple.300",
-                                                            transform: "scale(1.05)"
+                                                        bg="purple.500"
+                                                        color="white"
+                                                        borderRadius="lg"
+                                                        _hover={{
+                                                            bg: "purple.600",
+                                                            transform: "translateY(-2px) scale(1.05)",
+                                                            shadow: "md"
                                                         }}
+                                                        _active={{
+                                                            transform: "scale(0.95)"
+                                                        }}
+                                                        transition="all 0.2s"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}/edit`);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="상세보기" placement="top">
+                                                <Tooltip label="상세보기" placement="top" hasArrow>
                                                     <IconButton
                                                         icon={<ViewIcon />}
                                                         size="sm"
-                                                        bg="green.50"
-                                                        color="green.600"
-                                                        border="1px"
-                                                        borderColor="green.200"
-                                                        _hover={{ 
-                                                            bg: "green.100", 
-                                                            borderColor: "green.300",
-                                                            transform: "scale(1.05)"
+                                                        bg="green.500"
+                                                        color="white"
+                                                        borderRadius="lg"
+                                                        _hover={{
+                                                            bg: "green.600",
+                                                            transform: "translateY(-2px) scale(1.05)",
+                                                            shadow: "md"
                                                         }}
+                                                        _active={{
+                                                            transform: "scale(0.95)"
+                                                        }}
+                                                        transition="all 0.2s"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}`);
