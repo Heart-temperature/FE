@@ -44,6 +44,13 @@ import {
     ModalCloseButton,
     Textarea,
     Image,
+    Grid,
+    GridItem,
+    Icon,
+    Stat,
+    StatLabel,
+    StatNumber,
+    StatHelpText,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -63,7 +70,19 @@ import {
     ViewIcon,
     WarningIcon,
     DeleteIcon,
+    InfoIcon,
+    CheckCircleIcon,
+    StarIcon,
 } from '@chakra-ui/icons';
+import {
+    FiUsers,
+    FiAlertTriangle,
+    FiAlertCircle,
+    FiCheckCircle,
+    FiMessageSquare,
+    FiEdit2,
+    FiEye,
+} from 'react-icons/fi';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -297,15 +316,15 @@ export default function Dashboard() {
     const getEmotionColor = (emotion) => {
         switch (emotion) {
             case 'urgent':
-                return '#D93025'; // 빨강 - 긴급
+                return '#EF4444'; // 빨강 - 긴급 (Tailwind red-500)
             case 'caution':
-                return '#F9AB00'; // 노랑 - 주의
+                return '#F59E0B'; // 주황 - 주의 (Tailwind amber-500)
             case 'normal':
-                return '#1B9A59'; // 초록 - 정상
+                return '#10B981'; // 초록 - 정상 (Tailwind emerald-500)
             case 'new':
-                return '#5B7EBD'; // 파랑 - 신규 회원
+                return '#3B82F6'; // 파랑 - 신규 회원 (Tailwind blue-500)
             default:
-                return '#718096'; // 회색 - 알 수 없음
+                return '#6B7280'; // 회색 - 알 수 없음 (Tailwind gray-500)
         }
     };
 
@@ -388,6 +407,25 @@ export default function Dashboard() {
                         gender = user.sexuality;
                     }
 
+                    // 가입일 처리 (localStorage에서 가져오기, 없으면 현재 시간으로 저장)
+                    let joinedDate = '신규 회원';
+                    const storageKey = `user_joined_${user.id}`;
+                    const storedDate = localStorage.getItem(storageKey);
+
+                    if (storedDate) {
+                        // localStorage에 저장된 날짜가 있으면 사용
+                        joinedDate = storedDate;
+                    } else {
+                        // 없으면 현재 날짜로 저장
+                        const now = new Date();
+                        joinedDate = now.toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        });
+                        localStorage.setItem(storageKey, joinedDate);
+                    }
+
                     return {
                         id: user.id,
                         name: user.name,
@@ -397,7 +435,7 @@ export default function Dashboard() {
                         lastCall: lastCall,
                         phone: user.phoneNum,
                         address: user.address || '',
-                        joinedDate: user.birthDate || '',
+                        joinedDate: joinedDate,
                         lastActive: lastCall === '신규' ? '신규' : lastCall,
                         gender: gender,
                         callDuration: callDuration,
@@ -468,104 +506,258 @@ export default function Dashboard() {
     const bgColor = useColorModeValue('#F5F7FB', 'gray.800');
     const cardBg = useColorModeValue('white', 'gray.700');
 
+    // 통계 데이터 계산
+    const stats = {
+        total: users.length,
+        urgent: users.filter((u) => u.emotion === 'urgent').length,
+        caution: users.filter((u) => u.emotion === 'caution').length,
+        normal: users.filter((u) => u.emotion === 'normal').length,
+    };
+
     return (
         <Box bg={bgColor} minH="100vh">
             {/* Header */}
-            <Box bg="white" shadow="md" px={8} py={4} borderBottom="2px" borderColor="gray.100">
-                <VStack spacing={3} align="stretch">
+            <Box bg="white" borderBottom="1px" borderColor="gray.200" px={8} py={5}>
+                <VStack spacing={4} align="stretch">
                     <Flex align="center" justify="space-between">
                         <HStack spacing={4}>
-                            <Image src={dajungIcon} alt="Dajung Icon" boxSize="60px" />
+                            <Image src={dajungIcon} alt="Dajung Icon" boxSize="50px" />
                             <VStack align="start" spacing={0}>
-                                <Heading size="lg" color="gray.800" fontWeight="600">
-                                    다정이 관리 시스템
+                                <Heading size="lg" color="gray.900" fontWeight="700">
+                                    관리자 대시보드
                                 </Heading>
                             </VStack>
                         </HStack>
 
-                        <HStack spacing={6}>
-                            <HStack spacing={3}>
-                                <Button
-                                    leftIcon={<AddIcon />}
-                                    colorScheme="blue"
-                                    size="sm"
-                                    onClick={() => handleAction('사용자 추가', { name: '새 사용자' })}
-                                >
-                                    사용자 추가
-                                </Button>
-                                <Button
-                                    leftIcon={<DeleteIcon />}
-                                    colorScheme="red"
-                                    size="sm"
-                                    onClick={handleDeleteClick}
-                                    isDisabled={selectedRows.length === 0}
-                                >
-                                    {selectedRows.length > 0 ? `사용자 삭제 (${selectedRows.length})` : '사용자 삭제'}
-                                </Button>
-                                <HStack spacing={2} bg="blue.50" px={3} py={2} borderRadius="md">
-                                    <Text fontSize="sm" fontWeight="500" color="gray.800">
-                                        김관리
-                                    </Text>
-                                    <Text fontSize="xs" color="gray.500">
-                                        시스템 관리자
-                                    </Text>
-                                </HStack>
-                                <Button colorScheme="orange" size="sm" variant="outline" onClick={handleLogout}>
-                                    로그아웃
-                                </Button>
+                        <HStack spacing={3}>
+                            <Button
+                                leftIcon={<AddIcon />}
+                                colorScheme="blue"
+                                size="sm"
+                                variant="solid"
+                                onClick={() => handleAction('사용자 추가', { name: '새 사용자' })}
+                            >
+                                사용자 추가
+                            </Button>
+                            <Button
+                                leftIcon={<DeleteIcon />}
+                                colorScheme="red"
+                                size="sm"
+                                variant="outline"
+                                onClick={handleDeleteClick}
+                                isDisabled={selectedRows.length === 0}
+                            >
+                                {selectedRows.length > 0 ? `삭제 (${selectedRows.length})` : '삭제'}
+                            </Button>
+                            <HStack
+                                spacing={2}
+                                bg="gray.50"
+                                px={4}
+                                py={2}
+                                borderRadius="md"
+                                border="1px"
+                                borderColor="gray.200"
+                            >
+                                <Text fontSize="sm" fontWeight="600" color="gray.700">
+                                    김관리
+                                </Text>
+                                <Text fontSize="xs" color="gray.500">
+                                    관리자
+                                </Text>
                             </HStack>
+                            <Button size="sm" variant="ghost" colorScheme="gray" onClick={handleLogout}>
+                                로그아웃
+                            </Button>
                         </HStack>
                     </Flex>
 
                     {/* Action Bar */}
-                    <Flex
-                        align="center"
-                        justify="space-between"
-                        wrap="wrap"
-                        gap={4}
-                        bg="gray.50"
-                        p={4}
-                        borderRadius="lg"
-                    >
-                        <HStack spacing={3} flex="1" minW="300px">
-                            <InputGroup maxW="320px">
-                                <InputLeftElement pointerEvents="none">
-                                    <SearchIcon color="gray.400" />
-                                </InputLeftElement>
-                                <Input
-                                    placeholder="이름, 주소, 전화번호 검색"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    bg="white"
-                                    border="1px"
-                                    borderColor="gray.200"
-                                    _focus={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px #3182ce' }}
-                                />
-                            </InputGroup>
-
-                            <Select
-                                value={filterEmotion}
-                                onChange={(e) => setFilterEmotion(e.target.value)}
-                                maxW="140px"
-                                bg="white"
+                    <Flex align="center" justify="flex-start" wrap="wrap" gap={3}>
+                        <InputGroup maxW="320px">
+                            <InputLeftElement pointerEvents="none">
+                                <SearchIcon color="gray.400" />
+                            </InputLeftElement>
+                            <Input
+                                placeholder="이름, 주소, 전화번호 검색"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                bg="gray.50"
+                                border="1px"
                                 borderColor="gray.200"
-                            >
-                                <option value="all">전체 상태</option>
-                                <option value="urgent">긴급</option>
-                                <option value="caution">주의</option>
-                                <option value="normal">정상</option>
-                            </Select>
-                        </HStack>
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
+                            />
+                        </InputGroup>
+
+                        <Select
+                            value={filterEmotion}
+                            onChange={(e) => setFilterEmotion(e.target.value)}
+                            maxW="140px"
+                            bg="gray.50"
+                            borderColor="gray.200"
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3182ce', bg: 'white' }}
+                        >
+                            <option value="all">전체 상태</option>
+                            <option value="urgent">긴급</option>
+                            <option value="caution">주의</option>
+                            <option value="normal">정상</option>
+                        </Select>
                     </Flex>
                 </VStack>
             </Box>
 
-            {/* Main Content - Table */}
+            {/* Statistics Cards */}
             <Container maxW="full" px={6} py={6}>
-                <Box bg="white" borderRadius="xl" boxShadow="sm" overflow="hidden">
+                <Grid templateColumns="repeat(4, 1fr)" gap={4} mb={6}>
+                    {/* Total Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="lg"
+                            p={5}
+                            border="1px"
+                            borderColor="gray.200"
+                            borderTop="3px solid"
+                            borderTopColor="blue.500"
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
+                                        총 사용자
+                                    </Text>
+                                    <Heading size="xl" color="gray.900" mb={1}>
+                                        {stats.total}
+                                    </Heading>
+                                </Box>
+                                <Box bg="blue.50" p={2} borderRadius="md">
+                                    <Icon as={FiUsers} boxSize={5} color="blue.600" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Urgent Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="lg"
+                            p={5}
+                            border="1px"
+                            borderColor="gray.200"
+                            borderTop="3px solid"
+                            borderTopColor="red.500"
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
+                                        긴급 상태
+                                    </Text>
+                                    <Heading size="xl" color="gray.900" mb={1}>
+                                        {stats.urgent}
+                                    </Heading>
+                                </Box>
+                                <Box bg="red.50" p={2} borderRadius="md">
+                                    <Icon as={FiAlertCircle} boxSize={5} color="red.600" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Caution Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="lg"
+                            p={5}
+                            border="1px"
+                            borderColor="gray.200"
+                            borderTop="3px solid"
+                            borderTopColor="orange.500"
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
+                                        주의 상태
+                                    </Text>
+                                    <Heading size="xl" color="gray.900" mb={1}>
+                                        {stats.caution}
+                                    </Heading>
+                                </Box>
+                                <Box bg="orange.50" p={2} borderRadius="md">
+                                    <Icon as={FiAlertTriangle} boxSize={5} color="orange.600" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+
+                    {/* Normal Users Card */}
+                    <GridItem>
+                        <Box
+                            bg="white"
+                            borderRadius="lg"
+                            p={5}
+                            border="1px"
+                            borderColor="gray.200"
+                            borderTop="3px solid"
+                            borderTopColor="green.500"
+                        >
+                            <Flex justify="space-between" align="start">
+                                <Box>
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                        mb={2}
+                                        textTransform="uppercase"
+                                    >
+                                        정상 상태
+                                    </Text>
+                                    <Heading size="xl" color="gray.900" mb={1}>
+                                        {stats.normal}
+                                    </Heading>
+                                </Box>
+                                <Box bg="green.50" p={2} borderRadius="md">
+                                    <Icon as={FiCheckCircle} boxSize={5} color="green.600" />
+                                </Box>
+                            </Flex>
+                        </Box>
+                    </GridItem>
+                </Grid>
+            </Container>
+
+            {/* Main Content - Table */}
+            <Container maxW="full" px={6} pb={8}>
+                <Box bg="white" borderRadius="lg" border="1px" borderColor="gray.200" overflow="hidden">
+                    <Box px={6} py={4} borderBottom="1px" borderColor="gray.200">
+                        <Heading size="md" color="gray.900" fontWeight="700">
+                            사용자 목록
+                        </Heading>
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                            등록된 모든 사용자를 관리하고 모니터링합니다
+                        </Text>
+                    </Box>
                     <TableContainer>
                         <Table variant="simple" size="md">
-                            <Thead bg="gray.50">
+                            <Thead bg="gray.50" borderBottom="2px" borderColor="gray.200">
                                 <Tr>
                                     <Th px={4} py={3}>
                                         <Checkbox
@@ -643,6 +835,24 @@ export default function Dashboard() {
                                         <Button
                                             variant="ghost"
                                             size="sm"
+                                            onClick={() => handleSort('joinedDate')}
+                                            rightIcon={
+                                                sortField === 'joinedDate' ? (
+                                                    sortDirection === 'asc' ? (
+                                                        <ChevronUpIcon />
+                                                    ) : (
+                                                        <ChevronDownIcon />
+                                                    )
+                                                ) : null
+                                            }
+                                        >
+                                            가입일
+                                        </Button>
+                                    </Th>
+                                    <Th px={4} py={3}>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
                                             onClick={() => handleSort('lastCall')}
                                             rightIcon={
                                                 sortField === 'lastCall' ? (
@@ -664,7 +874,12 @@ export default function Dashboard() {
                             </Thead>
                             <Tbody>
                                 {paginatedUsers.map((user) => (
-                                    <Tr key={user.id} _hover={{ bg: 'gray.50' }}>
+                                    <Tr
+                                        key={user.id}
+                                        _hover={{ bg: 'gray.50' }}
+                                        borderBottom="1px"
+                                        borderColor="gray.100"
+                                    >
                                         <Td px={4} py={3}>
                                             <Checkbox
                                                 isChecked={selectedRows.includes(user.id)}
@@ -701,6 +916,7 @@ export default function Dashboard() {
                                                 py={1}
                                                 borderRadius="full"
                                                 fontSize="xs"
+                                                fontWeight="600"
                                             >
                                                 {getEmotionText(user.emotion)}
                                             </Badge>
@@ -709,12 +925,19 @@ export default function Dashboard() {
                                             <Badge
                                                 colorScheme={user.gender === '남성' ? 'blue' : 'pink'}
                                                 variant="subtle"
-                                                px={2}
+                                                px={3}
                                                 py={1}
-                                                borderRadius="md"
+                                                borderRadius="full"
+                                                fontSize="xs"
+                                                fontWeight="600"
                                             >
                                                 {user.gender}
                                             </Badge>
+                                        </Td>
+                                        <Td px={4} py={3}>
+                                            <Text fontSize="sm" color="gray.600">
+                                                {user.joinedDate}
+                                            </Text>
                                         </Td>
                                         <Td px={4} py={3}>
                                             <VStack align="start" spacing={0}>
@@ -727,58 +950,40 @@ export default function Dashboard() {
                                             </VStack>
                                         </Td>
                                         <Td px={4} py={3}>
-                                            <HStack spacing={2}>
-                                                <Tooltip label="메모 추가" placement="top">
+                                            <HStack spacing={1}>
+                                                <Tooltip label="메모 작성" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<EditIcon />}
+                                                        icon={<Icon as={FiMessageSquare} boxSize={4} />}
                                                         size="sm"
-                                                        bg="blue.50"
-                                                        color="blue.600"
-                                                        border="1px"
-                                                        borderColor="blue.200"
-                                                        _hover={{
-                                                            bg: 'blue.100',
-                                                            borderColor: 'blue.300',
-                                                            transform: 'scale(1.05)',
-                                                        }}
+                                                        variant="ghost"
+                                                        color="gray.600"
+                                                        _hover={{ bg: 'blue.50', color: 'blue.600' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleMemoClick(user);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="정보 수정" placement="top">
+                                                <Tooltip label="정보 수정" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<EditIcon />}
+                                                        icon={<Icon as={FiEdit2} boxSize={4} />}
                                                         size="sm"
-                                                        bg="purple.50"
-                                                        color="purple.600"
-                                                        border="1px"
-                                                        borderColor="purple.200"
-                                                        _hover={{
-                                                            bg: 'purple.100',
-                                                            borderColor: 'purple.300',
-                                                            transform: 'scale(1.05)',
-                                                        }}
+                                                        variant="ghost"
+                                                        color="gray.600"
+                                                        _hover={{ bg: 'orange.50', color: 'orange.600' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}/edit`);
                                                         }}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="상세보기" placement="top">
+                                                <Tooltip label="상세 보기" placement="top" hasArrow>
                                                     <IconButton
-                                                        icon={<ViewIcon />}
+                                                        icon={<Icon as={FiEye} boxSize={4} />}
                                                         size="sm"
-                                                        bg="green.50"
-                                                        color="green.600"
-                                                        border="1px"
-                                                        borderColor="green.200"
-                                                        _hover={{
-                                                            bg: 'green.100',
-                                                            borderColor: 'green.300',
-                                                            transform: 'scale(1.05)',
-                                                        }}
+                                                        variant="ghost"
+                                                        color="gray.600"
+                                                        _hover={{ bg: 'gray.100', color: 'gray.900' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/user/${user.id}`);
@@ -794,20 +999,12 @@ export default function Dashboard() {
                     </TableContainer>
 
                     {/* Pagination */}
-                    <Flex align="center" justify="center" px={6} py={4} borderTop="1px" borderColor="gray.200">
-                        <HStack spacing={2}>
+                    <Flex justify="center" px={6} py={5} borderTop="1px" borderColor="gray.200">
+                        <HStack spacing={1}>
                             <IconButton
                                 icon={<ChevronLeftIcon />}
                                 size="sm"
-                                variant="outline"
-                                onClick={() => setCurrentPage(1)}
-                                isDisabled={currentPage === 1}
-                                aria-label="첫 페이지"
-                            />
-                            <IconButton
-                                icon={<ChevronLeftIcon />}
-                                size="sm"
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => setCurrentPage(currentPage - 1)}
                                 isDisabled={currentPage === 1}
                                 aria-label="이전 페이지"
@@ -821,9 +1018,10 @@ export default function Dashboard() {
                                     <Button
                                         key={pageNum}
                                         size="sm"
-                                        variant={pageNum === currentPage ? 'solid' : 'outline'}
-                                        colorScheme={pageNum === currentPage ? 'blue' : 'gray'}
+                                        variant={pageNum === currentPage ? 'solid' : 'ghost'}
+                                        colorScheme="blue"
                                         onClick={() => setCurrentPage(pageNum)}
+                                        minW="32px"
                                     >
                                         {pageNum}
                                     </Button>
@@ -833,18 +1031,10 @@ export default function Dashboard() {
                             <IconButton
                                 icon={<ChevronRightIcon />}
                                 size="sm"
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => setCurrentPage(currentPage + 1)}
                                 isDisabled={currentPage === totalPages}
                                 aria-label="다음 페이지"
-                            />
-                            <IconButton
-                                icon={<ChevronRightIcon />}
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setCurrentPage(totalPages)}
-                                isDisabled={currentPage === totalPages}
-                                aria-label="마지막 페이지"
                             />
                         </HStack>
                     </Flex>
