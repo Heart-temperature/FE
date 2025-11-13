@@ -322,7 +322,7 @@ export default function Dashboard() {
             case 'normal':
                 return '#10B981'; // 초록 - 정상 (Tailwind emerald-500)
             case 'new':
-                return '#3B82F6'; // 파랑 - 신규 회원 (Tailwind blue-500)
+                return '#6B7280'; // 회색 - 신규 회원 (Tailwind gray-500)
             default:
                 return '#6B7280'; // 회색 - 알 수 없음 (Tailwind gray-500)
         }
