@@ -74,7 +74,8 @@ export default function UserLoginPage() {
                             <Input
                                 value="010"
                                 isReadOnly
-                                width="30%"
+                                p={1}
+                                width="40%"
                                 textAlign="center"
                                 fontSize={fs}
                                 height={inputH}
@@ -88,7 +89,7 @@ export default function UserLoginPage() {
 
                             {/* 8자리 숫자 입력칸 */}
                             <Input
-                                type="text"
+                                type="number"
                                 value={id}
                                 onChange={(e) => {
                                     const value = e.target.value.replace(/\D/g, '').slice(0, 8); // 숫자만, 최대 8자리
