@@ -38,7 +38,7 @@ export default function CallPage() {
     const rmsLogIntervalRef = useRef(0); // RMS 로깅 간격 카운터
 
     // VAD 설정
-    const VAD_THRESHOLD = 0.005; // 음성 감지 임계값 (더 민감하게 조정)
+    const VAD_THRESHOLD = 0.001; // 음성 감지 임계값 (매우 민감하게 조정)
     const SILENCE_DURATION = 1500; // 침묵 지속 시간 (ms) - 1.5초 침묵이면 전송
     const MIN_AUDIO_LENGTH = 10; // 최소 오디오 크기 (노이즈 필터링)
 
@@ -90,8 +90,14 @@ export default function CallPage() {
         try {
             console.log('🎤 마이크 권한 요청 중...');
 
-            // 마이크 권한 요청
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // 마이크 권한 요청 (자동 게인 컨트롤 활성화)
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true, // 자동 게인 조절
+                }
+            });
             audioStreamRef.current = stream;
 
             // AudioContext 생성
@@ -100,6 +106,11 @@ export default function CallPage() {
 
             // 오디오 소스 생성
             const source = audioContext.createMediaStreamSource(stream);
+
+            // GainNode 생성 (볼륨 증폭용)
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 2.0; // 볼륨 2배 증폭
+            console.log('🔊 마이크 게인 설정:', gainNode.gain.value);
 
             // AnalyserNode 생성 (볼륨 분석용)
             const analyser = audioContext.createAnalyser();
@@ -217,8 +228,9 @@ export default function CallPage() {
                 }
             };
 
-            // 연결
-            source.connect(analyser);
+            // 연결: source -> gainNode -> analyser -> processor -> destination
+            source.connect(gainNode);
+            gainNode.connect(analyser);
             analyser.connect(processor);
             processor.connect(audioContext.destination);
 
@@ -226,6 +238,7 @@ export default function CallPage() {
             console.log('✅ 마이크 시작 완료 (VAD 활성화)');
             console.log('   임계값:', VAD_THRESHOLD);
             console.log('   침묵 지속 시간:', SILENCE_DURATION, 'ms');
+            console.log('   마이크 게인:', gainNode.gain.value, 'x');
             console.log('='.repeat(50));
         } catch (error) {
             console.error('❌ 마이크 권한 요청 실패:', error);
