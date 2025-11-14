@@ -7,7 +7,7 @@ import DajeongLogo from '../../assets/image.png';
 import Img1 from '../../assets/img1.png';
 import Img2 from '../../assets/img2.png';
 import { ROUTES } from '../../routes';
-import usePersistentSettings from '../../hooks/usePersistentSettings';
+import useAppSettings from '../../hooks/useAppSettings';
 
 const MotionBox = motion(Box);
 
@@ -27,7 +27,7 @@ export default function MainPage() {
         inputH,
         imgCircleHeight,
         imgCircleWidth,
-    } = usePersistentSettings();
+    } = useAppSettings();
 
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
     const [isPolite, setIsPolite] = useState(true);
@@ -67,6 +67,8 @@ export default function MainPage() {
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
         // CallPage로 이동하면서 선택된 캐릭터 정보 및 고대비 모드 전달
+
+
         navigate(ROUTES.USER_APP_CALL, {
             state: {
                 character: {
@@ -75,6 +77,7 @@ export default function MainPage() {
                     color: currentModel.color,
                 },
                 isHighContrast: isHighContrast,
+                politeness: isPolite
             },
         });
     };
@@ -242,13 +245,7 @@ export default function MainPage() {
                                     ? '#FFFFFF'
                                     : '#E3F2FD'
                             }
-                            color={
-                                isPolite
-                                    ? isHighContrast
-                                        ? '#000000'
-                                        : 'white'
-                                    : '#000000'
-                            }
+                            color={isPolite ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                             fontSize={fs}
                             h={inputH}
                             flex="1"
@@ -258,14 +255,13 @@ export default function MainPage() {
                             borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                             borderRight="none"
                             _hover={{
-                                bg:
-                                    isPolite
-                                        ? isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#1976D2'
-                                        : isHighContrast
-                                        ? '#FFD700'
-                                        : '#2196F3',
+                                bg: isPolite
+                                    ? isHighContrast
+                                        ? '#FFEB3B'
+                                        : '#1976D2'
+                                    : isHighContrast
+                                    ? '#FFD700'
+                                    : '#2196F3',
                                 transform: 'translateY(-2px)',
                                 boxShadow: isHighContrast
                                     ? '0 6px 20px rgba(255, 215, 0, 0.4)'
@@ -290,13 +286,7 @@ export default function MainPage() {
                                     ? '#FFFFFF'
                                     : '#E3F2FD'
                             }
-                            color={
-                                !isPolite
-                                    ? isHighContrast
-                                        ? '#000000'
-                                        : 'white'
-                                    : '#000000'
-                            }
+                            color={!isPolite ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                             fontSize={fs}
                             h={inputH}
                             flex="1"
@@ -306,14 +296,13 @@ export default function MainPage() {
                             borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
                             borderLeft="none"
                             _hover={{
-                                bg:
-                                    !isPolite
-                                        ? isHighContrast
-                                            ? '#FFEB3B'
-                                            : '#1976D2'
-                                        : isHighContrast
-                                        ? '#FFD700'
-                                        : '#2196F3',
+                                bg: !isPolite
+                                    ? isHighContrast
+                                        ? '#FFEB3B'
+                                        : '#1976D2'
+                                    : isHighContrast
+                                    ? '#FFD700'
+                                    : '#2196F3',
                                 transform: 'translateY(-2px)',
                                 boxShadow: isHighContrast
                                     ? '0 6px 20px rgba(255, 215, 0, 0.4)'
@@ -382,13 +371,7 @@ export default function MainPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 0
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 0 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="15px 0 0 15px"
                                 h={inputH}
@@ -430,13 +413,7 @@ export default function MainPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 1
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 1 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="0"
                                 h={inputH}
@@ -479,13 +456,7 @@ export default function MainPage() {
                                         ? '#FFFFFF'
                                         : '#E3F2FD'
                                 }
-                                color={
-                                    fontSizeLevel === 2
-                                        ? isHighContrast
-                                            ? '#000000'
-                                            : 'white'
-                                        : '#000000'
-                                }
+                                color={fontSizeLevel === 2 ? (isHighContrast ? '#000000' : 'white') : '#000000'}
                                 fontWeight="700"
                                 borderRadius="0 15px 15px 0"
                                 h={inputH}

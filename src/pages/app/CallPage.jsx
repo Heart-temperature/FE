@@ -1,39 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import { Button, Flex, Text, VStack, Box, Image, Divider } from '@chakra-ui/react';
-
 import { motion, AnimatePresence } from 'framer-motion';
-
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import DajeongLogo from '../../assets/image.png';
-
 import DabokVideo from '../../video/dabok.webm';
-
 import DajeongVideo from '../../video/dajeung.webm';
-import usePersistentSettings from '../../hooks/usePersistentSettings';
+import useAppSettings from '../../hooks/useAppSettings';
+
+import { endCall, startCall } from '../../api/callAPI';
+import { getAiSocket } from '../../api/aiSocket';
 
 const MotionBox = motion(Flex);
-
 const MotionText = motion(Text);
 
 export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } =
-        usePersistentSettings();
+    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
     const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
-
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
-
     const [currentSubtitle, setCurrentSubtitle] = useState('');
+    const [aiMessages, setAiMessages] = useState([]);
 
     const videoRef = useRef(null); // video 태그 ref
 
-    // 전달받은 캐릭터 정보 및 고대비 모드
-
+    // 전달받은 캐릭터 정보
     const character = location.state?.character || {
         name: '다정이',
 
@@ -42,8 +36,15 @@ export default function CallPage() {
         color: '#2196F3',
     };
 
-    // isTalking 상태에 따라 video 재생/정지
+    useEffect(() => {
+        if (location.state) {
+            const { character, politeness } = location.state;
+            // 통화 시작 API 호출
+            startCall(character, politeness);
+        }
+    }, [location.state]);
 
+    // isTalking 상태에 따라 video 재생/정지
     useEffect(() => {
         if (!videoRef.current) return;
 
@@ -60,8 +61,33 @@ export default function CallPage() {
         }
     }, [isTalking, isUserTalking]);
 
-    // 테스트용 AI 음성 및 자막 시뮬레이션
+    useEffect(() => {
+        const socket = getAiSocket();
+        if (!socket) return;
 
+        socket.onmessage = async (event) => {
+            const data = event.data;
+
+            // 🎧 1) 오디오 Blob 메시지 처리
+            if (data instanceof Blob) {
+                console.log('🎵 AI 오디오 Blob 수신:', data);
+                // TODO: 오디오 재생 처리
+                return;
+            }
+
+            // 📝 2) JSON 텍스트 메시지 처리
+            try {
+                const msg = JSON.parse(data);
+                console.log('📩 AI JSON 메시지 수신:', msg);
+
+                setAiMessages((prev) => [...prev, msg]);
+            } catch (err) {
+                console.warn('⚠ JSON 파싱 실패 메시지:', data);
+            }
+        };
+    }, []);
+
+    // 테스트용 AI 음성 및 자막 시뮬레이션
     useEffect(() => {
         const testSubtitles = [
             { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
@@ -101,11 +127,9 @@ export default function CallPage() {
     }, []);
 
     const handleEndCall = () => {
+        endCall();
         setIsTalking(false);
-
-        setTimeout(() => {
-            navigate('/app/home'); // MainPage로 돌아가기
-        }, 300);
+        navigate('/app/home'); // MainPage로 돌아가기
     };
 
     return (
@@ -171,6 +195,22 @@ export default function CallPage() {
                             </MotionText>
                         </AnimatePresence>
                     </Box>
+
+                    {/* <Box
+                        bg="white"
+                        borderRadius="10px"
+                        p={3}
+                        h="200px"
+                        overflowY="auto"
+                        mt={4}
+                        boxShadow="0 0 10px rgba(0,0,0,0.1)"
+                    >
+                        {aiMessages.map((m, idx) => (
+                            <Text key={idx} color="black" mb={2}>
+                                👉 {m.message || JSON.stringify(m)}
+                            </Text>
+                        ))}
+                    </Box> */}
 
                     {/* 통화 종료 버튼 */}
 
