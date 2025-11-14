@@ -6,12 +6,14 @@ export const startCall = async (character, politeness) => {
     try {
         // 1) 토큰 가져오기
         const token = localStorage.getItem('userToken');
+
         if (!token) {
             console.error('❌ 토큰 없음 (로그인 필요)');
-            return { success: false, error: 'No token' };
+            throw new Error('로그인이 필요합니다.');
         }
 
-        // 2) 백엔드에서 callInfo 가져오기
+        // 2) 백엔드에서 callInfo 가져오기 (userId는 JWT 토큰에서 자동 추출)
+        console.log('📡 callInfo 요청: GET /webkit/call/callInfo');
         const response = await axios.get('http://localhost:8080/webkit/call/callInfo', {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -19,20 +21,20 @@ export const startCall = async (character, politeness) => {
         });
 
         const data = response.data;
-        console.log('📌 callInfo:', data);
+        console.log('📌 callInfo 응답:', data);
 
         // 3) WebSocket 연결 (없으면 connectAiSocket가 자동 연결)
         let aiSocket = getAiSocket();
         if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
             console.log('🔌 WebSocket이 닫혀있어서 재연결합니다...');
-            aiSocket = await connectAiSocket(); // ★ 여기서 연결됨
+            aiSocket = await connectAiSocket();
         }
 
-        // 4) payload 생성
+        // 4) payload 생성 (스펙에 맞춰 수정)
         const payload = {
             type: 'start_call',
-            persona: character.characterType,
-            speech_style: politeness ? 'formal' : 'casual',
+            persona: character.characterType, // "dabok" | "dajeong"
+            speech_style: politeness ? 'formal' : 'casual', // "formal" | "casual"
             user_info: data.user_info,
             conversationSummaries: data.conversationSummaries || [],
             latestConversationSummary: data.latestConversationSummary || '',
@@ -46,7 +48,22 @@ export const startCall = async (character, politeness) => {
         return { success: true };
     } catch (error) {
         console.error('❌ startCall error:', error);
-        return { success: false, error };
+
+        // 에러 메시지 생성
+        let errorMessage = '통화 시작 중 오류가 발생했습니다.';
+        if (error.response) {
+            if (error.response.status === 404) {
+                errorMessage = 'callInfo API를 찾을 수 없습니다. 백엔드를 확인해주세요.';
+            } else if (error.response.status === 401) {
+                errorMessage = '인증이 만료되었습니다. 다시 로그인해주세요.';
+            } else {
+                errorMessage = `서버 오류: ${error.response.status}`;
+            }
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        throw new Error(errorMessage);
     }
 };
 
