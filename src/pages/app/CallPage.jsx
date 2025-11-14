@@ -36,6 +36,7 @@ export default function CallPage() {
     const aiSpeakingRef = useRef(false); // AI 말하는 중 (VAD 비활성화)
     const audioChunkCountRef = useRef(0); // 오디오 청크 카운터
     const rmsLogIntervalRef = useRef(0); // RMS 로깅 간격 카운터
+    const isCallStartedRef = useRef(false); // 통화 시작 플래그 (중복 방지)
 
     // VAD 설정
     const VAD_THRESHOLD = 0.001; // 음성 감지 임계값 (매우 민감하게 조정)
@@ -51,15 +52,20 @@ export default function CallPage() {
 
     // 통화 시작 시 API 호출 및 마이크 시작
     useEffect(() => {
-        let isInitialized = false;
-
         const initCall = async () => {
-            if (location.state && !isInitialized) {
-                isInitialized = true;
+            // 중복 호출 방지 (React Strict Mode 대응)
+            if (isCallStartedRef.current) {
+                console.log('⚠️ 통화가 이미 시작되었습니다. 중복 호출 방지');
+                return;
+            }
+
+            if (location.state) {
+                isCallStartedRef.current = true;
                 const { character, politeness } = location.state;
 
                 console.log('='.repeat(50));
                 console.log('🎬 통화 초기화 시작');
+                console.log('   React Strict Mode:', isCallStartedRef.current);
                 console.log('='.repeat(50));
 
                 // 통화 시작 API 호출 (WebSocket 연결 포함)
@@ -81,7 +87,9 @@ export default function CallPage() {
 
         // 컴포넌트 언마운트 시 정리
         return () => {
+            console.log('🧹 CallPage cleanup 시작');
             stopMicrophone();
+            // cleanup 시에는 플래그를 리셋하지 않음 (페이지 재진입 시 다시 시작 가능)
         };
     }, []); // 빈 배열로 변경 - 한 번만 실행
 
