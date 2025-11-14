@@ -36,7 +36,7 @@ import { useNavigation } from '../../hooks';
 import { useState, useEffect } from 'react';
 import { WarningIcon, EditIcon, CalendarIcon, ChatIcon, InfoIcon, CloseIcon } from '@chakra-ui/icons';
 import { getUserInfo, getEmotionGraph, getCallDetail, getUserMemos, addUserMemo, updateUserMemo, deleteUserMemo, getLastEmotion } from '../../api';
-import { CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts';
+import { EmotionChart } from '../../components/ui';
 
 export default function UserDetail() {
     const { id } = useParams();
@@ -308,13 +308,30 @@ export default function UserDetail() {
         setMemoToDelete(null);
     };
 
-    // 감정 점수 데이터 준비
+    // 감정 점수 데이터 준비 (새 그래프 컴포넌트 형식으로 변환)
     const emotionChartData = emotionData.length > 0 
-        ? emotionData.map((item) => ({
-            ...item,
-            date: item.date ? item.date.split('-').slice(1).join('/') : '', // MM/DD 형식으로 변환
-            emotionText: getEmotionText(item.emotion),
-        }))
+        ? emotionData.map((item) => {
+            // score를 0-100 범위로 변환 (기존: 1=긴급, 2=주의, 3=정상)
+            // 변환: 1 -> 90, 2 -> 50, 3 -> 20 (또는 원하는 점수로 조정 가능)
+            let score = 50; // 기본값
+            if (item.score !== undefined) {
+                if (item.score === 1) score = 90; // 긴급
+                else if (item.score === 2) score = 50; // 주의
+                else if (item.score === 3) score = 20; // 정상
+                else score = item.score; // 이미 0-100 범위인 경우
+            } else if (item.emotion) {
+                // emotion 값으로 변환
+                if (item.emotion === 'urgent') score = 90;
+                else if (item.emotion === 'caution') score = 50;
+                else if (item.emotion === 'normal') score = 20;
+            }
+
+            return {
+                date: item.date || item.callDate || '',
+                score: score,
+                time: item.time || item.callTime || '',
+            };
+        })
         : [];
 
     // 사용자 정보가 없으면 로딩 중이거나 에러 상태
@@ -387,46 +404,21 @@ export default function UserDetail() {
                                 </HStack>
                             </CardHeader>
                             <CardBody>
-                                {emotionChartData.length > 0 ? (
-                                    <Box h="300px">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={emotionChartData}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="date" />
-                                                <YAxis domain={[0, 3]} />
-                                                <Tooltip
-                                                    formatter={(value, name) => [
-                                                        name === 'score' ? `${value}점` : value,
-                                                        name === 'score' ? '감정점수' : '통화시간',
-                                                    ]}
-                                                    labelFormatter={(label) => `날짜: ${label}`}
-                                                />
-                                                <Area
-                                                    type="monotone"
-                                                    dataKey="score"
-                                                    stroke="#3182ce"
-                                                    fill="#3182ce"
-                                                    fillOpacity={0.3}
-                                                />
-                                            </AreaChart>
-                                        </ResponsiveContainer>
-                                    </Box>
-                                ) : (
-                                    <Box h="300px" display="flex" alignItems="center" justifyContent="center">
-                                        <Text color="gray.500" fontSize="lg">
-                                            기록 없음
-                                        </Text>
-                                    </Box>
-                                )}
+                                <EmotionChart 
+                                    data={emotionChartData}
+                                    title="감정 변화 그래프"
+                                    width={800}
+                                    height={400}
+                                />
                                 <HStack mt={4} spacing={4} justify="center">
                                     <Tag colorScheme="red" size="sm">
-                                        <TagLabel>긴급 (1점)</TagLabel>
+                                        <TagLabel>긴급 (80점 이상)</TagLabel>
                                     </Tag>
-                                    <Tag colorScheme="yellow" size="sm">
-                                        <TagLabel>주의 (2점)</TagLabel>
+                                    <Tag colorScheme="orange" size="sm">
+                                        <TagLabel>주의 (40-80점)</TagLabel>
                                     </Tag>
                                     <Tag colorScheme="green" size="sm">
-                                        <TagLabel>정상 (3점)</TagLabel>
+                                        <TagLabel>정상 (40점 미만)</TagLabel>
                                     </Tag>
                                 </HStack>
                             </CardBody>
