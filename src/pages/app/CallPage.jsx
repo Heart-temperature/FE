@@ -196,7 +196,7 @@ export default function CallPage() {
                         </AnimatePresence>
                     </Box>
 
-                    <Box
+                    {/* <Box
                         bg="white"
                         borderRadius="10px"
                         p={3}
@@ -210,7 +210,7 @@ export default function CallPage() {
                                 👉 {m.message || JSON.stringify(m)}
                             </Text>
                         ))}
-                    </Box>
+                    </Box> */}
 
                     {/* 통화 종료 버튼 */}
 
