@@ -16,6 +16,34 @@ import { getAiSocket } from '../../api/aiSocket';
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
 
+// 상태 정의
+const STATES = {
+    IDLE: 'idle', // 대기 중
+    RECORDING: 'recording', // 🎤 녹음 중...
+    SILENCE_DETECTING: 'silence_detecting', // ⏸️ 침묵 감지 중...
+    SENDING: 'sending', // 📤 전송 중...
+    AI_THINKING: 'ai_thinking', // 🤖 AI 생각 중...
+    AI_SPEAKING: 'ai_speaking', // 🤖 AI 말하는 중
+};
+
+// 상태별 표시 텍스트
+const STATE_LABELS = {
+    [STATES.IDLE]: '대기 중',
+    [STATES.RECORDING]: '🎤 녹음 중...',
+    [STATES.SILENCE_DETECTING]: '⏸️ 침묵 감지 중...',
+    [STATES.SENDING]: '📤 전송 중...',
+    [STATES.AI_THINKING]: '🤖 AI 생각 중...',
+    [STATES.AI_SPEAKING]: '🤖 AI 말하는 중',
+};
+
+// 음성 감지 설정
+const VOICE_CONFIG = {
+    VOICE_THRESHOLD: 0.01, // 음성으로 인식할 최소 볼륨
+    SILENCE_THRESHOLD: 0.005, // 침묵으로 인식할 최대 볼륨
+    SILENCE_DURATION: 1000, // 침묵 지속 시간 (ms)
+    SAMPLE_RATE: 16000, // 샘플링 레이트
+};
+
 export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
