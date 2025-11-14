@@ -9,6 +9,7 @@ import DajeongVideo from '../../video/dajeung.webm';
 import useAppSettings from '../../hooks/useAppSettings';
 
 import { endCall, startCall } from '../../api/callAPI';
+import { getAiSocket } from '../../api/aiSocket';
 
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
@@ -20,10 +21,9 @@ export default function CallPage() {
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
     const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
-
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
-
     const [currentSubtitle, setCurrentSubtitle] = useState('');
+    const [aiMessages, setAiMessages] = useState([]);
 
     const videoRef = useRef(null); // video 태그 ref
 
@@ -45,7 +45,6 @@ export default function CallPage() {
     }, [location.state]);
 
     // isTalking 상태에 따라 video 재생/정지
-
     useEffect(() => {
         if (!videoRef.current) return;
 
@@ -62,8 +61,18 @@ export default function CallPage() {
         }
     }, [isTalking, isUserTalking]);
 
-    // 테스트용 AI 음성 및 자막 시뮬레이션
+    useEffect(() => {
+        const socket = getAiSocket();
+        if (!socket) return;
 
+        socket.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+
+            setAiMessages((prev) => [...prev, msg]);
+        };
+    }, []);
+
+    // 테스트용 AI 음성 및 자막 시뮬레이션
     useEffect(() => {
         const testSubtitles = [
             { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
@@ -170,6 +179,22 @@ export default function CallPage() {
                                 {currentSubtitle}
                             </MotionText>
                         </AnimatePresence>
+                    </Box>
+
+                    <Box
+                        bg="white"
+                        borderRadius="10px"
+                        p={3}
+                        h="200px"
+                        overflowY="auto"
+                        mt={4}
+                        boxShadow="0 0 10px rgba(0,0,0,0.1)"
+                    >
+                        {aiMessages.map((m, idx) => (
+                            <Text key={idx} color="black" mb={2}>
+                                👉 {m.message || JSON.stringify(m)}
+                            </Text>
+                        ))}
                     </Box>
 
                     {/* 통화 종료 버튼 */}
