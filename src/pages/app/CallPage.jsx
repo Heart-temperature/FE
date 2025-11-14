@@ -31,13 +31,15 @@ export default function CallPage() {
     const analyserRef = useRef(null); // AnalyserNode ref
     const processorRef = useRef(null); // ScriptProcessorNode ref
     const audioBufferRef = useRef([]); // 오디오 버퍼
-    const silenceTimeoutRef = useRef(null); // 침묵 타이머
+    const silenceStartTimeRef = useRef(null); // 침묵 시작 시간
     const vadStateRef = useRef('idle'); // VAD 상태: idle, speaking, silence
     const aiSpeakingRef = useRef(false); // AI 말하는 중 (VAD 비활성화)
+    const audioChunkCountRef = useRef(0); // 오디오 청크 카운터
 
     // VAD 설정
     const VAD_THRESHOLD = 0.01; // 음성 감지 임계값 (0.01 ~ 0.05 사이로 조정)
     const SILENCE_DURATION = 1500; // 침묵 지속 시간 (ms) - 1.5초 침묵이면 전송
+    const MIN_AUDIO_LENGTH = 10; // 최소 오디오 크기 (노이즈 필터링)
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
@@ -65,6 +67,8 @@ export default function CallPage() {
     // 마이크 시작 함수 (VAD 포함)
     const startMicrophone = async () => {
         try {
+            console.log('🎤 마이크 권한 요청 중...');
+
             // 마이크 권한 요청
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioStreamRef.current = stream;
@@ -89,6 +93,13 @@ export default function CallPage() {
             processor.onaudioprocess = (e) => {
                 // AI가 말하는 중이면 VAD 비활성화
                 if (aiSpeakingRef.current) {
+                    // 침묵 시작 시간 초기화
+                    if (silenceStartTimeRef.current !== null) {
+                        console.log('🤖 AI 말하는 중 - VAD 대기');
+                        silenceStartTimeRef.current = null;
+                        vadStateRef.current = 'idle';
+                        setIsUserSpeaking(false);
+                    }
                     return;
                 }
 
@@ -101,20 +112,29 @@ export default function CallPage() {
                 }
                 const rms = Math.sqrt(sum / inputData.length);
 
+                const now = Date.now();
+
                 // VAD 로직
                 if (rms > VAD_THRESHOLD) {
                     // 음성 감지
                     if (vadStateRef.current === 'idle') {
+                        console.log('='.repeat(50));
                         console.log('🎤 음성 감지 시작');
+                        console.log('   RMS 값:', rms.toFixed(4));
+                        console.log('   임계값:', VAD_THRESHOLD);
                         vadStateRef.current = 'speaking';
                         setIsUserSpeaking(true);
                         audioBufferRef.current = []; // 버퍼 초기화
+                        audioChunkCountRef.current = 0;
                     }
 
-                    // 침묵 타이머 리셋
-                    if (silenceTimeoutRef.current) {
-                        clearTimeout(silenceTimeoutRef.current);
-                        silenceTimeoutRef.current = null;
+                    // 침묵 시작 시간 초기화 (음성이 다시 감지됨)
+                    if (silenceStartTimeRef.current !== null) {
+                        silenceStartTimeRef.current = null;
+                        if (vadStateRef.current === 'silence') {
+                            console.log('🎤 침묵 중단 - 다시 말하기 시작');
+                            vadStateRef.current = 'speaking';
+                        }
                     }
 
                     // 오디오 데이터를 버퍼에 저장
@@ -124,19 +144,47 @@ export default function CallPage() {
                         int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
                     }
                     audioBufferRef.current.push(int16Data);
+                    audioChunkCountRef.current++;
+
+                    // 첫 번째 청크 또는 50번째마다 로그
+                    if (audioChunkCountRef.current === 1 || audioChunkCountRef.current % 50 === 0) {
+                        console.log(`🔊 오디오 청크 수집: ${int16Data.length} samples (청크 #${audioChunkCountRef.current})`);
+                    }
                 } else {
                     // 침묵 감지
                     if (vadStateRef.current === 'speaking') {
-                        // 침묵 타이머 시작
-                        if (!silenceTimeoutRef.current) {
-                            silenceTimeoutRef.current = setTimeout(() => {
-                                console.log('🔇 침묵 감지 - 오디오 전송');
-                                sendAudioBuffer();
-                                vadStateRef.current = 'idle';
-                                setIsUserSpeaking(false);
-                                audioBufferRef.current = [];
-                                silenceTimeoutRef.current = null;
-                            }, SILENCE_DURATION);
+                        // 침묵 시작 시간 기록
+                        if (silenceStartTimeRef.current === null) {
+                            silenceStartTimeRef.current = now;
+                            vadStateRef.current = 'silence';
+                            console.log('🔇 침묵 감지 시작');
+                            console.log('   RMS 값:', rms.toFixed(4));
+                            console.log('   대기 시간:', SILENCE_DURATION, 'ms');
+                        }
+                    }
+
+                    // 침묵이 지속되는지 확인
+                    if (vadStateRef.current === 'silence' && silenceStartTimeRef.current !== null) {
+                        const silenceDuration = now - silenceStartTimeRef.current;
+
+                        // 침묵 지속 시간 체크 (100ms마다 로그)
+                        if (silenceDuration % 500 < 100) {
+                            console.log(`⏱️ 침묵 지속: ${silenceDuration}ms / ${SILENCE_DURATION}ms`);
+                        }
+
+                        if (silenceDuration >= SILENCE_DURATION) {
+                            console.log('='.repeat(50));
+                            console.log('📤 침묵 지속 시간 초과 - 오디오 전송');
+                            console.log('   침묵 지속:', silenceDuration, 'ms');
+                            console.log('   수집된 청크:', audioChunkCountRef.current);
+                            sendAudioBuffer();
+
+                            // 상태 초기화
+                            vadStateRef.current = 'idle';
+                            setIsUserSpeaking(false);
+                            audioBufferRef.current = [];
+                            audioChunkCountRef.current = 0;
+                            silenceStartTimeRef.current = null;
                         }
                     }
                 }
@@ -147,7 +195,11 @@ export default function CallPage() {
             analyser.connect(processor);
             processor.connect(audioContext.destination);
 
-            console.log('🎤 마이크 시작 (VAD 활성화)');
+            console.log('='.repeat(50));
+            console.log('✅ 마이크 시작 완료 (VAD 활성화)');
+            console.log('   임계값:', VAD_THRESHOLD);
+            console.log('   침묵 지속 시간:', SILENCE_DURATION, 'ms');
+            console.log('='.repeat(50));
         } catch (error) {
             console.error('❌ 마이크 권한 요청 실패:', error);
             alert('마이크 권한이 필요합니다. 브라우저 설정에서 마이크 권한을 허용해주세요.');
@@ -157,69 +209,93 @@ export default function CallPage() {
     // 오디오 버퍼 전송
     const sendAudioBuffer = () => {
         if (audioBufferRef.current.length === 0) {
-            console.log('⚠️ 전송할 오디오 없음');
+            console.log('⚠️ 전송할 오디오 없음 (버퍼 비어있음)');
             return;
         }
 
         const socket = getAiSocket();
         if (!socket || socket.readyState !== WebSocket.OPEN) {
             console.error('❌ WebSocket 연결 안 됨');
+            console.error('   상태:', socket ? socket.readyState : 'null');
             return;
         }
 
-        // 버퍼를 하나의 ArrayBuffer로 합치기
-        const totalLength = audioBufferRef.current.reduce((acc, arr) => acc + arr.length, 0);
-        const mergedBuffer = new Int16Array(totalLength);
-        let offset = 0;
-        for (const buffer of audioBufferRef.current) {
-            mergedBuffer.set(buffer, offset);
-            offset += buffer.length;
-        }
+        try {
+            // 버퍼를 하나의 ArrayBuffer로 합치기
+            const totalLength = audioBufferRef.current.reduce((acc, arr) => acc + arr.length, 0);
+            const mergedBuffer = new Int16Array(totalLength);
+            let offset = 0;
+            for (const buffer of audioBufferRef.current) {
+                mergedBuffer.set(buffer, offset);
+                offset += buffer.length;
+            }
 
-        // WebM 포맷으로 변환하여 전송
-        const blob = new Blob([mergedBuffer.buffer], { type: 'audio/webm' });
-        socket.send(blob);
-        console.log('🎤 사용자 오디오 전송:', blob.size, 'bytes');
+            // 너무 작은 데이터는 무시 (노이즈)
+            if (mergedBuffer.length < MIN_AUDIO_LENGTH) {
+                console.log('⚠️ 오디오 크기가 너무 작음 (노이즈로 판단):', mergedBuffer.length, 'samples');
+                return;
+            }
+
+            // Blob으로 변환하여 전송
+            const blob = new Blob([mergedBuffer.buffer], { type: 'audio/webm' });
+
+            console.log('='.repeat(50));
+            console.log('📤 AI 서버로 오디오 전송');
+            console.log('   크기:', blob.size, 'bytes');
+            console.log('   샘플 수:', mergedBuffer.length);
+            console.log('   청크 수:', audioBufferRef.current.length);
+
+            socket.send(blob);
+
+            console.log('✅ 오디오 전송 완료');
+            console.log('='.repeat(50));
+        } catch (error) {
+            console.error('❌ 오디오 전송 실패:', error);
+        }
     };
 
     // 마이크 중지 함수
     const stopMicrophone = () => {
-        // 침묵 타이머 정리
-        if (silenceTimeoutRef.current) {
-            clearTimeout(silenceTimeoutRef.current);
-            silenceTimeoutRef.current = null;
-        }
+        console.log('🎤 마이크 중지 시작...');
+
+        // 침묵 시작 시간 초기화
+        silenceStartTimeRef.current = null;
 
         // ScriptProcessor 정리
         if (processorRef.current) {
             processorRef.current.disconnect();
             processorRef.current = null;
+            console.log('   ✓ ScriptProcessor 정리');
         }
 
         // Analyser 정리
         if (analyserRef.current) {
             analyserRef.current.disconnect();
             analyserRef.current = null;
+            console.log('   ✓ Analyser 정리');
         }
 
         // AudioContext 정리
         if (audioContextRef.current) {
             audioContextRef.current.close();
             audioContextRef.current = null;
+            console.log('   ✓ AudioContext 정리');
         }
 
         // 오디오 스트림 정리
         if (audioStreamRef.current) {
             audioStreamRef.current.getTracks().forEach((track) => track.stop());
             audioStreamRef.current = null;
+            console.log('   ✓ 오디오 스트림 정리');
         }
 
         // 상태 초기화
         vadStateRef.current = 'idle';
         audioBufferRef.current = [];
+        audioChunkCountRef.current = 0;
         setIsUserSpeaking(false);
 
-        console.log('🎤 마이크 중지');
+        console.log('✅ 마이크 중지 완료');
     };
 
     // isTalking 상태에 따라 video 재생/정지
@@ -247,7 +323,15 @@ export default function CallPage() {
 
             // 오디오 Blob 메시지 처리
             if (data instanceof Blob) {
-                console.log('🎵 AI 오디오 Blob 수신:', data);
+                console.log('='.repeat(50));
+                console.log('📥 AI 오디오 Blob 수신');
+                console.log('   크기:', data.size, 'bytes');
+
+                // 너무 작은 데이터는 무시
+                if (data.size < MIN_AUDIO_LENGTH) {
+                    console.log('⚠️ 오디오 크기가 너무 작음 (무시)');
+                    return;
+                }
 
                 // 오디오 재생
                 const audioUrl = URL.createObjectURL(data);
@@ -256,13 +340,15 @@ export default function CallPage() {
                 // AI가 말하기 시작
                 setIsTalking(true);
                 aiSpeakingRef.current = true; // VAD 비활성화
+                console.log('🔊 AI 말하기 시작 (VAD 비활성화)');
 
                 audio.onended = () => {
                     // AI가 말하기 종료
                     setIsTalking(false);
                     aiSpeakingRef.current = false; // VAD 재활성화
                     URL.revokeObjectURL(audioUrl);
-                    console.log('🎵 AI 오디오 재생 종료');
+                    console.log('✅ AI 말하기 종료 (VAD 재활성화)');
+                    console.log('='.repeat(50));
                 };
 
                 audio.onerror = (error) => {
@@ -274,7 +360,7 @@ export default function CallPage() {
 
                 try {
                     await audio.play();
-                    console.log('🎵 AI 오디오 재생 시작');
+                    console.log('🔊 AI 오디오 재생 시작');
                 } catch (error) {
                     console.error('❌ 오디오 재생 실패:', error);
                     setIsTalking(false);
@@ -287,26 +373,33 @@ export default function CallPage() {
             // JSON 텍스트 메시지 처리
             try {
                 const msg = JSON.parse(data);
-                console.log('📩 AI JSON 메시지 수신:', msg);
+                const msgType = msg.type || 'unknown';
+                console.log('📩 AI JSON 메시지 수신:', msgType);
 
                 setAiMessages((prev) => [...prev, msg]);
 
                 // 자막 업데이트
                 if (msg.message || msg.text) {
                     setCurrentSubtitle(msg.message || msg.text);
+                    console.log('   자막 업데이트:', msg.message || msg.text);
                 }
             } catch (err) {
-                console.warn('⚠ JSON 파싱 실패 메시지:', data);
+                console.warn('⚠️ JSON 파싱 실패:', data);
             }
         };
     }, []);
 
     const handleEndCall = () => {
+        console.log('📞 통화 종료 요청');
+
         // 마이크 중지
         stopMicrophone();
+
         // 통화 종료 API 호출
         endCall();
         setIsTalking(false);
+
+        console.log('✅ 통화 종료 완료');
         navigate('/app/home');
     };
 
