@@ -119,9 +119,13 @@ export default function CallPage() {
 
     // WebSocket 메시지 핸들러
     const handleMessage = useCallback((data) => {
-        console.log(`📨 수신: ${data.type || data.event || 'unknown'}`);
+        console.log(`📨 수신: ${data.type || data.event || 'unknown'}`, data);
 
         switch (data.type || data.event) {
+            case 'start':
+                console.log(`📞 통화 시작: ${data.message || '통화 거는 중...'}`);
+                setCurrentSubtitle(data.message || '통화 거는 중...');
+                break;
             case 'system':
                 console.log(`💬 시스템: ${data.message || ''}`);
                 break;
@@ -137,6 +141,11 @@ export default function CallPage() {
                 break;
             case 'status':
                 console.log(`📊 상태: ${data.message}`);
+                setCurrentSubtitle(data.message || '');
+                break;
+            case 'stt_status':
+                console.log(`🎙️ STT 진행 중: ${data.message}`);
+                setCurrentSubtitle('음성을 분석 중입니다...');
                 break;
             case 'tts_start':
                 console.log(`🔊 TTS 시작: "${data.text}"`);
@@ -155,8 +164,24 @@ export default function CallPage() {
                 ]);
                 setCurrentSubtitle(data.assistant_text || '');
                 break;
+            case 'call_summary':
+                console.log('📊 통화 요약:', data);
+                console.log('📊 감정 통계:', data.emotion_statistics);
+                console.log('📝 대화 요약:', data.conversation_summary);
+                // TODO: 통화 요약 데이터를 저장하거나 표시
+                setCurrentSubtitle('통화가 종료되었습니다.');
+                break;
+            case 'auto_disconnect':
+                console.warn(`⚠️ 비정상 종료: ${data.message}`);
+                setCurrentSubtitle('통화가 비정상적으로 종료되었습니다.');
+                break;
             case 'error':
                 console.error(`❌ 오류: ${data.message}`);
+                if (data.message === 'no active session') {
+                    console.error('녹음 세션이 활성화되지 않았습니다.');
+                } else {
+                    setCurrentSubtitle(`오류: ${data.message}`);
+                }
                 break;
         }
     }, []);
@@ -254,7 +279,7 @@ export default function CallPage() {
                             setIsUserTalking(true);
 
                             socket.send(JSON.stringify({
-                                event: 'start',
+                                type: 'start',
                                 lang: 'ko'
                             }));
 
@@ -288,7 +313,7 @@ export default function CallPage() {
                                     console.log(`🎤 음성 종료 감지 - stop 이벤트 전송 (${vadStateRef.current.audioChunks.length} 프레임)`);
 
                                     socket.send(JSON.stringify({
-                                        event: 'stop'
+                                        type: 'stop'
                                     }));
                                 } else {
                                     console.log(`🎤 너무 짧은 음성 - 무시 (${vadStateRef.current.audioChunks.length} 프레임)`);

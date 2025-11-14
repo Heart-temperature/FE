@@ -105,6 +105,11 @@ export const loginUser = async (phoneNum, loginPw) => {
             localStorage.setItem('userToken', data.token);
         }
 
+        // userId 저장 (callInfo API에서 필요)
+        if (data.userId) {
+            localStorage.setItem('userId', data.userId);
+        }
+
         return data;
     } catch (error) {
         if (error.response && error.response.data) {
@@ -119,6 +124,7 @@ export const loginUser = async (phoneNum, loginPw) => {
 // 로그아웃
 export const logoutUser = () => {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('userId');
 };
 
 //로그인 상태 확인

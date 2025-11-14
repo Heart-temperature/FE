@@ -4,15 +4,22 @@ import { connectAiSocket, getAiSocket } from './aiSocket';
 
 export const startCall = async (character, politeness) => {
     try {
-        // 1) 토큰 가져오기
+        // 1) 토큰과 userId 가져오기
         const token = localStorage.getItem('userToken');
+        const userId = localStorage.getItem('userId');
+
         if (!token) {
             console.error('❌ 토큰 없음 (로그인 필요)');
             return { success: false, error: 'No token' };
         }
 
+        if (!userId) {
+            console.error('❌ userId 없음 (로그인 필요)');
+            return { success: false, error: 'No userId' };
+        }
+
         // 2) 백엔드에서 callInfo 가져오기
-        const response = await axios.get('http://localhost:8080/webkit/call/callInfo', {
+        const response = await axios.get(`http://localhost:8080/webkit/call/callInfo/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -25,14 +32,14 @@ export const startCall = async (character, politeness) => {
         let aiSocket = getAiSocket();
         if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
             console.log('🔌 WebSocket이 닫혀있어서 재연결합니다...');
-            aiSocket = await connectAiSocket(); // ★ 여기서 연결됨
+            aiSocket = await connectAiSocket();
         }
 
-        // 4) payload 생성
+        // 4) payload 생성 (스펙에 맞춰 수정)
         const payload = {
             type: 'start_call',
-            persona: character.characterType,
-            speech_style: politeness ? 'formal' : 'casual',
+            persona: character.characterType, // "dabok" | "dajeong"
+            speech_style: politeness ? 'formal' : 'casual', // "formal" | "casual"
             user_info: data.user_info,
             conversationSummaries: data.conversationSummaries || [],
             latestConversationSummary: data.latestConversationSummary || '',
