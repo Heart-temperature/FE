@@ -20,12 +20,15 @@ export default function CallPage() {
 
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
-    const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
+    const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
     const [currentSubtitle, setCurrentSubtitle] = useState('');
     const [aiMessages, setAiMessages] = useState([]);
+    const [isListening, setIsListening] = useState(false); // 음성 인식 활성 상태
 
     const videoRef = useRef(null); // video 태그 ref
+    const recognitionRef = useRef(null); // SpeechRecognition 인스턴스
+    const isRecognitionActive = useRef(false); // 음성 인식 활성 여부 추적
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
@@ -36,11 +39,106 @@ export default function CallPage() {
         color: '#2196F3',
     };
 
+    // 음성 인식 초기화
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            console.error('이 브라우저는 음성 인식을 지원하지 않습니다.');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ko-KR';
+        recognition.continuous = true;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            console.log('🎤 음성 인식 시작');
+            isRecognitionActive.current = true;
+            setIsListening(true);
+            setIsUserTalking(true);
+        };
+
+        recognition.onresult = (event) => {
+            const lastResult = event.results[event.results.length - 1];
+            if (lastResult.isFinal) {
+                const transcript = lastResult[0].transcript;
+                console.log('📝 인식된 텍스트:', transcript);
+
+                // 자막 표시
+                setCurrentSubtitle(`나: ${transcript}`);
+
+                // AI 서버로 전송
+                const socket = getAiSocket();
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    const payload = {
+                        type: 'user_speech',
+                        text: transcript,
+                    };
+                    socket.send(JSON.stringify(payload));
+                }
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('❌ 음성 인식 오류:', event.error);
+
+            // no-speech 에러는 무시 (사용자가 말하지 않은 경우)
+            if (event.error === 'no-speech') {
+                return;
+            }
+
+            // aborted 에러는 정상 종료로 처리
+            if (event.error === 'aborted') {
+                return;
+            }
+
+            isRecognitionActive.current = false;
+            setIsListening(false);
+            setIsUserTalking(false);
+        };
+
+        recognition.onend = () => {
+            console.log('🛑 음성 인식 종료');
+
+            // 자동 재시작 (continuous 모드 유지)
+            if (isRecognitionActive.current) {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.warn('음성 인식 재시작 실패:', error);
+                }
+            } else {
+                setIsListening(false);
+                setIsUserTalking(false);
+            }
+        };
+
+        recognitionRef.current = recognition;
+
+        return () => {
+            if (recognitionRef.current) {
+                isRecognitionActive.current = false;
+                try {
+                    recognitionRef.current.stop();
+                } catch (error) {
+                    console.warn('음성 인식 정리 실패:', error);
+                }
+            }
+        };
+    }, []);
+
     useEffect(() => {
         if (location.state) {
             const { character, politeness } = location.state;
             // 통화 시작 API 호출
             startCall(character, politeness);
+
+            // 통화 시작 시 음성 인식 자동 시작
+            setTimeout(() => {
+                startSpeechRecognition();
+            }, 1000);
         }
     }, [location.state]);
 
@@ -60,6 +158,37 @@ export default function CallPage() {
             videoRef.current.pause();
         }
     }, [isTalking, isUserTalking]);
+
+    // 음성 인식 시작 함수
+    const startSpeechRecognition = () => {
+        if (!recognitionRef.current) {
+            console.warn('음성 인식이 초기화되지 않았습니다.');
+            return;
+        }
+
+        if (isRecognitionActive.current) {
+            console.log('음성 인식이 이미 실행 중입니다.');
+            return;
+        }
+
+        try {
+            recognitionRef.current.start();
+        } catch (error) {
+            console.error('음성 인식 시작 실패:', error);
+        }
+    };
+
+    // 음성 인식 중지 함수
+    const stopSpeechRecognition = () => {
+        if (!recognitionRef.current) return;
+
+        isRecognitionActive.current = false;
+        try {
+            recognitionRef.current.stop();
+        } catch (error) {
+            console.warn('음성 인식 중지 실패:', error);
+        }
+    };
 
     useEffect(() => {
         const socket = getAiSocket();
@@ -81,52 +210,35 @@ export default function CallPage() {
                 console.log('📩 AI JSON 메시지 수신:', msg);
 
                 setAiMessages((prev) => [...prev, msg]);
+
+                // AI 응답이 왔을 때 자막 표시
+                if (msg.message || msg.text) {
+                    const aiText = msg.message || msg.text;
+                    setCurrentSubtitle(`${character.name}: ${aiText}`);
+                    setIsTalking(true);
+
+                    // AI가 말하는 동안 음성 인식 일시 중지
+                    if (isRecognitionActive.current) {
+                        stopSpeechRecognition();
+                    }
+
+                    // AI 응답이 끝나면 다시 음성 인식 시작 (예: 3초 후)
+                    setTimeout(() => {
+                        setIsTalking(false);
+                        startSpeechRecognition();
+                    }, aiText.length * 100); // 텍스트 길이에 비례한 시간
+                }
             } catch (err) {
                 console.warn('⚠ JSON 파싱 실패 메시지:', data);
             }
         };
-    }, []);
-
-    // 테스트용 AI 음성 및 자막 시뮬레이션
-    useEffect(() => {
-        const testSubtitles = [
-            { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '오늘 날씨가 참 좋네요.', duration: 2500, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '무슨 이야기를 나누고 싶으세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-        ];
-
-        let index = 0;
-
-        const showNextSubtitle = () => {
-            const current = testSubtitles[index % testSubtitles.length];
-
-            setCurrentSubtitle(current.text);
-
-            setIsTalking(current.aiTalking);
-
-            index++;
-
-            setTimeout(showNextSubtitle, current.duration);
-        };
-
-        // 첫 자막 즉시 표시
-
-        showNextSubtitle();
-
-        return () => {
-            index = testSubtitles.length; // cleanup
-        };
-    }, []);
+    }, [character.name]);
 
     const handleEndCall = () => {
+        // 음성 인식 중지
+        stopSpeechRecognition();
+
+        // 통화 종료
         endCall();
         setIsTalking(false);
         navigate('/app/home'); // MainPage로 돌아가기
