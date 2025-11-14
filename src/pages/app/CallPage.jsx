@@ -50,13 +50,22 @@ export default function CallPage() {
 
     // 통화 시작 시 API 호출 및 마이크 시작
     useEffect(() => {
-        if (location.state) {
-            const { character, politeness } = location.state;
-            // 통화 시작 API 호출
-            startCall(character, politeness);
-            // 마이크 시작
-            startMicrophone();
-        }
+        const initCall = async () => {
+            if (location.state) {
+                const { character, politeness } = location.state;
+
+                // 통화 시작 API 호출 (WebSocket 연결 포함)
+                await startCall(character, politeness);
+
+                // WebSocket 메시지 핸들러 등록
+                setupWebSocketHandler();
+
+                // 마이크 시작
+                startMicrophone();
+            }
+        };
+
+        initCall();
 
         // 컴포넌트 언마운트 시 정리
         return () => {
@@ -313,13 +322,22 @@ export default function CallPage() {
         }
     }, [isTalking]);
 
-    // WebSocket 메시지 수신 처리
-    useEffect(() => {
+    // WebSocket 메시지 핸들러 설정
+    const setupWebSocketHandler = () => {
         const socket = getAiSocket();
-        if (!socket) return;
+        if (!socket) {
+            console.error('❌ WebSocket이 없습니다. 핸들러 등록 실패');
+            return;
+        }
+
+        console.log('='.repeat(50));
+        console.log('📡 WebSocket 메시지 핸들러 등록');
+        console.log('   WebSocket 상태:', socket.readyState, '(1=OPEN)');
+        console.log('='.repeat(50));
 
         socket.onmessage = async (event) => {
             const data = event.data;
+            console.log('📨 WebSocket 메시지 수신 (타입:', typeof data, ')');
 
             // 오디오 Blob 메시지 처리
             if (data instanceof Blob) {
@@ -374,7 +392,7 @@ export default function CallPage() {
             try {
                 const msg = JSON.parse(data);
                 const msgType = msg.type || 'unknown';
-                console.log('📩 AI JSON 메시지 수신:', msgType);
+                console.log('📩 AI JSON 메시지 수신:', msgType, msg);
 
                 setAiMessages((prev) => [...prev, msg]);
 
@@ -387,7 +405,17 @@ export default function CallPage() {
                 console.warn('⚠️ JSON 파싱 실패:', data);
             }
         };
-    }, []);
+
+        socket.onerror = (error) => {
+            console.error('❌ WebSocket 에러:', error);
+        };
+
+        socket.onclose = (event) => {
+            console.log('🔌 WebSocket 연결 종료');
+            console.log('   코드:', event.code);
+            console.log('   이유:', event.reason);
+        };
+    };
 
     const handleEndCall = () => {
         console.log('📞 통화 종료 요청');
