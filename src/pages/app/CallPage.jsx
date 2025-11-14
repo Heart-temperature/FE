@@ -11,7 +11,7 @@ import DajeongLogo from '../../assets/image.png';
 import DabokVideo from '../../video/dabok.webm';
 
 import DajeongVideo from '../../video/dajeung.webm';
-import usePersistentSettings from '../../hooks/usePersistentSettings';
+import useAppSettings from '../../hooks/useAppSettings';
 
 const MotionBox = motion(Flex);
 
@@ -21,8 +21,7 @@ export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } =
-        usePersistentSettings();
+    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
     const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
 
@@ -32,8 +31,7 @@ export default function CallPage() {
 
     const videoRef = useRef(null); // video 태그 ref
 
-    // 전달받은 캐릭터 정보 및 고대비 모드
-
+    // 전달받은 캐릭터 정보
     const character = location.state?.character || {
         name: '다정이',
 
