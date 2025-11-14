@@ -67,6 +67,8 @@ export default function MainPage() {
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
         // CallPage로 이동하면서 선택된 캐릭터 정보 및 고대비 모드 전달
+
+
         navigate(ROUTES.USER_APP_CALL, {
             state: {
                 character: {
@@ -75,6 +77,7 @@ export default function MainPage() {
                     color: currentModel.color,
                 },
                 isHighContrast: isHighContrast,
+                politeness: isPolite
             },
         });
     };

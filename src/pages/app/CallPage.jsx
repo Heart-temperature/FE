@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import { Button, Flex, Text, VStack, Box, Image, Divider } from '@chakra-ui/react';
-
 import { motion, AnimatePresence } from 'framer-motion';
-
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import DajeongLogo from '../../assets/image.png';
-
 import DabokVideo from '../../video/dabok.webm';
-
 import DajeongVideo from '../../video/dajeung.webm';
 import useAppSettings from '../../hooks/useAppSettings';
 
-const MotionBox = motion(Flex);
+import { startCall } from '../../api/callAPI';
 
+const MotionBox = motion(Flex);
 const MotionText = motion(Text);
 
 export default function CallPage() {
@@ -39,6 +35,14 @@ export default function CallPage() {
 
         color: '#2196F3',
     };
+
+    useEffect(() => {
+        if (location.state) {
+            const { character, politeness } = location.state;
+            // 통화 시작 API 호출
+            startCall(character, politeness);
+        }
+    }, [location.state]);
 
     // isTalking 상태에 따라 video 재생/정지
 

@@ -3,36 +3,32 @@ import axios from 'axios';
 
 let aiSocket = null;
 
-export const startCall = async () => {
+export const startCall = async (character, politeness) => {
     try {
+        // politeness 변환
+        const politenessValue = politeness ? 'formal' : 'casual';
+
         // 1) 백엔드에서 callInfo 가져오기
         const response = await axios.get('http://localhost:8080/webkit/call/callInfo');
         const data = response.data;
 
         console.log('📌 callInfo:', data);
 
-        // 2) WebSocket 연결 (이미 연결돼있으면 재연결 방지)
+        // 2) WebSocket 연결 준비
         if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
             aiSocket = new WebSocket('ws://202.31.135.25:8080/ws');
 
-            // WebSocket 연결될 때까지 기다리기
             await new Promise((resolve, reject) => {
-                aiSocket.onopen = () => {
-                    console.log('✅ WebSocket connected!');
-                    resolve();
-                };
-                aiSocket.onerror = (err) => {
-                    console.error('❌ WebSocket error:', err);
-                    reject(err);
-                };
+                aiSocket.onopen = () => resolve();
+                aiSocket.onerror = (err) => reject(err);
             });
         }
 
-        // 3) AI 서버로 전송할 메시지 구성
+        // 3) AI 서버로 전달할 payload 구성
         const payload = {
             type: 'start_call',
-            persona: 'dabok',
-            politeness: 'jondae',
+            persona: character.characterType, // 캐릭터에서 characterType 쓰기
+            speechStyle: politenessValue, // formal이면 존댓말, casual이면 반말
             user_info: data.user_info,
             conversationSummaries: data.conversationSummaries || [],
             latestConversationSummary: data.latestConversationSummary || '',
@@ -40,7 +36,7 @@ export const startCall = async () => {
 
         console.log('📤 AI 서버로 보낼 payload:', payload);
 
-        // 4) WebSocket으로 전송
+        // 4) WebSocket 전송
         aiSocket.send(JSON.stringify(payload));
 
         return { success: true };
