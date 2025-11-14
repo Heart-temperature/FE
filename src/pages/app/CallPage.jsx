@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button, Flex, Text, VStack, Box, Image, Divider } from '@chakra-ui/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Button, Flex, Text, VStack, Box, HStack, Badge } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import DajeongLogo from '../../assets/image.png';
 import DabokVideo from '../../video/dabok.webm';
 import DajeongVideo from '../../video/dajeung.webm';
 import useAppSettings from '../../hooks/useAppSettings';
@@ -20,117 +19,424 @@ export default function CallPage() {
 
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
-    const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
+    const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
-    const [currentSubtitle, setCurrentSubtitle] = useState('');
-    const [aiMessages, setAiMessages] = useState([]);
+    const [currentSubtitle, setCurrentSubtitle] = useState('통화를 시작합니다...');
+    const [transcriptions, setTranscriptions] = useState([]);
+    const [isCallActive, setIsCallActive] = useState(false);
 
-    const videoRef = useRef(null); // video 태그 ref
+    const videoRef = useRef(null);
+    const audioContextRef = useRef(null);
+    const audioStreamRef = useRef(null);
+    const audioSourceRef = useRef(null);
+    const audioProcessorRef = useRef(null);
+
+    // VAD 상태
+    const vadStateRef = useRef({
+        isSpeaking: false,
+        silenceFrames: 0,
+        speechFrames: 0,
+        preRollBuffer: [],
+        isSending: false,
+        audioChunks: []
+    });
+
+    // 오디오 수신 버퍼
+    const audioBufferRef = useRef(null);
+    const isReceivingAudioRef = useRef(false);
+
+    // VAD 설정
+    const VAD_CONFIG = {
+        frameSize: 4096,
+        sampleRate: 16000,
+        preRollDuration: 0.5,
+        preRollFrames: Math.ceil(16000 * 0.5 / 4096),
+        energyThreshold: 0.01,
+        speechStartFrames: 3,
+        silenceEndFrames: 15,
+        minSpeechFrames: 5
+    };
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
         name: '다정이',
-
         characterType: 'dajeong',
-
         color: '#2196F3',
     };
 
-    useEffect(() => {
-        if (location.state) {
-            const { character, politeness } = location.state;
-            // 통화 시작 API 호출
-            startCall(character, politeness);
+    const politeness = location.state?.politeness || 'jondae';
+
+    // 오디오 재생 함수
+    const playAudio = useCallback(async (audioData) => {
+        try {
+            const arrayBuffer = audioData instanceof Blob ? await audioData.arrayBuffer() :
+                (audioData instanceof ArrayBuffer ? audioData : audioData.buffer);
+            const size = arrayBuffer.byteLength;
+            console.log(`🎵 재생 시작: ${size} bytes`);
+
+            if (!audioContextRef.current) {
+                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)({
+                    sampleRate: 16000
+                });
+            }
+
+            if (audioContextRef.current.state === 'suspended') {
+                await audioContextRef.current.resume();
+                console.log(`🔊 AudioContext 재개됨`);
+            }
+
+            if (arrayBuffer.byteLength < 2) {
+                console.warn(`⚠️ 오디오 데이터가 너무 작음: ${arrayBuffer.byteLength} bytes`);
+                return;
+            }
+
+            const audioDataInt16 = new Int16Array(arrayBuffer);
+            const float32Array = new Float32Array(audioDataInt16.length);
+
+            for (let i = 0; i < audioDataInt16.length; i++) {
+                float32Array[i] = audioDataInt16[i] / 32768.0;
+            }
+
+            const audioBuffer = audioContextRef.current.createBuffer(1, float32Array.length, 16000);
+            audioBuffer.getChannelData(0).set(float32Array);
+
+            const source = audioContextRef.current.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContextRef.current.destination);
+
+            source.onended = () => {
+                console.log(`✅ 재생 완료 (${audioBuffer.duration.toFixed(2)}초)`);
+                setIsTalking(false);
+            };
+
+            source.start(0);
+            console.log(`▶️ 재생 시작됨 (${audioBuffer.duration.toFixed(2)}초)`);
+            setIsTalking(true);
+        } catch (error) {
+            console.error('❌ 재생 오류:', error);
         }
-    }, [location.state]);
+    }, []);
+
+    // WebSocket 메시지 핸들러
+    const handleMessage = useCallback((data) => {
+        console.log(`📨 수신: ${data.type || data.event || 'unknown'}`);
+
+        switch (data.type || data.event) {
+            case 'system':
+                console.log(`💬 시스템: ${data.message || ''}`);
+                break;
+            case 'ready':
+                if (data.event === 'start') {
+                    console.log('✅ 음성 녹음 준비 완료');
+                }
+                break;
+            case 'ended':
+                if (data.event === 'stop') {
+                    console.log('✅ 음성 녹음 종료 완료');
+                }
+                break;
+            case 'status':
+                console.log(`📊 상태: ${data.message}`);
+                break;
+            case 'tts_start':
+                console.log(`🔊 TTS 시작: "${data.text}"`);
+                setCurrentSubtitle(data.text || '');
+                setIsTalking(true);
+                break;
+            case 'tts_end':
+                console.log(`🔊 TTS 종료`);
+                setIsTalking(false);
+                break;
+            case 'transcription':
+                setTranscriptions(prev => [
+                    ...prev,
+                    { type: 'user', text: data.user_text },
+                    { type: 'assistant', text: data.assistant_text }
+                ]);
+                setCurrentSubtitle(data.assistant_text || '');
+                break;
+            case 'error':
+                console.error(`❌ 오류: ${data.message}`);
+                break;
+        }
+    }, []);
+
+    // 음성 에너지 계산
+    const calculateEnergy = (audioData) => {
+        let sum = 0;
+        for (let i = 0; i < audioData.length; i++) {
+            sum += audioData[i] * audioData[i];
+        }
+        return Math.sqrt(sum / audioData.length);
+    };
+
+    // 음성 감지
+    const detectSpeech = (audioData) => {
+        const energy = calculateEnergy(audioData);
+        return energy > VAD_CONFIG.energyThreshold;
+    };
+
+    // 통화 시작 - 마이크 초기화
+    useEffect(() => {
+        const initCall = async () => {
+            if (!location.state) return;
+
+            try {
+                // 1. 통화 시작 API 호출
+                await startCall(character, politeness);
+                console.log('📞 통화 시작 API 호출 완료');
+
+                // 2. 마이크 권한 요청
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        sampleRate: 16000
+                    }
+                });
+                console.log('🎤 마이크 획득');
+
+                if (!audioContextRef.current) {
+                    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: 16000
+                    });
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                const source = audioContextRef.current.createMediaStreamSource(stream);
+                const processor = audioContextRef.current.createScriptProcessor(VAD_CONFIG.frameSize, 1, 1);
+
+                // VAD 상태 초기화
+                vadStateRef.current = {
+                    isSpeaking: false,
+                    silenceFrames: 0,
+                    speechFrames: 0,
+                    preRollBuffer: [],
+                    isSending: false,
+                    audioChunks: []
+                };
+
+                processor.onaudioprocess = (e) => {
+                    const socket = getAiSocket();
+                    if (!socket || socket.readyState !== WebSocket.OPEN) {
+                        return;
+                    }
+
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    const int16Data = new Int16Array(inputData.length);
+
+                    for (let i = 0; i < inputData.length; i++) {
+                        const s = Math.max(-1, Math.min(1, inputData[i]));
+                        int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+
+                    // 프리롤 버퍼에 추가
+                    vadStateRef.current.preRollBuffer.push(int16Data.buffer);
+                    if (vadStateRef.current.preRollBuffer.length > VAD_CONFIG.preRollFrames) {
+                        vadStateRef.current.preRollBuffer.shift();
+                    }
+
+                    // VAD로 음성 감지
+                    const hasSpeech = detectSpeech(inputData);
+                    if (hasSpeech) {
+                        vadStateRef.current.speechFrames++;
+                        vadStateRef.current.silenceFrames = 0;
+
+                        // 음성 시작 감지
+                        if (!vadStateRef.current.isSpeaking && vadStateRef.current.speechFrames >= VAD_CONFIG.speechStartFrames) {
+                            vadStateRef.current.isSpeaking = true;
+                            vadStateRef.current.isSending = true;
+                            vadStateRef.current.audioChunks = [];
+
+                            console.log('🎤 음성 시작 감지 - start 이벤트 전송');
+                            setIsUserTalking(true);
+
+                            socket.send(JSON.stringify({
+                                event: 'start',
+                                lang: 'ko'
+                            }));
+
+                            // 프리롤 버퍼 포함해서 전송 시작
+                            for (const chunk of vadStateRef.current.preRollBuffer) {
+                                vadStateRef.current.audioChunks.push(chunk);
+                                socket.send(chunk);
+                            }
+                        }
+
+                        // 음성 중이면 계속 전송
+                        if (vadStateRef.current.isSpeaking && vadStateRef.current.isSending) {
+                            vadStateRef.current.audioChunks.push(int16Data.buffer);
+                            socket.send(int16Data.buffer);
+                        }
+                    } else {
+                        vadStateRef.current.speechFrames = 0;
+
+                        if (vadStateRef.current.isSpeaking) {
+                            vadStateRef.current.silenceFrames++;
+
+                            // 무음 중에도 계속 전송
+                            if (vadStateRef.current.isSending) {
+                                vadStateRef.current.audioChunks.push(int16Data.buffer);
+                                socket.send(int16Data.buffer);
+                            }
+
+                            // 음성 종료 감지
+                            if (vadStateRef.current.silenceFrames >= VAD_CONFIG.silenceEndFrames) {
+                                if (vadStateRef.current.audioChunks.length >= VAD_CONFIG.minSpeechFrames) {
+                                    console.log(`🎤 음성 종료 감지 - stop 이벤트 전송 (${vadStateRef.current.audioChunks.length} 프레임)`);
+
+                                    socket.send(JSON.stringify({
+                                        event: 'stop'
+                                    }));
+                                } else {
+                                    console.log(`🎤 너무 짧은 음성 - 무시 (${vadStateRef.current.audioChunks.length} 프레임)`);
+                                }
+
+                                vadStateRef.current.isSpeaking = false;
+                                vadStateRef.current.isSending = false;
+                                vadStateRef.current.silenceFrames = 0;
+                                vadStateRef.current.speechFrames = 0;
+                                vadStateRef.current.audioChunks = [];
+                                setIsUserTalking(false);
+                            }
+                        }
+                    }
+                };
+
+                source.connect(processor);
+                processor.connect(audioContextRef.current.destination);
+                audioStreamRef.current = stream;
+                audioSourceRef.current = source;
+                audioProcessorRef.current = processor;
+                setIsCallActive(true);
+                console.log('✅ 통화 시작 (로컬 VAD 활성화)');
+            } catch (error) {
+                console.error('❌ 마이크 오류:', error);
+                alert('마이크 권한이 필요합니다.');
+                navigate('/app/home');
+            }
+        };
+
+        initCall();
+    }, [location.state, character, politeness, navigate]);
+
+    // WebSocket 메시지 리스너
+    useEffect(() => {
+        const socket = getAiSocket();
+        if (!socket) return;
+
+        const messageHandler = async (event) => {
+            if (typeof event.data === 'string') {
+                const data = JSON.parse(event.data);
+
+                // audio_start/audio_end 처리
+                if (data.type === 'audio_start') {
+                    isReceivingAudioRef.current = true;
+                    audioBufferRef.current = [];
+                    console.log(`🎵 오디오 수신 시작 (${data.size} bytes 예상)`);
+                } else if (data.type === 'audio_end') {
+                    isReceivingAudioRef.current = false;
+                    if (audioBufferRef.current && audioBufferRef.current.length > 0) {
+                        const totalLength = audioBufferRef.current.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+                        console.log(`🎵 오디오 수집 완료: ${audioBufferRef.current.length}개 청크, 총 ${totalLength} bytes`);
+
+                        const combinedBuffer = new Uint8Array(totalLength);
+                        let offset = 0;
+                        for (const chunk of audioBufferRef.current) {
+                            const chunkArray = chunk instanceof ArrayBuffer ? new Uint8Array(chunk) : chunk;
+                            combinedBuffer.set(chunkArray, offset);
+                            offset += chunkArray.length;
+                        }
+                        await playAudio(combinedBuffer.buffer);
+                        audioBufferRef.current = null;
+                    }
+                } else {
+                    handleMessage(data);
+                }
+            } else if (event.data instanceof Blob || event.data instanceof ArrayBuffer || event.data instanceof Uint8Array) {
+                const buffer = event.data instanceof Blob ? await event.data.arrayBuffer() :
+                    (event.data instanceof ArrayBuffer ? event.data : event.data.buffer);
+
+                if (isReceivingAudioRef.current) {
+                    audioBufferRef.current.push(buffer);
+                    console.log(`📥 오디오 청크 수신: ${buffer.byteLength} bytes (총 ${audioBufferRef.current.length}개)`);
+                } else {
+                    console.log(`📥 오디오 즉시 재생: ${buffer.byteLength} bytes`);
+                    await playAudio(buffer);
+                }
+            }
+        };
+
+        socket.onmessage = messageHandler;
+
+        return () => {
+            socket.onmessage = null;
+        };
+    }, [handleMessage, playAudio]);
 
     // isTalking 상태에 따라 video 재생/정지
     useEffect(() => {
         if (!videoRef.current) return;
 
         if (isTalking && !isUserTalking) {
-            // AI가 말할 때: 재생
-
             videoRef.current.play().catch((e) => {
                 console.log('Video play failed:', e);
             });
         } else {
-            // AI 말 안할 때: 정지 (멈춘 자리 유지)
-
             videoRef.current.pause();
         }
     }, [isTalking, isUserTalking]);
 
-    useEffect(() => {
-        const socket = getAiSocket();
-        if (!socket) return;
+    const handleEndCall = useCallback(() => {
+        console.log('📴 통화 종료');
 
-        socket.onmessage = async (event) => {
-            const data = event.data;
-
-            // 🎧 1) 오디오 Blob 메시지 처리
-            if (data instanceof Blob) {
-                console.log('🎵 AI 오디오 Blob 수신:', data);
-                // TODO: 오디오 재생 처리
-                return;
-            }
-
-            // 📝 2) JSON 텍스트 메시지 처리
-            try {
-                const msg = JSON.parse(data);
-                console.log('📩 AI JSON 메시지 수신:', msg);
-
-                setAiMessages((prev) => [...prev, msg]);
-            } catch (err) {
-                console.warn('⚠ JSON 파싱 실패 메시지:', data);
-            }
-        };
-    }, []);
-
-    // 테스트용 AI 음성 및 자막 시뮬레이션
-    useEffect(() => {
-        const testSubtitles = [
-            { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '오늘 날씨가 참 좋네요.', duration: 2500, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '무슨 이야기를 나누고 싶으세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-        ];
-
-        let index = 0;
-
-        const showNextSubtitle = () => {
-            const current = testSubtitles[index % testSubtitles.length];
-
-            setCurrentSubtitle(current.text);
-
-            setIsTalking(current.aiTalking);
-
-            index++;
-
-            setTimeout(showNextSubtitle, current.duration);
+        // VAD 상태 초기화
+        vadStateRef.current = {
+            isSpeaking: false,
+            silenceFrames: 0,
+            speechFrames: 0,
+            preRollBuffer: [],
+            isSending: false,
+            audioChunks: []
         };
 
-        // 첫 자막 즉시 표시
+        if (audioProcessorRef.current) {
+            audioProcessorRef.current.disconnect();
+            audioProcessorRef.current = null;
+        }
+        if (audioSourceRef.current) {
+            audioSourceRef.current.disconnect();
+            audioSourceRef.current = null;
+        }
+        if (audioStreamRef.current) {
+            audioStreamRef.current.getTracks().forEach(track => track.stop());
+            audioStreamRef.current = null;
+        }
 
-        showNextSubtitle();
-
-        return () => {
-            index = testSubtitles.length; // cleanup
-        };
-    }, []);
-
-    const handleEndCall = () => {
         endCall();
         setIsTalking(false);
-        navigate('/app/home'); // MainPage로 돌아가기
-    };
+        setIsCallActive(false);
+        navigate('/app/home');
+    }, [navigate]);
+
+    // 페이지 언로드 시 정리
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (isCallActive) {
+                handleEndCall();
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            if (isCallActive) {
+                handleEndCall();
+            }
+        };
+    }, [isCallActive, handleEndCall]);
 
     return (
         <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
@@ -138,7 +444,6 @@ export default function CallPage() {
             <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={6} align="stretch">
                     {/* 캐릭터 영역 */}
-
                     <MotionBox
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -150,9 +455,9 @@ export default function CallPage() {
                         justifyContent="center"
                         overflow="hidden"
                         borderRadius="15px"
+                        position="relative"
                     >
                         {/* video 태그로 webm 재생 제어 */}
-
                         <Box
                             as="video"
                             ref={videoRef}
@@ -167,10 +472,40 @@ export default function CallPage() {
                                 console.error('Video 로드 실패:', e.target.src);
                             }}
                         />
+
+                        {/* 상태 표시 배지 */}
+                        <HStack
+                            position="absolute"
+                            top="15px"
+                            right="15px"
+                            spacing={2}
+                        >
+                            {isUserTalking && (
+                                <Badge
+                                    colorScheme="blue"
+                                    fontSize="md"
+                                    px={3}
+                                    py={1}
+                                    borderRadius="full"
+                                >
+                                    🎤 말하는 중
+                                </Badge>
+                            )}
+                            {isTalking && (
+                                <Badge
+                                    colorScheme="green"
+                                    fontSize="md"
+                                    px={3}
+                                    py={1}
+                                    borderRadius="full"
+                                >
+                                    🔊 AI 응답 중
+                                </Badge>
+                            )}
+                        </HStack>
                     </MotionBox>
 
                     {/* 현재 자막 */}
-
                     <Box mt={2}>
                         <AnimatePresence mode="wait">
                             <MotionText
@@ -196,24 +531,7 @@ export default function CallPage() {
                         </AnimatePresence>
                     </Box>
 
-                    {/* <Box
-                        bg="white"
-                        borderRadius="10px"
-                        p={3}
-                        h="200px"
-                        overflowY="auto"
-                        mt={4}
-                        boxShadow="0 0 10px rgba(0,0,0,0.1)"
-                    >
-                        {aiMessages.map((m, idx) => (
-                            <Text key={idx} color="black" mb={2}>
-                                👉 {m.message || JSON.stringify(m)}
-                            </Text>
-                        ))}
-                    </Box> */}
-
                     {/* 통화 종료 버튼 */}
-
                     <Button
                         w="full"
                         bg={isHighContrast ? '#FFD700' : '#F44336'}
@@ -228,16 +546,13 @@ export default function CallPage() {
                         mt={2}
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#D32F2F',
-
                             transform: 'translateY(-2px)',
-
                             boxShadow: isHighContrast
                                 ? '0 6px 20px rgba(255, 215, 0, 0.4)'
                                 : '0 6px 20px rgba(244, 67, 54, 0.4)',
                         }}
                         _active={{
                             bg: isHighContrast ? '#FFC107' : '#C62828',
-
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
