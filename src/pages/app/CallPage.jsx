@@ -20,12 +20,14 @@ export default function CallPage() {
 
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
-    const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
+    const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중
     const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
-    const [currentSubtitle, setCurrentSubtitle] = useState('');
+    const [currentSubtitle, setCurrentSubtitle] = useState('통화 연결 중...');
     const [aiMessages, setAiMessages] = useState([]);
 
     const videoRef = useRef(null); // video 태그 ref
+    const mediaRecorderRef = useRef(null); // MediaRecorder ref
+    const audioStreamRef = useRef(null); // 오디오 스트림 ref
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
@@ -36,13 +38,69 @@ export default function CallPage() {
         color: '#2196F3',
     };
 
+    // 통화 시작 시 마이크 권한 요청 및 녹음 시작
     useEffect(() => {
         if (location.state) {
             const { character, politeness } = location.state;
             // 통화 시작 API 호출
             startCall(character, politeness);
+
+            // 마이크 권한 요청 및 녹음 시작
+            startMicrophoneRecording();
         }
+
+        // 컴포넌트 언마운트 시 녹음 중지
+        return () => {
+            stopMicrophoneRecording();
+        };
     }, [location.state]);
+
+    // 마이크 녹음 시작 함수
+    const startMicrophoneRecording = async () => {
+        try {
+            // 마이크 권한 요청
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioStreamRef.current = stream;
+
+            // MediaRecorder 생성
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'audio/webm',
+            });
+            mediaRecorderRef.current = mediaRecorder;
+
+            // 오디오 데이터 수집 및 전송
+            mediaRecorder.ondataavailable = async (event) => {
+                if (event.data.size > 0) {
+                    const socket = getAiSocket();
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        // 오디오 Blob를 WebSocket으로 전송
+                        socket.send(event.data);
+                        console.log('🎤 사용자 오디오 전송:', event.data.size, 'bytes');
+                    }
+                }
+            };
+
+            // 100ms마다 오디오 청크 수집
+            mediaRecorder.start(100);
+            console.log('🎤 마이크 녹음 시작');
+        } catch (error) {
+            console.error('❌ 마이크 권한 요청 실패:', error);
+            alert('마이크 권한이 필요합니다. 브라우저 설정에서 마이크 권한을 허용해주세요.');
+        }
+    };
+
+    // 마이크 녹음 중지 함수
+    const stopMicrophoneRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+            console.log('🎤 마이크 녹음 중지');
+        }
+
+        if (audioStreamRef.current) {
+            audioStreamRef.current.getTracks().forEach((track) => track.stop());
+            audioStreamRef.current = null;
+        }
+    };
 
     // isTalking 상태에 따라 video 재생/정지
     useEffect(() => {
@@ -71,7 +129,35 @@ export default function CallPage() {
             // 🎧 1) 오디오 Blob 메시지 처리
             if (data instanceof Blob) {
                 console.log('🎵 AI 오디오 Blob 수신:', data);
-                // TODO: 오디오 재생 처리
+
+                // 오디오 재생
+                const audioUrl = URL.createObjectURL(data);
+                const audio = new Audio(audioUrl);
+
+                // AI가 말하기 시작
+                setIsTalking(true);
+
+                audio.onended = () => {
+                    // AI가 말하기 종료
+                    setIsTalking(false);
+                    URL.revokeObjectURL(audioUrl);
+                    console.log('🎵 AI 오디오 재생 종료');
+                };
+
+                audio.onerror = (error) => {
+                    console.error('❌ 오디오 재생 실패:', error);
+                    setIsTalking(false);
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+                try {
+                    await audio.play();
+                    console.log('🎵 AI 오디오 재생 시작');
+                } catch (error) {
+                    console.error('❌ 오디오 재생 실패:', error);
+                    setIsTalking(false);
+                }
+
                 return;
             }
 
@@ -81,52 +167,23 @@ export default function CallPage() {
                 console.log('📩 AI JSON 메시지 수신:', msg);
 
                 setAiMessages((prev) => [...prev, msg]);
+
+                // 자막 업데이트
+                if (msg.message || msg.text) {
+                    setCurrentSubtitle(msg.message || msg.text);
+                }
             } catch (err) {
                 console.warn('⚠ JSON 파싱 실패 메시지:', data);
             }
         };
     }, []);
 
-    // 테스트용 AI 음성 및 자막 시뮬레이션
-    useEffect(() => {
-        const testSubtitles = [
-            { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '오늘 날씨가 참 좋네요.', duration: 2500, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '무슨 이야기를 나누고 싶으세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-        ];
-
-        let index = 0;
-
-        const showNextSubtitle = () => {
-            const current = testSubtitles[index % testSubtitles.length];
-
-            setCurrentSubtitle(current.text);
-
-            setIsTalking(current.aiTalking);
-
-            index++;
-
-            setTimeout(showNextSubtitle, current.duration);
-        };
-
-        // 첫 자막 즉시 표시
-
-        showNextSubtitle();
-
-        return () => {
-            index = testSubtitles.length; // cleanup
-        };
-    }, []);
 
     const handleEndCall = () => {
+        // 마이크 녹음 중지
+        stopMicrophoneRecording();
+
+        // 통화 종료 API 호출
         endCall();
         setIsTalking(false);
         navigate('/app/home'); // MainPage로 돌아가기
