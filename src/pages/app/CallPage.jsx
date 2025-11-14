@@ -21,42 +21,38 @@ export default function CallPage() {
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
     const [isTalking, setIsTalking] = useState(false); // AI가 말하는 중
-    const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
     const [currentSubtitle, setCurrentSubtitle] = useState('통화 연결 중...');
     const [aiMessages, setAiMessages] = useState([]);
 
     const videoRef = useRef(null); // video 태그 ref
-    const mediaRecorderRef = useRef(null); // MediaRecorder ref
+    const mediaRecorderRef = useRef(null); // 마이크 녹음기 ref
     const audioStreamRef = useRef(null); // 오디오 스트림 ref
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
         name: '다정이',
-
         characterType: 'dajeong',
-
         color: '#2196F3',
     };
 
-    // 통화 시작 시 마이크 권한 요청 및 녹음 시작
+    // 통화 시작 시 API 호출 및 마이크 시작
     useEffect(() => {
         if (location.state) {
             const { character, politeness } = location.state;
             // 통화 시작 API 호출
             startCall(character, politeness);
-
-            // 마이크 권한 요청 및 녹음 시작
-            startMicrophoneRecording();
+            // 마이크 시작
+            startMicrophone();
         }
 
-        // 컴포넌트 언마운트 시 녹음 중지
+        // 컴포넌트 언마운트 시 정리
         return () => {
-            stopMicrophoneRecording();
+            stopMicrophone();
         };
     }, [location.state]);
 
-    // 마이크 녹음 시작 함수
-    const startMicrophoneRecording = async () => {
+    // 마이크 시작 함수
+    const startMicrophone = async () => {
         try {
             // 마이크 권한 요청
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -68,19 +64,18 @@ export default function CallPage() {
             });
             mediaRecorderRef.current = mediaRecorder;
 
-            // 오디오 데이터 수집 및 전송
-            mediaRecorder.ondataavailable = async (event) => {
+            // 오디오 데이터가 준비되면 서버로 전송
+            mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
                     const socket = getAiSocket();
                     if (socket && socket.readyState === WebSocket.OPEN) {
-                        // 오디오 Blob를 WebSocket으로 전송
                         socket.send(event.data);
                         console.log('🎤 사용자 오디오 전송:', event.data.size, 'bytes');
                     }
                 }
             };
 
-            // 100ms마다 오디오 청크 수집
+            // 100ms마다 오디오 청크 전송
             mediaRecorder.start(100);
             console.log('🎤 마이크 녹음 시작');
         } catch (error) {
@@ -89,8 +84,8 @@ export default function CallPage() {
         }
     };
 
-    // 마이크 녹음 중지 함수
-    const stopMicrophoneRecording = () => {
+    // 마이크 중지 함수
+    const stopMicrophone = () => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
             mediaRecorderRef.current.stop();
             console.log('🎤 마이크 녹음 중지');
@@ -106,19 +101,18 @@ export default function CallPage() {
     useEffect(() => {
         if (!videoRef.current) return;
 
-        if (isTalking && !isUserTalking) {
+        if (isTalking) {
             // AI가 말할 때: 재생
-
             videoRef.current.play().catch((e) => {
                 console.log('Video play failed:', e);
             });
         } else {
-            // AI 말 안할 때: 정지 (멈춘 자리 유지)
-
+            // AI 말 안할 때: 정지
             videoRef.current.pause();
         }
-    }, [isTalking, isUserTalking]);
+    }, [isTalking]);
 
+    // WebSocket 메시지 수신 처리
     useEffect(() => {
         const socket = getAiSocket();
         if (!socket) return;
@@ -126,7 +120,7 @@ export default function CallPage() {
         socket.onmessage = async (event) => {
             const data = event.data;
 
-            // 🎧 1) 오디오 Blob 메시지 처리
+            // 오디오 Blob 메시지 처리
             if (data instanceof Blob) {
                 console.log('🎵 AI 오디오 Blob 수신:', data);
 
@@ -161,7 +155,7 @@ export default function CallPage() {
                 return;
             }
 
-            // 📝 2) JSON 텍스트 메시지 처리
+            // JSON 텍스트 메시지 처리
             try {
                 const msg = JSON.parse(data);
                 console.log('📩 AI JSON 메시지 수신:', msg);
@@ -178,15 +172,13 @@ export default function CallPage() {
         };
     }, []);
 
-
     const handleEndCall = () => {
-        // 마이크 녹음 중지
-        stopMicrophoneRecording();
-
+        // 마이크 중지
+        stopMicrophone();
         // 통화 종료 API 호출
         endCall();
         setIsTalking(false);
-        navigate('/app/home'); // MainPage로 돌아가기
+        navigate('/app/home');
     };
 
     return (
@@ -195,7 +187,6 @@ export default function CallPage() {
             <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={6} align="stretch">
                     {/* 캐릭터 영역 */}
-
                     <MotionBox
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -209,7 +200,6 @@ export default function CallPage() {
                         borderRadius="15px"
                     >
                         {/* video 태그로 webm 재생 제어 */}
-
                         <Box
                             as="video"
                             ref={videoRef}
@@ -227,7 +217,6 @@ export default function CallPage() {
                     </MotionBox>
 
                     {/* 현재 자막 */}
-
                     <Box mt={2}>
                         <AnimatePresence mode="wait">
                             <MotionText
@@ -253,24 +242,7 @@ export default function CallPage() {
                         </AnimatePresence>
                     </Box>
 
-                    {/* <Box
-                        bg="white"
-                        borderRadius="10px"
-                        p={3}
-                        h="200px"
-                        overflowY="auto"
-                        mt={4}
-                        boxShadow="0 0 10px rgba(0,0,0,0.1)"
-                    >
-                        {aiMessages.map((m, idx) => (
-                            <Text key={idx} color="black" mb={2}>
-                                👉 {m.message || JSON.stringify(m)}
-                            </Text>
-                        ))}
-                    </Box> */}
-
                     {/* 통화 종료 버튼 */}
-
                     <Button
                         w="full"
                         bg={isHighContrast ? '#FFD700' : '#F44336'}
@@ -285,16 +257,13 @@ export default function CallPage() {
                         mt={2}
                         _hover={{
                             bg: isHighContrast ? '#FFEB3B' : '#D32F2F',
-
                             transform: 'translateY(-2px)',
-
                             boxShadow: isHighContrast
                                 ? '0 6px 20px rgba(255, 215, 0, 0.4)'
                                 : '0 6px 20px rgba(244, 67, 54, 0.4)',
                         }}
                         _active={{
                             bg: isHighContrast ? '#FFC107' : '#C62828',
-
                             transform: 'translateY(0)',
                         }}
                         transition="all 0.2s"
