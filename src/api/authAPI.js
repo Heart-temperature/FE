@@ -103,11 +103,18 @@ export const loginUser = async (phoneNum, loginPw) => {
 
         if (data.token) {
             localStorage.setItem('userToken', data.token);
-        }
 
-        // userId 저장 (callInfo API에서 필요)
-        if (data.userId) {
-            localStorage.setItem('userId', data.userId);
+            // JWT에서 userId 추출 (토큰의 payload에서 sub 필드)
+            try {
+                const payload = JSON.parse(atob(data.token.split('.')[1]));
+                const userId = payload.sub; // JWT의 sub 필드가 userId (전화번호)
+                if (userId) {
+                    localStorage.setItem('userId', userId);
+                    console.log('✅ userId 저장:', userId);
+                }
+            } catch (e) {
+                console.error('JWT 파싱 실패:', e);
+            }
         }
 
         return data;
