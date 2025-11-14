@@ -18,5 +18,5 @@ export {
     getCallRecords,
     getCallDetail,
     getUserMemos,
-} from './userAPI.js';
+} from './adminPageAPI.js';
 
