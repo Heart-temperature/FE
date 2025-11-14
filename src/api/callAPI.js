@@ -8,8 +8,21 @@ export const startCall = async (character, politeness) => {
         // politeness 변환
         const politenessValue = politeness ? 'formal' : 'casual';
 
+        // 토큰 가져오기 (로컬스토리지 등)
+        const token = localStorage.getItem('userToken');
+
+        if (!token) {
+            console.error('❌ 토큰이 없습니다. 로그인 필요');
+            return { success: false, error: 'No token' };
+        }
+
         // 1) 백엔드에서 callInfo 가져오기
-        const response = await axios.get('http://localhost:8080/webkit/call/callInfo');
+        const response = await axios.get('http://localhost:8080/webkit/call/callInfo', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
         const data = response.data;
 
         console.log('📌 callInfo:', data);
@@ -27,8 +40,8 @@ export const startCall = async (character, politeness) => {
         // 3) AI 서버로 전달할 payload 구성
         const payload = {
             type: 'start_call',
-            persona: character.characterType, // 캐릭터에서 characterType 쓰기
-            speechStyle: politenessValue, // formal이면 존댓말, casual이면 반말
+            persona: character.characterType,
+            speechStyle: politenessValue,
             user_info: data.user_info,
             conversationSummaries: data.conversationSummaries || [],
             latestConversationSummary: data.latestConversationSummary || '',
