@@ -45,3 +45,28 @@ export const startCall = async (character, politeness) => {
         return { success: false, error };
     }
 };
+
+export const endCall = () => {
+    try {
+        // WebSocket 준비 확인
+        if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
+            console.warn('⚠ WebSocket is not connected. Cannot send stop_call.');
+            return { success: false, error: 'WebSocket not connected' };
+        }
+
+        // AI 서버로 전달할 payload 구성
+        const payload = {
+            type: 'stop_call',
+        };
+
+        console.log('📤 AI 서버로 보낼 payload:', payload);
+
+        // WebSocket 전송
+        aiSocket.send(JSON.stringify(payload));
+
+        return { success: true };
+    } catch (error) {
+        console.error('❌ endCall error:', error);
+        return { success: false, error };
+    }
+};

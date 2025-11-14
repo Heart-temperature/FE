@@ -8,7 +8,7 @@ import DabokVideo from '../../video/dabok.webm';
 import DajeongVideo from '../../video/dajeung.webm';
 import useAppSettings from '../../hooks/useAppSettings';
 
-import { startCall } from '../../api/callAPI';
+import { endCall, startCall } from '../../api/callAPI';
 
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
@@ -103,11 +103,9 @@ export default function CallPage() {
     }, []);
 
     const handleEndCall = () => {
+        endCall();
         setIsTalking(false);
-
-        setTimeout(() => {
-            navigate('/app/home'); // MainPage로 돌아가기
-        }, 300);
+        navigate('/app/home'); // MainPage로 돌아가기
     };
 
     return (
