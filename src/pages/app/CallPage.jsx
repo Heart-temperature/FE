@@ -35,9 +35,10 @@ export default function CallPage() {
     const vadStateRef = useRef('idle'); // VAD 상태: idle, speaking, silence
     const aiSpeakingRef = useRef(false); // AI 말하는 중 (VAD 비활성화)
     const audioChunkCountRef = useRef(0); // 오디오 청크 카운터
+    const rmsLogIntervalRef = useRef(0); // RMS 로깅 간격 카운터
 
     // VAD 설정
-    const VAD_THRESHOLD = 0.01; // 음성 감지 임계값 (0.01 ~ 0.05 사이로 조정)
+    const VAD_THRESHOLD = 0.005; // 음성 감지 임계값 (더 민감하게 조정)
     const SILENCE_DURATION = 1500; // 침묵 지속 시간 (ms) - 1.5초 침묵이면 전송
     const MIN_AUDIO_LENGTH = 10; // 최소 오디오 크기 (노이즈 필터링)
 
@@ -50,9 +51,16 @@ export default function CallPage() {
 
     // 통화 시작 시 API 호출 및 마이크 시작
     useEffect(() => {
+        let isInitialized = false;
+
         const initCall = async () => {
-            if (location.state) {
+            if (location.state && !isInitialized) {
+                isInitialized = true;
                 const { character, politeness } = location.state;
+
+                console.log('='.repeat(50));
+                console.log('🎬 통화 초기화 시작');
+                console.log('='.repeat(50));
 
                 // 통화 시작 API 호출 (WebSocket 연결 포함)
                 await startCall(character, politeness);
@@ -62,6 +70,10 @@ export default function CallPage() {
 
                 // 마이크 시작
                 startMicrophone();
+
+                console.log('='.repeat(50));
+                console.log('✅ 통화 초기화 완료');
+                console.log('='.repeat(50));
             }
         };
 
@@ -71,7 +83,7 @@ export default function CallPage() {
         return () => {
             stopMicrophone();
         };
-    }, [location.state]);
+    }, []); // 빈 배열로 변경 - 한 번만 실행
 
     // 마이크 시작 함수 (VAD 포함)
     const startMicrophone = async () => {
@@ -100,18 +112,6 @@ export default function CallPage() {
 
             // 오디오 처리
             processor.onaudioprocess = (e) => {
-                // AI가 말하는 중이면 VAD 비활성화
-                if (aiSpeakingRef.current) {
-                    // 침묵 시작 시간 초기화
-                    if (silenceStartTimeRef.current !== null) {
-                        console.log('🤖 AI 말하는 중 - VAD 대기');
-                        silenceStartTimeRef.current = null;
-                        vadStateRef.current = 'idle';
-                        setIsUserSpeaking(false);
-                    }
-                    return;
-                }
-
                 const inputData = e.inputBuffer.getChannelData(0);
 
                 // 볼륨 계산 (RMS)
@@ -120,6 +120,24 @@ export default function CallPage() {
                     sum += inputData[i] * inputData[i];
                 }
                 const rms = Math.sqrt(sum / inputData.length);
+
+                // RMS 값을 주기적으로 로깅 (50번에 한 번)
+                rmsLogIntervalRef.current++;
+                if (rmsLogIntervalRef.current % 50 === 0) {
+                    console.log(`📊 RMS: ${rms.toFixed(6)} | 임계값: ${VAD_THRESHOLD} | AI 말하는 중: ${aiSpeakingRef.current} | VAD 상태: ${vadStateRef.current}`);
+                }
+
+                // AI가 말하는 중이면 VAD 비활성화
+                if (aiSpeakingRef.current) {
+                    // 침묵 시작 시간 초기화
+                    if (silenceStartTimeRef.current !== null) {
+                        console.log('🤖 AI 말하는 중 - VAD 비활성화');
+                        silenceStartTimeRef.current = null;
+                        vadStateRef.current = 'idle';
+                        setIsUserSpeaking(false);
+                    }
+                    return;
+                }
 
                 const now = Date.now();
 
@@ -265,6 +283,7 @@ export default function CallPage() {
 
     // 마이크 중지 함수
     const stopMicrophone = () => {
+        console.log('='.repeat(50));
         console.log('🎤 마이크 중지 시작...');
 
         // 침묵 시작 시간 초기화
@@ -272,39 +291,58 @@ export default function CallPage() {
 
         // ScriptProcessor 정리
         if (processorRef.current) {
-            processorRef.current.disconnect();
-            processorRef.current = null;
-            console.log('   ✓ ScriptProcessor 정리');
+            try {
+                processorRef.current.disconnect();
+                processorRef.current.onaudioprocess = null;
+                processorRef.current = null;
+                console.log('   ✓ ScriptProcessor 정리');
+            } catch (e) {
+                console.warn('   ⚠️ ScriptProcessor 정리 중 오류:', e);
+            }
         }
 
         // Analyser 정리
         if (analyserRef.current) {
-            analyserRef.current.disconnect();
-            analyserRef.current = null;
-            console.log('   ✓ Analyser 정리');
+            try {
+                analyserRef.current.disconnect();
+                analyserRef.current = null;
+                console.log('   ✓ Analyser 정리');
+            } catch (e) {
+                console.warn('   ⚠️ Analyser 정리 중 오류:', e);
+            }
         }
 
         // AudioContext 정리
         if (audioContextRef.current) {
-            audioContextRef.current.close();
-            audioContextRef.current = null;
-            console.log('   ✓ AudioContext 정리');
+            try {
+                audioContextRef.current.close();
+                audioContextRef.current = null;
+                console.log('   ✓ AudioContext 정리');
+            } catch (e) {
+                console.warn('   ⚠️ AudioContext 정리 중 오류:', e);
+            }
         }
 
         // 오디오 스트림 정리
         if (audioStreamRef.current) {
-            audioStreamRef.current.getTracks().forEach((track) => track.stop());
-            audioStreamRef.current = null;
-            console.log('   ✓ 오디오 스트림 정리');
+            try {
+                audioStreamRef.current.getTracks().forEach((track) => track.stop());
+                audioStreamRef.current = null;
+                console.log('   ✓ 오디오 스트림 정리');
+            } catch (e) {
+                console.warn('   ⚠️ 오디오 스트림 정리 중 오류:', e);
+            }
         }
 
         // 상태 초기화
         vadStateRef.current = 'idle';
         audioBufferRef.current = [];
         audioChunkCountRef.current = 0;
+        rmsLogIntervalRef.current = 0;
         setIsUserSpeaking(false);
 
         console.log('✅ 마이크 중지 완료');
+        console.log('='.repeat(50));
     };
 
     // isTalking 상태에 따라 video 재생/정지
@@ -360,6 +398,23 @@ export default function CallPage() {
                 aiSpeakingRef.current = true; // VAD 비활성화
                 console.log('🔊 AI 말하기 시작 (VAD 비활성화)');
 
+                audio.onloadedmetadata = () => {
+                    console.log('🎵 오디오 메타데이터 로드 완료');
+                    console.log('   재생 시간:', audio.duration, '초');
+                };
+
+                audio.onplay = () => {
+                    console.log('▶️ 오디오 재생 시작됨');
+                };
+
+                audio.onplaying = () => {
+                    console.log('▶️ 오디오 재생 중...');
+                };
+
+                audio.onpause = () => {
+                    console.log('⏸️ 오디오 일시정지');
+                };
+
                 audio.onended = () => {
                     // AI가 말하기 종료
                     setIsTalking(false);
@@ -371,16 +426,22 @@ export default function CallPage() {
 
                 audio.onerror = (error) => {
                     console.error('❌ 오디오 재생 실패:', error);
+                    console.error('   에러 코드:', audio.error?.code);
+                    console.error('   에러 메시지:', audio.error?.message);
                     setIsTalking(false);
                     aiSpeakingRef.current = false;
                     URL.revokeObjectURL(audioUrl);
                 };
 
                 try {
-                    await audio.play();
-                    console.log('🔊 AI 오디오 재생 시작');
+                    const playPromise = audio.play();
+                    console.log('🔊 audio.play() 호출됨');
+                    await playPromise;
+                    console.log('✅ audio.play() Promise 완료');
                 } catch (error) {
-                    console.error('❌ 오디오 재생 실패:', error);
+                    console.error('❌ audio.play() 실패:', error);
+                    console.error('   에러 이름:', error.name);
+                    console.error('   에러 메시지:', error.message);
                     setIsTalking(false);
                     aiSpeakingRef.current = false;
                 }
