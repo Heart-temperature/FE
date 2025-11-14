@@ -10,15 +10,16 @@ export const startCall = async (character, politeness) => {
 
         if (!token) {
             console.error('❌ 토큰 없음 (로그인 필요)');
-            return { success: false, error: 'No token' };
+            throw new Error('로그인이 필요합니다.');
         }
 
         if (!userId) {
             console.error('❌ userId 없음 (로그인 필요)');
-            return { success: false, error: 'No userId' };
+            throw new Error('사용자 정보를 찾을 수 없습니다.');
         }
 
         // 2) 백엔드에서 callInfo 가져오기
+        console.log(`📡 callInfo 요청: GET /webkit/call/callInfo/${userId}`);
         const response = await axios.get(`http://localhost:8080/webkit/call/callInfo/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -26,7 +27,7 @@ export const startCall = async (character, politeness) => {
         });
 
         const data = response.data;
-        console.log('📌 callInfo:', data);
+        console.log('📌 callInfo 응답:', data);
 
         // 3) WebSocket 연결 (없으면 connectAiSocket가 자동 연결)
         let aiSocket = getAiSocket();
@@ -53,7 +54,22 @@ export const startCall = async (character, politeness) => {
         return { success: true };
     } catch (error) {
         console.error('❌ startCall error:', error);
-        return { success: false, error };
+
+        // 에러 메시지 생성
+        let errorMessage = '통화 시작 중 오류가 발생했습니다.';
+        if (error.response) {
+            if (error.response.status === 404) {
+                errorMessage = 'callInfo API를 찾을 수 없습니다. 백엔드를 확인해주세요.';
+            } else if (error.response.status === 401) {
+                errorMessage = '인증이 만료되었습니다. 다시 로그인해주세요.';
+            } else {
+                errorMessage = `서버 오류: ${error.response.status}`;
+            }
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        throw new Error(errorMessage);
     }
 };
 

@@ -208,8 +208,15 @@ export default function CallPage() {
 
             try {
                 // 1. 통화 시작 API 호출
-                await startCall(character, politeness);
-                console.log('📞 통화 시작 API 호출 완료');
+                try {
+                    await startCall(character, politeness);
+                    console.log('📞 통화 시작 API 호출 완료');
+                } catch (apiError) {
+                    console.error('❌ 통화 시작 API 실패:', apiError.message);
+                    alert(apiError.message || '통화를 시작할 수 없습니다.');
+                    navigate('/app/home');
+                    return;
+                }
 
                 // 2. 마이크 권한 요청
                 const stream = await navigator.mediaDevices.getUserMedia({
