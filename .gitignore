@@ -131,6 +131,5 @@ temp/
 # !package.json
 # !package-lock.json
 
-
-
-
+# Test and reference files
+test-interface/
