@@ -4,23 +4,17 @@ import { connectAiSocket, getAiSocket } from './aiSocket';
 
 export const startCall = async (character, politeness) => {
     try {
-        // 1) 토큰과 userId 가져오기
+        // 1) 토큰 가져오기
         const token = localStorage.getItem('userToken');
-        const userId = localStorage.getItem('userId');
 
         if (!token) {
             console.error('❌ 토큰 없음 (로그인 필요)');
             throw new Error('로그인이 필요합니다.');
         }
 
-        if (!userId) {
-            console.error('❌ userId 없음 (로그인 필요)');
-            throw new Error('사용자 정보를 찾을 수 없습니다.');
-        }
-
-        // 2) 백엔드에서 callInfo 가져오기
-        console.log(`📡 callInfo 요청: GET /webkit/call/callInfo/${userId}`);
-        const response = await axios.get(`http://localhost:8080/webkit/call/callInfo/${userId}`, {
+        // 2) 백엔드에서 callInfo 가져오기 (userId는 JWT 토큰에서 자동 추출)
+        console.log('📡 callInfo 요청: GET /webkit/call/callInfo');
+        const response = await axios.get('http://localhost:8080/webkit/call/callInfo', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
