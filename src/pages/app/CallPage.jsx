@@ -65,10 +65,25 @@ export default function CallPage() {
         const socket = getAiSocket();
         if (!socket) return;
 
-        socket.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
+        socket.onmessage = async (event) => {
+            const data = event.data;
 
-            setAiMessages((prev) => [...prev, msg]);
+            // 🎧 1) 오디오 Blob 메시지 처리
+            if (data instanceof Blob) {
+                console.log('🎵 AI 오디오 Blob 수신:', data);
+                // TODO: 오디오 재생 처리
+                return;
+            }
+
+            // 📝 2) JSON 텍스트 메시지 처리
+            try {
+                const msg = JSON.parse(data);
+                console.log('📩 AI JSON 메시지 수신:', msg);
+
+                setAiMessages((prev) => [...prev, msg]);
+            } catch (err) {
+                console.warn('⚠ JSON 파싱 실패 메시지:', data);
+            }
         };
     }, []);
 
