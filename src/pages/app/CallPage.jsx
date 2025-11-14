@@ -14,25 +14,58 @@ import { getAiSocket } from '../../api/aiSocket';
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
 
+// 상태 정의
+const STATES = {
+    IDLE: 'idle', // 대기 중
+    RECORDING: 'recording', // 🎤 녹음 중...
+    SILENCE_DETECTING: 'silence_detecting', // ⏸️ 침묵 감지 중...
+    SENDING: 'sending', // 📤 전송 중...
+    AI_THINKING: 'ai_thinking', // 🤖 AI 생각 중...
+    AI_SPEAKING: 'ai_speaking', // 🤖 AI 말하는 중
+};
+
+// 상태별 표시 텍스트
+const STATE_LABELS = {
+    [STATES.IDLE]: '대기 중',
+    [STATES.RECORDING]: '🎤 녹음 중...',
+    [STATES.SILENCE_DETECTING]: '⏸️ 침묵 감지 중...',
+    [STATES.SENDING]: '📤 전송 중...',
+    [STATES.AI_THINKING]: '🤖 AI 생각 중...',
+    [STATES.AI_SPEAKING]: '🤖 AI 말하는 중',
+};
+
+// 음성 감지 설정
+const VOICE_CONFIG = {
+    VOICE_THRESHOLD: 0.01, // 음성으로 인식할 최소 볼륨
+    SILENCE_THRESHOLD: 0.005, // 침묵으로 인식할 최대 볼륨
+    SILENCE_DURATION: 1000, // 침묵 지속 시간 (ms)
+    SAMPLE_RATE: 16000, // 샘플링 레이트
+};
+
 export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
     const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, callBtnH } = useAppSettings();
 
-    const [isTalking, setIsTalking] = useState(true); // AI가 말하는 중
-    const [isUserTalking, setIsUserTalking] = useState(false); // 사용자가 말하는 중
-    const [currentSubtitle, setCurrentSubtitle] = useState('');
-    const [aiMessages, setAiMessages] = useState([]);
+    // 상태 관리
+    const [state, setState] = useState(STATES.IDLE);
+    const [currentSubtitle, setCurrentSubtitle] = useState('안녕하세요! 무엇을 도와드릴까요?');
 
-    const videoRef = useRef(null); // video 태그 ref
+    // Refs
+    const videoRef = useRef(null);
+    const audioContextRef = useRef(null);
+    const mediaStreamRef = useRef(null);
+    const analyserRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const silenceTimerRef = useRef(null);
+    const audioElementRef = useRef(null);
 
     // 전달받은 캐릭터 정보
     const character = location.state?.character || {
         name: '다정이',
-
         characterType: 'dajeong',
-
         color: '#2196F3',
     };
 
@@ -44,23 +77,200 @@ export default function CallPage() {
         }
     }, [location.state]);
 
-    // isTalking 상태에 따라 video 재생/정지
+    // 비디오 재생 제어
     useEffect(() => {
         if (!videoRef.current) return;
 
-        if (isTalking && !isUserTalking) {
-            // AI가 말할 때: 재생
-
+        if (state === STATES.AI_SPEAKING) {
             videoRef.current.play().catch((e) => {
                 console.log('Video play failed:', e);
             });
         } else {
-            // AI 말 안할 때: 정지 (멈춘 자리 유지)
-
             videoRef.current.pause();
         }
-    }, [isTalking, isUserTalking]);
+    }, [state]);
 
+    // 마이크 초기화 및 음성 감지 시작
+    useEffect(() => {
+        let animationFrameId;
+
+        const initMicrophone = async () => {
+            try {
+                // 마이크 접근
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: VOICE_CONFIG.SAMPLE_RATE,
+                    },
+                });
+                mediaStreamRef.current = stream;
+
+                // AudioContext 생성
+                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)({
+                    sampleRate: VOICE_CONFIG.SAMPLE_RATE,
+                });
+                const audioContext = audioContextRef.current;
+
+                // Analyser 생성 (음성 레벨 감지)
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 2048;
+                analyserRef.current = analyser;
+
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+
+                // MediaRecorder 생성
+                mediaRecorderRef.current = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus',
+                });
+
+                mediaRecorderRef.current.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunksRef.current.push(event.data);
+                    }
+                };
+
+                mediaRecorderRef.current.onstop = () => {
+                    sendAudioToServer();
+                };
+
+                // 음성 레벨 감지 루프
+                const detectVoice = () => {
+                    const bufferLength = analyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+                    analyser.getByteTimeDomainData(dataArray);
+
+                    // 음성 레벨 계산 (RMS)
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        const normalized = (dataArray[i] - 128) / 128;
+                        sum += normalized * normalized;
+                    }
+                    const rms = Math.sqrt(sum / bufferLength);
+
+                    // 상태별 처리
+                    if (state === STATES.IDLE) {
+                        // 대기 중: 음성 감지 시 녹음 시작
+                        if (rms > VOICE_CONFIG.VOICE_THRESHOLD) {
+                            startRecording();
+                        }
+                    } else if (state === STATES.RECORDING) {
+                        // 녹음 중: 침묵 감지
+                        if (rms < VOICE_CONFIG.SILENCE_THRESHOLD) {
+                            startSilenceDetection();
+                        } else {
+                            // 음성이 다시 감지되면 침묵 타이머 취소
+                            if (silenceTimerRef.current) {
+                                clearTimeout(silenceTimerRef.current);
+                                silenceTimerRef.current = null;
+                                setState(STATES.RECORDING);
+                            }
+                        }
+                    } else if (state === STATES.SILENCE_DETECTING) {
+                        // 침묵 감지 중: 음성이 다시 감지되면 녹음으로 복귀
+                        if (rms > VOICE_CONFIG.VOICE_THRESHOLD) {
+                            if (silenceTimerRef.current) {
+                                clearTimeout(silenceTimerRef.current);
+                                silenceTimerRef.current = null;
+                            }
+                            setState(STATES.RECORDING);
+                        }
+                    }
+
+                    animationFrameId = requestAnimationFrame(detectVoice);
+                };
+
+                detectVoice();
+            } catch (error) {
+                console.error('마이크 접근 실패:', error);
+                setCurrentSubtitle('마이크 접근 권한이 필요합니다.');
+            }
+        };
+
+        initMicrophone();
+
+        return () => {
+            // Cleanup
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (mediaStreamRef.current) {
+                mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+            }
+            if (audioContextRef.current) {
+                audioContextRef.current.close();
+            }
+            if (silenceTimerRef.current) {
+                clearTimeout(silenceTimerRef.current);
+            }
+        };
+    }, [state]);
+
+    // 녹음 시작
+    const startRecording = () => {
+        console.log('🎤 녹음 시작');
+        setState(STATES.RECORDING);
+        setCurrentSubtitle('듣고 있습니다...');
+
+        audioChunksRef.current = [];
+        mediaRecorderRef.current.start();
+
+        // "start" 메시지 전송
+        const socket = getAiSocket();
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: 'start' }));
+        }
+    };
+
+    // 침묵 감지 시작
+    const startSilenceDetection = () => {
+        if (state !== STATES.RECORDING) return;
+        if (silenceTimerRef.current) return;
+
+        setState(STATES.SILENCE_DETECTING);
+
+        silenceTimerRef.current = setTimeout(() => {
+            console.log('⏸️ 침묵 지속 -> 녹음 종료');
+            stopRecording();
+        }, VOICE_CONFIG.SILENCE_DURATION);
+    };
+
+    // 녹음 종료 및 전송
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            setState(STATES.SENDING);
+            setCurrentSubtitle('전송 중...');
+            mediaRecorderRef.current.stop();
+        }
+
+        if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = null;
+        }
+    };
+
+    // 오디오 서버로 전송
+    const sendAudioToServer = async () => {
+        console.log('📤 오디오 전송');
+
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+        audioChunksRef.current = [];
+
+        const socket = getAiSocket();
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            // "stop" 메시지 전송
+            socket.send(JSON.stringify({ type: 'stop' }));
+
+            // 오디오 Blob 전송
+            socket.send(audioBlob);
+
+            setState(STATES.AI_THINKING);
+            setCurrentSubtitle('AI가 생각 중입니다...');
+        }
+    };
+
+    // WebSocket 메시지 처리
     useEffect(() => {
         const socket = getAiSocket();
         if (!socket) return;
@@ -68,68 +278,71 @@ export default function CallPage() {
         socket.onmessage = async (event) => {
             const data = event.data;
 
-            // 🎧 1) 오디오 Blob 메시지 처리
+            // 🎧 오디오 Blob 메시지 처리
             if (data instanceof Blob) {
                 console.log('🎵 AI 오디오 Blob 수신:', data);
-                // TODO: 오디오 재생 처리
+                playAiAudio(data);
                 return;
             }
 
-            // 📝 2) JSON 텍스트 메시지 처리
+            // 📝 JSON 텍스트 메시지 처리
             try {
                 const msg = JSON.parse(data);
                 console.log('📩 AI JSON 메시지 수신:', msg);
 
-                setAiMessages((prev) => [...prev, msg]);
+                if (msg.type === 'ended') {
+                    // AI가 응답을 완료했음을 알림
+                    console.log('✅ AI 응답 완료');
+                } else if (msg.message) {
+                    // 자막 표시
+                    setCurrentSubtitle(msg.message);
+                }
             } catch (err) {
                 console.warn('⚠ JSON 파싱 실패 메시지:', data);
             }
         };
     }, []);
 
-    // 테스트용 AI 음성 및 자막 시뮬레이션
-    useEffect(() => {
-        const testSubtitles = [
-            { text: '안녕하세요! 오늘 기분이 어떠세요?', duration: 3000, aiTalking: true },
+    // AI 오디오 재생
+    const playAiAudio = async (audioBlob) => {
+        setState(STATES.AI_SPEAKING);
+        setCurrentSubtitle('AI가 말하는 중...');
 
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audioElementRef.current = audio;
 
-            { text: '오늘 날씨가 참 좋네요.', duration: 2500, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-
-            { text: '무슨 이야기를 나누고 싶으세요?', duration: 3000, aiTalking: true },
-
-            { text: '(사용자 응답 대기 중...)', duration: 2000, aiTalking: false },
-        ];
-
-        let index = 0;
-
-        const showNextSubtitle = () => {
-            const current = testSubtitles[index % testSubtitles.length];
-
-            setCurrentSubtitle(current.text);
-
-            setIsTalking(current.aiTalking);
-
-            index++;
-
-            setTimeout(showNextSubtitle, current.duration);
+        audio.onended = () => {
+            console.log('🔇 AI 오디오 재생 완료 -> 대기 중');
+            setState(STATES.IDLE);
+            setCurrentSubtitle('말씀해주세요!');
+            URL.revokeObjectURL(audioUrl);
         };
 
-        // 첫 자막 즉시 표시
-
-        showNextSubtitle();
-
-        return () => {
-            index = testSubtitles.length; // cleanup
+        audio.onerror = (e) => {
+            console.error('오디오 재생 실패:', e);
+            setState(STATES.IDLE);
+            setCurrentSubtitle('오디오 재생 오류가 발생했습니다.');
+            URL.revokeObjectURL(audioUrl);
         };
-    }, []);
+
+        await audio.play();
+    };
 
     const handleEndCall = () => {
+        // 오디오 재생 중이면 중지
+        if (audioElementRef.current) {
+            audioElementRef.current.pause();
+            audioElementRef.current = null;
+        }
+
+        // 녹음 중이면 중지
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+        }
+
         endCall();
-        setIsTalking(false);
-        navigate('/app/home'); // MainPage로 돌아가기
+        navigate('/app/home');
     };
 
     return (
