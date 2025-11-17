@@ -536,9 +536,9 @@ export default function UserDetail() {
                                                 // 감정 점수를 감정 상태로 변환
                                                 let emotionStatus = 'new';
                                                 if (typeof emotion === 'number') {
-                                                    const emotionScore = emotion * 100; // 백분율 변환
-                                                    if (emotionScore >= 80) emotionStatus = 'urgent';
-                                                    else if (emotionScore >= 40) emotionStatus = 'caution';
+                                                    // 40 이하: 정상, 40~80: 주의, 80 이상: 긴급
+                                                    if (emotion >= 80) emotionStatus = 'urgent';
+                                                    else if (emotion >= 40) emotionStatus = 'caution';
                                                     else emotionStatus = 'normal';
                                                 } else if (typeof emotion === 'string') {
                                                     emotionStatus = emotion;

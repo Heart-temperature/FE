@@ -359,9 +359,9 @@ export const getLastEmotion = async (userId) => {
         
         if (responseText && responseText.trim()) {
             try {
-                // double 값을 파싱 (백분율 0~1 범위를 0~100으로 변환)
+                // double 값을 파싱
                 const emotionScore = parseFloat(responseText);
-                return isNaN(emotionScore) ? null : emotionScore * 100;
+                return isNaN(emotionScore) ? null : emotionScore;
             } catch (e) {
                 return null;
             }
@@ -478,19 +478,8 @@ export const getEmotionGraph = async (userId) => {
                 const data = JSON.parse(responseText);
                 const records = Array.isArray(data) ? data : [];
                 
-                // 백엔드에서 반환하는 감정 점수(0~1 범위)를 0~100으로 변환
-                return records.map(item => {
-                    if (typeof item === 'number') {
-                        return item * 100;
-                    } else if (item && typeof item === 'object') {
-                        return {
-                            ...item,
-                            score: item.score !== undefined ? item.score * 100 : item.score,
-                            emotion: item.emotion !== undefined && typeof item.emotion === 'number' ? item.emotion * 100 : item.emotion,
-                        };
-                    }
-                    return item;
-                });
+                // 백엔드에서 반환하는 감정 점수 그대로 사용
+                return records;
             } catch (e) {
                 return [];
             }
