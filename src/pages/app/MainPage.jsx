@@ -19,20 +19,14 @@ export default function MainPage() {
         isHighContrast,
         toggleHighContrast,
         fs,
-        callBtnH,
         arrowBtnSize,
         arrowIconSize,
-        aiImgSize,
-        btnH,
         inputH,
         imgCircleHeight,
-        imgCircleWidth,
     } = useAppSettings();
 
     const [currentModelIndex, setCurrentModelIndex] = useState(0);
     const [isPolite, setIsPolite] = useState(true);
-
-    const handleToggle = () => setIsPolite((prev) => !prev);
 
     // AI 모델 데이터
     const aiModels = [
@@ -66,20 +60,33 @@ export default function MainPage() {
 
     const handleStartCall = () => {
         console.log(`통화 시작: ${currentModel.name}`);
+        console.log('📞 CallPage로 이동 시작...');
+        console.log('   경로:', ROUTES.USER_APP_CALL);
+        console.log('   캐릭터:', currentModel);
+        console.log('   정중함:', isPolite);
+        
         // CallPage로 이동하면서 선택된 캐릭터 정보 및 고대비 모드 전달
-
-
-        navigate(ROUTES.USER_APP_CALL, {
-            state: {
-                character: {
-                    name: currentModel.name,
-                    characterType: currentModel.characterType,
-                    color: currentModel.color,
-                },
-                isHighContrast: isHighContrast,
-                politeness: isPolite
+        const navigationState = {
+            character: {
+                name: currentModel.name,
+                characterType: currentModel.characterType,
+                color: currentModel.color,
             },
-        });
+            isHighContrast: isHighContrast,
+            politeness: isPolite
+        };
+        
+        console.log('   전달할 state:', navigationState);
+        
+        try {
+            navigate(ROUTES.USER_APP_CALL, {
+                state: navigationState,
+                replace: false, // 히스토리에 추가
+            });
+            console.log('✅ navigate 호출 완료');
+        } catch (error) {
+            console.error('❌ navigate 오류:', error);
+        }
     };
 
     return (

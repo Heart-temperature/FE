@@ -4,12 +4,11 @@ import { Box, Button, Flex, FormControl, FormLabel, Input, Text, VStack, HStack,
 import DajeongLogo from '../../assets/image.png';
 import { ROUTES } from '../../routes';
 import { loginUser } from '../../api/authAPI';
-import { s } from 'framer-motion/client';
 import useAppSettings from '../../hooks/useAppSettings';
 
 export default function UserLoginPage() {
     const navigate = useNavigate();
-    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, inputH, btnH } =
+    const { fontSizeLevel, setFontSizeLevel, isHighContrast, toggleHighContrast, fs, inputH } =
         useAppSettings();
 
     const [id, setId] = useState('');
