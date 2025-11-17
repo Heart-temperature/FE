@@ -114,7 +114,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: ROUTES.HOME,
-                element: <DashboardPage />,
+                element: <UserLoginPage />,
                 handle: ROUTE_META[ROUTES.HOME],
             },
             {
