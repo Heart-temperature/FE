@@ -149,3 +149,4 @@ export const CharacterSlider = ({ character, setCharacter }) => {
 
 
 
+

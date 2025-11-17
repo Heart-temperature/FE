@@ -337,12 +337,12 @@ export const updateUserMemo = async (memoId, memoDetail) => {
 
 /**
  * 사용자 마지막 감정상태 조회 API
- * @param {string} userLoginId - 사용자 로그인 ID (전화번호)
- * @returns {Promise<Object>} 감정상태 데이터
+ * @param {number|string} userId - 사용자 ID
+ * @returns {Promise<number|null>} 감정 점수 (double) 또는 null
  */
-export const getLastEmotion = async (userLoginId) => {
+export const getLastEmotion = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/record/last-emotion/${userLoginId}?user_login_id=${userLoginId}`, {
+        const response = await fetch(`http://localhost:8080/webkit/record/last-emotion/${userId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -359,7 +359,9 @@ export const getLastEmotion = async (userLoginId) => {
         
         if (responseText && responseText.trim()) {
             try {
-                return JSON.parse(responseText);
+                // double 값을 파싱 (백분율 0~1 범위를 0~100으로 변환)
+                const emotionScore = parseFloat(responseText);
+                return isNaN(emotionScore) ? null : emotionScore * 100;
             } catch (e) {
                 return null;
             }
@@ -373,13 +375,13 @@ export const getLastEmotion = async (userLoginId) => {
 };
 
 /**
- * 사용자 마지막 통화 정보 조회 API
- * @param {string} userLoginId - 사용자 로그인 ID (전화번호)
- * @returns {Promise<Object>} 통화 정보 데이터
+ * 사용자 마지막 통화 시간 조회 API
+ * @param {number|string} userId - 사용자 ID
+ * @returns {Promise<string|null>} 마지막 통화 시간 (LocalDateTime 문자열) 또는 null
  */
-export const getLastCall = async (userLoginId) => {
+export const getLastCall = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/record/last-call/${userLoginId}?user_login_id=${userLoginId}`, {
+        const response = await fetch(`http://localhost:8080/webkit/record/last-call/${userId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -396,9 +398,12 @@ export const getLastCall = async (userLoginId) => {
         
         if (responseText && responseText.trim()) {
             try {
-                return JSON.parse(responseText);
+                // LocalDateTime 문자열을 파싱 (JSON으로 감싸져 있을 수도 있음)
+                const data = JSON.parse(responseText);
+                return typeof data === 'string' ? data : (data.dateTime || data.toString());
             } catch (e) {
-                return null;
+                // JSON이 아닌 경우 그대로 반환
+                return responseText.trim();
             }
         }
 
@@ -471,7 +476,21 @@ export const getEmotionGraph = async (userId) => {
         if (responseText && responseText.trim()) {
             try {
                 const data = JSON.parse(responseText);
-                return Array.isArray(data) ? data : [];
+                const records = Array.isArray(data) ? data : [];
+                
+                // 백엔드에서 반환하는 감정 점수(0~1 범위)를 0~100으로 변환
+                return records.map(item => {
+                    if (typeof item === 'number') {
+                        return item * 100;
+                    } else if (item && typeof item === 'object') {
+                        return {
+                            ...item,
+                            score: item.score !== undefined ? item.score * 100 : item.score,
+                            emotion: item.emotion !== undefined && typeof item.emotion === 'number' ? item.emotion * 100 : item.emotion,
+                        };
+                    }
+                    return item;
+                });
             } catch (e) {
                 return [];
             }
@@ -521,51 +540,14 @@ export const getCallRecords = async (userId) => {
 };
 
 /**
- * AI 대화 히스토리 조회 API
+ * 사용자 전체 통화 기록 조회 API (CallRecordResponse 리스트)
  * @param {number} userId - 사용자 ID
- * @returns {Promise<Array>} 대화 히스토리
+ * @returns {Promise<Array>} 통화 기록 배열 (CallRecordResponse)
  */
 export const getCallDetail = async (userId) => {
     try {
-        // 1️⃣ 먼저 전체 통화 기록 조회
-        const callRecords = await getCallRecords(userId);
-        
-        if (!callRecords || callRecords.length === 0) {
-            return [];
-        }
-
-        // 2️⃣ 가장 최근 통화의 ID 추출 (배열의 마지막 항목 또는 첫 항목, 백엔드 정렬에 따라)
-        // 보통 최근 항목이 배열의 처음이거나 끝이므로, 대부분의 경우 마지막 항목을 선택
-        const mostRecentRecord = callRecords[0] || callRecords[callRecords.length - 1];
-        const callRecordId = mostRecentRecord.id || mostRecentRecord.call_id;
-        
-        const headers = getHeaders();
-        
-        // 3️⃣ 해당 ID로 상세 정보 조회
-        const response = await fetch(`http://localhost:8080/webkit/record/call-detail/${callRecordId}`, {
-            method: 'GET',
-            headers: headers,
-        });
-
-        if (!response.ok) {
-            if (response.status === 403 || response.status === 404) {
-                return [];
-            }
-            throw new Error(`Failed to fetch call detail: ${response.status}`);
-        }
-
-        const responseText = await response.text();
-        
-        if (responseText && responseText.trim()) {
-            try {
-                const data = JSON.parse(responseText);
-                return Array.isArray(data) ? data : [data];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        return [];
+        // /webkit/record/user/{userId} API를 사용하여 전체 통화 기록 조회
+        return await getCallRecords(userId);
     } catch (error) {
         return [];
     }
