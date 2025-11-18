@@ -571,8 +571,8 @@ export default function UserDetail() {
                                                     emotionStatus = emotion;
                                                 }
                                                 
-                                                // is_normal_finish가 1(true)이면 비정상 종료
-                                                const isAbnormalFinish = isNormalFinish === 1 || isNormalFinish === true;
+                                                // is_normal_finish가 0(false)이면 비정상 종료, 1(true)이면 정상 종료
+                                                const isAbnormalFinish = isNormalFinish === 0 || isNormalFinish === false;
                                                 
                                                 return (
                                                     <Box key={conv.id || conv.callId || index} p={4} bg="gray.50" borderRadius="lg">

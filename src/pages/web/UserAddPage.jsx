@@ -179,7 +179,7 @@ export default function UserAdd() {
             });
 
             // 대시보드로 이동
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             toast({
                 title: '사용자 추가 실패',
