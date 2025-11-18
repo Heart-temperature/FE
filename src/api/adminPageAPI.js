@@ -130,6 +130,13 @@ export const addUser = async (userData) => {
  */
 export const updateUser = async (userId, userData) => {
     try {
+        // 디버깅: 전송되는 데이터 확인
+        console.log('updateUser API 호출:', {
+            userId,
+            userData,
+            sexuality: userData.sexuality
+        });
+        
         const response = await fetch(`http://localhost:8080/webkit/admin/user-info/update/${userId}`, {
             method: 'PUT',
             headers: getHeaders(),
@@ -138,6 +145,11 @@ export const updateUser = async (userId, userData) => {
 
         if (!response.ok) {
             const errorData = await response.text();
+            console.error('updateUser API 에러:', {
+                status: response.status,
+                error: errorData,
+                requestData: userData
+            });
             throw new Error(`Update failed: ${response.status} - ${errorData}`);
         }
 
