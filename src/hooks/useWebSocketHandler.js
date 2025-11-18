@@ -48,6 +48,12 @@ export const useWebSocketHandler = (callbacks = {}) => {
                 const isEndCallAudio = isEndingCallRef.current;
                 await playTtsAudio(data, {
                     isEndCallAudio: isEndCallAudio,
+                    onAudioReceived: () => {
+                        // AI 오디오 수신 시 "응답 생성 중" 프로그레스 바 숨김
+                        if (callbacks.onAudioReceived) {
+                            callbacks.onAudioReceived();
+                        }
+                    },
                     onStart: () => {
                         if (callbacks.onTtsAudioStart) {
                             callbacks.onTtsAudioStart();

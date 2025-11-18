@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Flex, Text, VStack, Box } from '@chakra-ui/react';
+import { Button, Flex, Text, VStack, Box, Progress } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -30,7 +30,47 @@ const AnimatedSpeakingText = () => {
         return () => clearInterval(interval);
     }, []);
 
-    return <span>사용자가 말하는 중{dots}</span>;
+    return (
+        <Box as="span" display="inline-block" textAlign="center" w="100%">
+            사용자가 말하는 중{dots}
+        </Box>
+    );
+};
+
+// AI 응답 생성 중 프로그레스 바 컴포넌트
+const AIThinkingProgress = ({ isHighContrast }) => {
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        // 프로그레스 바가 0에서 100까지 반복적으로 증가
+        const interval = setInterval(() => {
+            setProgress((prev) => {
+                if (prev >= 100) {
+                    return 0; // 100% 도달 시 다시 0으로
+                }
+                return prev + 2; // 2%씩 증가
+            });
+        }, 50); // 50ms마다 업데이트 (부드러운 애니메이션)
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <VStack spacing={3} w="100%" py={2}>
+            <Text fontSize="2xl" fontWeight="bold" textAlign="center" color={isHighContrast ? '#FFFFFF' : '#000000'}>
+                응답 생성 중...
+            </Text>
+            <Progress
+                value={progress}
+                size="lg"
+                colorScheme="blue"
+                borderRadius="full"
+                w="100%"
+                hasStripe
+                isAnimated
+            />
+        </VStack>
+    );
 };
 
 export default function CallPage() {
@@ -72,9 +112,9 @@ export default function CallPage() {
 
     // VAD 설정 (사람 음성만 감지하도록 엄격한 조건)
     const VAD_THRESHOLD = 0.005; // 노이즈 필터링을 위해 임계값 대폭 상향 (기존: 0.002)
-    const SILENCE_DURATION = 3000; // 할머니 할아버지를 위해 침묵 시간을 3초로 설정
-    const MIN_RECORDING_TIME = 2000; // 최소 녹음 시간을 2초로 증가 (노이즈로 인한 잘못된 전송 방지)
-    const MIN_AUDIO_CHUNKS = 30; // 최소 청크 수 증가 (기존: 20) - 더 많은 데이터 필요
+    const SILENCE_DURATION = 2000; // 할머니 할아버지를 위해 침묵 시간을 3초로 설정
+    const MIN_RECORDING_TIME = 1000; // 최소 녹음 시간을 2초로 증가 (노이즈로 인한 잘못된 전송 방지)
+    const MIN_AUDIO_CHUNKS = 20; // 최소 청크 수 증가 (기존: 20) - 더 많은 데이터 필요
     const MIN_RMS_FOR_START = 0.008; // 녹음 시작을 위한 최소 RMS 값 (사람 음성만 감지하도록 높게 설정)
     const MIN_CONSECUTIVE_FRAMES = 8; // 연속 프레임 수 증가 (기존: 5) - 더 엄격한 조건
     const MIN_RMS_AVERAGE = 0.006; // 연속 프레임의 평균 RMS 값 (일시적 노이즈 필터링)
@@ -496,7 +536,8 @@ export default function CallPage() {
                             console.log('   현재 녹음 상태:', isRecordingRef.current);
                             console.log('   현재 청크 수:', audioChunkCountRef.current);
                             console.log('='.repeat(50));
-                            setVadStatus('말 안하는 중'); // 음성 인식 중일 때만 상태 표시
+                            // "말 안하는 중" 상태는 표시하지 않음
+                            setVadStatus('');
                         }
                     }
 
@@ -531,8 +572,9 @@ export default function CallPage() {
                                 audioChunkCountRef.current >= MIN_AUDIO_CHUNKS
                             ) {
                                 console.log('✅ 모든 조건 만족 - 녹음 종료, 서버로 전송');
+                                // "응답 생성 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
+                                setVadStatus('응답 생성 중');
                                 sendStopMessage();
-                                setVadStatus(''); // 전송 중은 상태 표시 안 함 (음성 인식이 끝났으므로)
                             } else {
                                 console.log('⚠️ 조건 미충족 - 녹음이 너무 짧거나 데이터 없음');
                                 isRecordingRef.current = false;
@@ -548,13 +590,14 @@ export default function CallPage() {
 
                             vadStateRef.current = 'idle';
                             setIsUserSpeaking(false);
-                            audioBufferRef.current = [];
-                            audioChunkCountRef.current = 0;
+                            // audioBufferRef는 sendStopMessage에서 사용하므로 여기서 비우지 않음
+                            // audioChunkCountRef도 sendStopMessage에서 사용하므로 여기서 리셋하지 않음
                             silenceStartTimeRef.current = null;
                             recordingStartTimeRef.current = null;
                             consecutiveVoiceFramesRef.current = 0; // 리셋
                             rmsHistoryRef.current = []; // RMS 히스토리 리셋
-                            setVadStatus(''); // idle 상태로 돌아가면 상태 표시 안 함
+                            // "응답 생성 중" 프로그레스 바는 유지 (AI 오디오 수신 전까지)
+                            // setVadStatus('')는 하지 않음
                         }
                     }
                 }
@@ -625,6 +668,8 @@ export default function CallPage() {
             console.log('='.repeat(50));
             console.log('📤 STOP 메시지 전송');
             console.log('   버퍼에 쌓인 청크 수:', audioBufferRef.current.length);
+
+            // 프로그레스 바는 이미 "✅ 모든 조건 만족" 로그 시점에 표시됨
 
             // 버퍼에 쌓인 모든 오디오 청크를 서버로 전송
             if (audioBufferRef.current.length > 0) {
@@ -720,10 +765,20 @@ export default function CallPage() {
 
     // WebSocket 핸들러 훅
     const { setupWebSocketHandler, setNormalFinish, hasReceivedCallSummary, startEndingCall } = useWebSocketHandler({
+        onAudioReceived: () => {
+            // AI 오디오 수신 시 "응답 생성 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
+            if (vadStatus.includes('응답 생성 중')) {
+                setVadStatus('');
+            }
+        },
         onTtsAudioStart: () => {
             setIsTalking(true);
             aiSpeakingRef.current = true;
-            setVadStatus(''); // TTS 재생 중에는 상태 표시 안 함 (사용자 음성 인식이 아니므로)
+            
+            // TTS 재생 시작 시 "응답 생성 중" 프로그레스 바 숨김 (TTS가 재생 중이면 프로그레스 바 표시 안 함)
+            if (vadStatus.includes('응답 생성 중')) {
+                setVadStatus('');
+            }
             
             // 첫 TTS 오디오가 실제로 재생될 때만 자막 업데이트 (TTS 오디오 재생 전까지 "통화 거는 중..." 유지)
             if (isFirstTtsRef.current) {
@@ -809,11 +864,13 @@ export default function CallPage() {
             // 녹음 준비 완료
         },
         onEndedStop: () => {
-            setVadStatus(''); // AI 생각 중은 상태 표시 안 함 (음성 인식 중이 아니므로)
+            // 백엔드에서 녹음 종료 확인 (프로그레스 바는 sendStopMessage에서 이미 표시됨)
+            // 여기서는 추가 작업 없음
         },
         onTtsStart: (text) => {
             // tts_start 메시지는 TTS 오디오 재생 전에 오지만,
             // 첫 TTS인 경우 오디오가 실제로 재생될 때까지 "통화 거는 중..."을 유지해야 함
+            // TTS 시작 메시지를 받았지만 아직 오디오가 재생되지 않았으므로 프로그레스 바는 유지
             if (isFirstTtsRef.current) {
                 // 첫 TTS인 경우 pendingTranscriptionRef에 저장 (onTtsAudioStart에서 표시)
                 console.log('📝 첫 TTS 텍스트 수신 (오디오 재생 전) - "통화 거는 중..." 유지');
@@ -823,9 +880,11 @@ export default function CallPage() {
                 // 첫 TTS가 아닌 경우 즉시 자막 업데이트
                 setAiSubtitle(text);
             }
+            // 프로그레스 바는 onTtsAudioStart에서 숨김 (오디오 실제 재생 시작 시)
         },
         onTranscription: ({ userText, assistantText }) => {
             // transcription은 TTS 생성 전에 보내지므로, TTS 재생 중이면 나중에 업데이트
+            // "응답 생성 중" 프로그레스 바는 TTS 재생 시작 전까지 유지 (onTtsAudioStart에서 숨김)
             if (aiSpeakingRef.current) {
                 // TTS 재생 중이면 대기
                 pendingTranscriptionRef.current = { userText, assistantText };
@@ -992,33 +1051,36 @@ export default function CallPage() {
 
                     {/* 음성 감지 상태 표시 (음성 인식 중일 때만 표시) */}
                     {vadStatus && (
-                        <Box
-                            bg={
-                                vadStatus.includes('사용자가 말하는 중')
-                                    ? 'red.500'
-                                    : vadStatus.includes('말 안하는 중')
-                                    ? 'orange.400'
-                                    : vadStatus.includes('다정이가 말하는 중')
-                                    ? 'blue.500'
-                                    : vadStatus.includes('전송')
-                                    ? 'green.500'
-                                    : vadStatus.includes('AI 생각')
-                                    ? 'purple.500'
-                                    : 'gray.400'
-                            }
-                            color="white"
-                            px={6}
-                            py={4}
-                            borderRadius="15px"
-                            textAlign="center"
-                        >
-                            <Text fontSize="2xl" fontWeight="bold">
-                                {vadStatus.includes('사용자가 말하는 중') ? (
+                        <Box textAlign="center">
+                            {vadStatus.includes('AI 생각') || vadStatus.includes('응답 생성') ? (
+                                <AIThinkingProgress isHighContrast={isHighContrast} />
+                            ) : vadStatus.includes('사용자가 말하는 중') ? (
+                                <Text fontSize="2xl" fontWeight="bold" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                     <AnimatedSpeakingText />
-                                ) : (
-                                    vadStatus
-                                )}
-                            </Text>
+                                </Text>
+                            ) : (
+                                // "말 안하는 중"은 표시하지 않음, 다른 상태만 표시
+                                !vadStatus.includes('말 안하는 중') && (
+                                    <Box
+                                        bg={
+                                            vadStatus.includes('다정이가 말하는 중')
+                                                ? 'blue.500'
+                                                : vadStatus.includes('전송')
+                                                ? 'green.500'
+                                                : 'gray.400'
+                                        }
+                                        color="white"
+                                        px={6}
+                                        py={4}
+                                        borderRadius="15px"
+                                        textAlign="center"
+                                    >
+                                        <Text fontSize="2xl" fontWeight="bold">
+                                            {vadStatus}
+                                        </Text>
+                                    </Box>
+                                )
+                            )}
                         </Box>
                     )}
 

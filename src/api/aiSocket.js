@@ -29,7 +29,8 @@ export const connectAiSocket = () => {
         }
 
         isManualClose = false;
-        aiSocket = new WebSocket(`ws://202.31.135.25:8080/ws`);
+        const WS_URL = import.meta.env.VITE_WS_URL || 'ws://202.31.135.25:8080/ws';
+        aiSocket = new WebSocket(WS_URL);
 
         aiSocket.onopen = () => {
             console.log('✅ AI WebSocket 연결됨');

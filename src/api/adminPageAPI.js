@@ -1,4 +1,11 @@
 /**
+ * API Base URL 가져오기
+ */
+const getApiBaseUrl = () => {
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
+};
+
+/**
  * JWT 토큰 가져오기 (localStorage에서)
  * @returns {string|null} JWT 토큰 (Bearer 제외한 순수 토큰만)
  */
@@ -34,6 +41,7 @@ const getHeaders = () => {
     const token = getToken();
     const headers = {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     };
 
     if (token) {
@@ -51,7 +59,8 @@ const getHeaders = () => {
  */
 export const fetchUserList = async (adminId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-list?adminId=${adminId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-list?adminId=${adminId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -69,8 +78,8 @@ export const fetchUserList = async (adminId) => {
                 if (!Array.isArray(userList)) {
                     userList = [userList];
                 }
-            } catch (e) {
-                console.error('Failed to parse user list:', e.message);
+            } catch (error) {
+                console.error('Failed to parse user list:', error.message);
             }
         }
 
@@ -88,7 +97,8 @@ export const fetchUserList = async (adminId) => {
  */
 export const addUser = async (userData) => {
     try {
-        const response = await fetch('http://localhost:8080/webkit/admin/relationship-signup', {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/relationship-signup`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify(userData),
@@ -106,7 +116,7 @@ export const addUser = async (userData) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 console.warn('Response is not JSON, treating as success');
                 result = { message: 'User added successfully' };
             }
@@ -137,7 +147,8 @@ export const updateUser = async (userId, userData) => {
             sexuality: userData.sexuality
         });
         
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-info/update/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-info/update/${userId}`, {
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify(userData),
@@ -159,7 +170,7 @@ export const updateUser = async (userId, userData) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 console.warn('Response is not JSON');
                 result = { message: 'User updated successfully' };
             }
@@ -188,7 +199,8 @@ export const updateUserInfoMemo = async (userId, memo) => {
             memo: memo || '',
         };
         
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-info-memo/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-info-memo/${userId}`, {
             method: 'PATCH',
             headers: headers,
             body: JSON.stringify(requestBody),
@@ -205,7 +217,7 @@ export const updateUserInfoMemo = async (userId, memo) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 result = { message: 'User memo updated successfully' };
             }
         } else {
@@ -226,7 +238,8 @@ export const updateUserInfoMemo = async (userId, memo) => {
  */
 export const deleteUser = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-delete/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-delete/${userId}`, {
             method: 'DELETE',
             headers: getHeaders(),
         });
@@ -258,7 +271,8 @@ export const addUserMemo = async (userId, memoDetail) => {
             memo_detail: memoDetail,
         };
         
-        const response = await fetch('http://localhost:8080/webkit/admin/user-memo', {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-memo`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(requestBody),
@@ -276,7 +290,7 @@ export const addUserMemo = async (userId, memoDetail) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 result = { message: 'Memo added successfully' };
             }
         } else {
@@ -309,7 +323,8 @@ export const updateUserMemo = async (memoId, memoDetail) => {
             memo_detail: memoDetail,
         };
         
-        const url = `http://localhost:8080/webkit/admin/user-memo/${memoId}`;
+        const API_BASE_URL = getApiBaseUrl();
+        const url = `${API_BASE_URL}/admin/user-memo/${memoId}`;
         
         const response = await fetch(url, {
             method: 'PATCH',
@@ -333,7 +348,7 @@ export const updateUserMemo = async (memoId, memoDetail) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 result = { message: 'Memo updated successfully' };
             }
         } else {
@@ -354,7 +369,8 @@ export const updateUserMemo = async (memoId, memoDetail) => {
  */
 export const getLastEmotion = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/record/last-emotion/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/record/last-emotion/${userId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -374,13 +390,13 @@ export const getLastEmotion = async (userId) => {
                 // double 값을 파싱
                 const emotionScore = parseFloat(responseText);
                 return isNaN(emotionScore) ? null : emotionScore;
-            } catch (e) {
+            } catch {
                 return null;
             }
         }
 
         return null;
-    } catch (error) {
+    } catch {
         // 네트워크 에러 등은 조용히 처리 (null 반환)
         return null;
     }
@@ -393,7 +409,8 @@ export const getLastEmotion = async (userId) => {
  */
 export const getLastCall = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/record/last-call/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/record/last-call/${userId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -413,14 +430,14 @@ export const getLastCall = async (userId) => {
                 // LocalDateTime 문자열을 파싱 (JSON으로 감싸져 있을 수도 있음)
                 const data = JSON.parse(responseText);
                 return typeof data === 'string' ? data : (data.dateTime || data.toString());
-            } catch (e) {
+            } catch {
                 // JSON이 아닌 경우 그대로 반환
                 return responseText.trim();
             }
         }
 
         return null;
-    } catch (error) {
+    } catch {
         // 네트워크 에러 등은 조용히 처리 (null 반환)
         return null;
     }
@@ -433,7 +450,8 @@ export const getLastCall = async (userId) => {
  */
 export const getUserInfo = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-info/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-info/${userId}`, {
             method: 'GET',
             headers: getHeaders(),
         });
@@ -450,7 +468,7 @@ export const getUserInfo = async (userId) => {
         if (responseText && responseText.trim()) {
             try {
                 return JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 return null;
             }
         }
@@ -471,7 +489,8 @@ export const getEmotionGraph = async (userId) => {
     try {
         const headers = getHeaders();
         
-        const response = await fetch(`http://localhost:8080/webkit/record/emotion-graph/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/record/emotion-graph/${userId}`, {
             method: 'GET',
             headers: headers,
         });
@@ -492,13 +511,13 @@ export const getEmotionGraph = async (userId) => {
                 
                 // 백엔드에서 반환하는 감정 점수 그대로 사용
                 return records;
-            } catch (e) {
+            } catch {
                 return [];
             }
         }
 
         return [];
-    } catch (error) {
+    } catch {
         return [];
     }
 };
@@ -511,7 +530,8 @@ export const getEmotionGraph = async (userId) => {
 export const getCallRecords = async (userId) => {
     try {
         const headers = getHeaders();
-        const response = await fetch(`http://localhost:8080/webkit/record/user/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/record/user/${userId}`, {
             method: 'GET',
             headers: headers,
         });
@@ -529,13 +549,13 @@ export const getCallRecords = async (userId) => {
             try {
                 const data = JSON.parse(responseText);
                 return Array.isArray(data) ? data : [];
-            } catch (e) {
+            } catch {
                 return [];
             }
         }
 
         return [];
-    } catch (error) {
+    } catch {
         return [];
     }
 };
@@ -549,7 +569,7 @@ export const getCallDetail = async (userId) => {
     try {
         // /webkit/record/user/{userId} API를 사용하여 전체 통화 기록 조회
         return await getCallRecords(userId);
-    } catch (error) {
+    } catch {
         return [];
     }
 };
@@ -563,7 +583,8 @@ export const getUserMemos = async (userId) => {
     try {
         const headers = getHeaders();
         
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-memo/${userId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-memo/${userId}`, {
             method: 'GET',
             headers: headers,
         });
@@ -603,7 +624,7 @@ export const getUserMemos = async (userId) => {
                 } else {
                     return [];
                 }
-            } catch (e) {
+            } catch {
                 return [];
             }
         }
@@ -628,7 +649,8 @@ export const deleteUserMemo = async (memoId) => {
         
         const headers = getHeaders();
         
-        const response = await fetch(`http://localhost:8080/webkit/admin/user-memo/${memoId}`, {
+        const API_BASE_URL = getApiBaseUrl();
+        const response = await fetch(`${API_BASE_URL}/admin/user-memo/${memoId}`, {
             method: 'DELETE',
             headers: headers,
         }).catch((fetchError) => {
@@ -648,7 +670,7 @@ export const deleteUserMemo = async (memoId) => {
         if (responseText && responseText.trim()) {
             try {
                 result = JSON.parse(responseText);
-            } catch (e) {
+            } catch {
                 result = { message: 'Memo deleted successfully' };
             }
         } else {

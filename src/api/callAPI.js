@@ -13,10 +13,13 @@ export const startCall = async (character, politeness) => {
         }
 
         // 2) 백엔드에서 callInfo 가져오기 (userId는 JWT 토큰에서 자동 추출)
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
         console.log('📡 callInfo 요청: GET /webkit/call/callInfo');
-        const response = await axios.get('http://localhost:8080/webkit/call/callInfo', {
+        const response = await axios.get(`${API_BASE_URL}/call/callInfo`, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
             },
         });
 

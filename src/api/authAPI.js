@@ -8,22 +8,25 @@
 import axios from 'axios';
 import { base, tr } from 'framer-motion/client';
 
-const BASE_URL = 'http://localhost:8080/webkit';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
 
 const api = axios.create({
     baseURL: BASE_URL,
     headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     },
 });
 
 export const loginAdmin = async (loginId, loginPw) => {
     try {
-        const response = await fetch('http://localhost:8080/webkit/admin/auth/login', {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
+        const response = await fetch(`${API_BASE_URL}/admin/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
             },
             body: JSON.stringify({ loginId, loginPw }),
         });
@@ -57,11 +60,13 @@ export const loginAdmin = async (loginId, loginPw) => {
  */
 export const signUpAdmin = async (userData) => {
     try {
-        const response = await fetch('http://localhost:8080/webkit/admin/auth/sign-up', {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
+        const response = await fetch(`${API_BASE_URL}/admin/auth/sign-up`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
             },
             body: JSON.stringify(userData),
         });

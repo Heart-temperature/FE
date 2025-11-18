@@ -61,17 +61,17 @@ export const playTtsAudio = async (audioBlob, callbacks = {}) => {
         console.log('='.repeat(50));
         console.log('📥 AI 오디오 Blob 수신');
         console.log('   크기:', audioBlob.size, 'bytes');
+        
+        // AI 오디오 수신 시 "응답 생성 중" 프로그레스 바 숨김
+        if (callbacks.onAudioReceived) {
+            callbacks.onAudioReceived();
+        }
 
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
 
         // 재생 중인 오디오 목록에 추가
         activeAudios.add(audio);
-
-        // 재생 시작 콜백
-        if (callbacks.onStart) {
-            callbacks.onStart();
-        }
 
         console.log('🔊 AI 말하기 시작');
 
@@ -96,9 +96,18 @@ export const playTtsAudio = async (audioBlob, callbacks = {}) => {
             URL.revokeObjectURL(audioUrl);
         };
 
+        // 실제 재생 시작 시 콜백 호출 (playing 이벤트 사용)
+        audio.onplaying = () => {
+            // 오디오가 실제로 재생되기 시작할 때 콜백 호출
+            if (callbacks.onStart) {
+                callbacks.onStart();
+            }
+            console.log('✅ 오디오 실제 재생 시작');
+        };
+
         // 오디오 재생
         await audio.play();
-        console.log('✅ 오디오 재생 시작');
+        console.log('✅ audio.play() 호출 완료 (실제 재생 시작 대기 중)');
 
         return audio;
     } catch (error) {

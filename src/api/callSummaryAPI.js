@@ -1,7 +1,7 @@
 // callSummaryAPI.js
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/webkit';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
 
 /**
  * 통화 요약 저장 API
@@ -33,6 +33,7 @@ export const saveCallSummary = async (callSummary) => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
                 },
             }
         );
