@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
             });
 
             // 대시보드로 이동
-            setTimeout(() => navigate('/'), 1000);
+            setTimeout(() => navigate('/dashboard'), 1000);
         } catch (error) {
             toast({
                 title: '로그인 실패',

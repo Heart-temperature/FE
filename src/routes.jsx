@@ -65,10 +65,6 @@ export const ROUTE_META = {
         title: '로그인 - 다정이',
         description: '사용자 로그인',
     },
-    [ROUTES.FIRST_LOGIN]: {
-        title: '초기 비밀번호 변경 - 다정이',
-        description: '최초 로그인 시 비밀번호 변경',
-    },
     [ROUTES.USER_ADD]: {
         title: '사용자 추가 - 다정이',
         description: '새 사용자 등록',
