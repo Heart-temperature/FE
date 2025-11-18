@@ -19,6 +19,7 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import dajungIcon from '../../assets/image.png';
 import { loginAdmin } from '../../api';
+import {ROUTES} from "../../routes.jsx";
 
 export default function AdminLoginPage() {
     const navigate = useNavigate();
@@ -91,7 +92,7 @@ export default function AdminLoginPage() {
             });
 
             // 대시보드로 이동
-            setTimeout(() => navigate('/'), 1000);
+            setTimeout(() => navigate(ROUTES.DASHBOARD), 1000);
         } catch (error) {
             toast({
                 title: '로그인 실패',
