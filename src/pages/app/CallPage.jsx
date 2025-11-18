@@ -14,6 +14,25 @@ import useWebSocketHandler from '../../hooks/useWebSocketHandler';
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
 
+// 사용자가 말하는 중 애니메이션 컴포넌트
+const AnimatedSpeakingText = () => {
+    const [dots, setDots] = useState('.');
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDots((prev) => {
+                if (prev === '.') return '..';
+                if (prev === '..') return '...';
+                return '.';
+            });
+        }, 500); // 0.5초마다 변경
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return <span>사용자가 말하는 중{dots}</span>;
+};
+
 export default function CallPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -347,21 +366,7 @@ export default function CallPage() {
                 }
                 const rms = Math.sqrt(sum / inputData.length);
 
-                // UI에 RMS 표시 제거 (디버깅용)
-                // setDebugRms(rms);
 
-                // 로깅 (10번마다)
-                // RMS 로그 출력 제거 (디버깅용)
-                // rmsLogIntervalRef.current++;
-                // if (rmsLogIntervalRef.current % 10 === 0) {
-                //     console.log(
-                //         `📊 RMS: ${rms.toFixed(7)} | 임계값: ${VAD_THRESHOLD} | AI: ${aiSpeakingRef.current} | VAD: ${
-                //             vadStateRef.current
-                //         } | 녹음: ${isRecordingRef.current} | 청크: ${audioChunkCountRef.current}`
-                //     );
-                // }
-
-                // AI가 말하는 중이면 VAD 완전 비활성화 (오디오 처리 자체를 중단)
                 if (aiSpeakingRef.current) {
                     if (vadStateRef.current !== 'idle') {
                         console.log('🤖 AI 말하는 중 - VAD 비활성화 및 녹음 중지');
@@ -970,7 +975,7 @@ export default function CallPage() {
                         alignItems="center"
                         justifyContent="center"
                         overflow="hidden"
-                        borderRadius="15px"
+                        borderRadius="10px"
                     >
                         <Box
                             as="video"
@@ -980,7 +985,7 @@ export default function CallPage() {
                             muted
                             playsInline
                             w="100%"
-                            h="70%"
+                            h="90%"
                             objectFit="cover"
                         />
                     </MotionBox>
@@ -1008,7 +1013,11 @@ export default function CallPage() {
                             textAlign="center"
                         >
                             <Text fontSize="2xl" fontWeight="bold">
-                                {vadStatus}
+                                {vadStatus.includes('사용자가 말하는 중') ? (
+                                    <AnimatedSpeakingText />
+                                ) : (
+                                    vadStatus
+                                )}
                             </Text>
                         </Box>
                     )}

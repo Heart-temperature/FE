@@ -36,7 +36,7 @@ export default function MainPage() {
             image: Img2,
             characterType: 'dajeong',
             color: isHighContrast ? '#FFD700' : '#2196F3',
-            description: '친근하고 활기찬 목소리',
+            description: '따뜻하게 듣는 30세 여성 상담사',
         },
         {
             id: 2,
@@ -44,7 +44,7 @@ export default function MainPage() {
             image: Img1,
             characterType: 'dabok',
             color: isHighContrast ? '#FFD700' : '#4CAF50',
-            description: '차분하고 안정된 목소리',
+            description: '조용하고 외로운 75세 공장 출신 노인.',
         },
     ];
 
@@ -160,15 +160,16 @@ export default function MainPage() {
                                                     ? '0 0 20px rgba(255, 215, 0, 0.5)'
                                                     : '0 8px 20px rgba(0, 0, 0, 0.1)'
                                             }
+                                            overflow="hidden"
                                         >
                                             <Image
                                                 position="relative"
                                                 src={currentModel.image}
                                                 alt={currentModel.name}
-                                                w="100%"
-                                                h="100%"
+                                                w="130%"
+                                                h="130%"
                                                 objectFit="contain"
-                                                top="8px"
+                                                top="-15px"
                                             />
                                         </Box>
 
