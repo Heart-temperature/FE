@@ -23,11 +23,13 @@ export const startCall = async (character, politeness) => {
         const data = response.data;
         console.log('📌 callInfo 응답:', data);
 
-        // 3) WebSocket 연결 (없으면 connectAiSocket가 자동 연결)
+        // 3) WebSocket 연결 확인 (CallPage에서 이미 연결했으므로 확인만)
         let aiSocket = getAiSocket();
         if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
-            console.log('🔌 WebSocket이 닫혀있어서 재연결합니다...');
+            console.log('⚠️ WebSocket이 닫혀있어서 재연결합니다...');
             aiSocket = await connectAiSocket();
+        } else {
+            console.log('✅ WebSocket 연결 확인됨 (이미 연결되어 있음)');
         }
 
         // 4) payload 생성 (스펙에 맞춰 수정)

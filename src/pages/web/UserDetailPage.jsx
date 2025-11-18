@@ -90,18 +90,103 @@ export default function UserDetail() {
                         setJoinedDate(formattedDate);
                     }
 
-                    // userInfo의 loginId를 사용하여 나머지 API 호출 (병렬 처리)
-                    const [emotionGraph, callDetail, userMemos, lastEmotionData] = await Promise.all([
+                    // userInfo의 ID를 사용하여 나머지 API 호출 (병렬 처리)
+                    const [emotionGraph, callRecords, userMemos, emotionScore] = await Promise.all([
                         getEmotionGraph(id),
                         getCallDetail(id),
                         getUserMemos(id),
-                        getLastEmotion(userInfo.loginId || userInfo.phoneNum),
+                        getLastEmotion(id),
                     ]);
 
-                    setEmotionData(emotionGraph || []);
-                    setCallData(callDetail || []);
+                    // CallRecord를 날짜순으로 정렬 (최신순)
+                    const sortedCallRecords = [...callRecords].sort((a, b) => {
+                        const dateA = new Date(a.callDate || a.date || a.createdAt || a.callDateTime || 0);
+                        const dateB = new Date(b.callDate || b.date || b.createdAt || b.callDateTime || 0);
+                        return dateB - dateA; // 최신순
+                    });
+                    
+                    // emotion-graph 데이터에 날짜 정보가 없을 수 있으므로 CallRecord와 매칭
+                    const enrichedEmotionData = emotionGraph.map((emotionItem, index) => {
+                        // CallRecord에서 해당 인덱스의 기록 찾기 (최신순으로 정렬된 것 기준)
+                        const matchingRecord = sortedCallRecords[index];
+                        
+                        if (matchingRecord) {
+                            // CallRecordResponse에서 날짜와 시간 추출
+                            let dateStr = '';
+                            let timeStr = '';
+                            
+                            // 다양한 날짜 필드명 시도
+                            const dateField = matchingRecord.callDate || matchingRecord.date || 
+                                            matchingRecord.createdAt || matchingRecord.callDateTime;
+                            
+                            if (dateField) {
+                                try {
+                                    const date = new Date(dateField);
+                                    if (!isNaN(date.getTime())) {
+                                        dateStr = date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+                                        timeStr = date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                                    } else {
+                                        dateStr = String(dateField);
+                                    }
+                                } catch (e) {
+                                    dateStr = String(dateField);
+                                }
+                            }
+                            
+                            // emotion 점수 추출
+                            let score = 0;
+                            if (typeof emotionItem === 'number') {
+                                score = emotionItem;
+                            } else if (emotionItem && typeof emotionItem === 'object') {
+                                score = emotionItem.score || emotionItem.emotion || matchingRecord.emotion || 0;
+                            }
+                            
+                            return {
+                                score: score,
+                                date: dateStr,
+                                time: timeStr,
+                            };
+                        }
+                        
+                        // 매칭되는 기록이 없으면 기존 데이터 사용
+                        if (typeof emotionItem === 'number') {
+                            return {
+                                score: emotionItem,
+                                date: '',
+                                time: '',
+                            };
+                        }
+                        
+                        return {
+                            score: emotionItem?.score || emotionItem?.emotion || 0,
+                            date: emotionItem?.date || '',
+                            time: emotionItem?.time || '',
+                        };
+                    });
+
+                    setEmotionData(enrichedEmotionData || []);
+                    setCallData(callRecords || []);
                     setMemos(userMemos || []);
-                    setLastEmotion(lastEmotionData);
+                    
+                    // call 기록이 없으면 신규 회원으로 처리
+                    if (!callRecords || callRecords.length === 0) {
+                        setLastEmotion(null); // null이면 "신규"로 표시됨
+                    } else {
+                        // getLastEmotion API에서 받은 감정 점수를 기반으로 감정상태 결정
+                        // 40 이하: 정상, 40~80: 주의, 80 이상: 긴급
+                        let emotionStatus = null;
+                        if (emotionScore !== null && !isNaN(emotionScore)) {
+                            if (emotionScore >= 80) {
+                                emotionStatus = { emotion: 'urgent', description: '긴급' };
+                            } else if (emotionScore >= 40) {
+                                emotionStatus = { emotion: 'caution', description: '주의' };
+                            } else {
+                                emotionStatus = { emotion: 'normal', description: '정상' };
+                            }
+                        }
+                        // emotion 값이 없거나 유효하지 않은 경우 null로 유지 (신규 회원)
+                        setLastEmotion(emotionStatus);
+                    }
                 } else {
                     toast({
                         title: '사용자 정보 없음',
@@ -308,28 +393,14 @@ export default function UserDetail() {
         setMemoToDelete(null);
     };
 
-    // 감정 점수 데이터 준비 (새 그래프 컴포넌트 형식으로 변환)
+    // 감정 점수 데이터 준비 (enrichedEmotionData가 이미 정규화되어 있음)
     const emotionChartData = emotionData.length > 0 
-        ? emotionData.map((item) => {
-            // score를 0-100 범위로 변환 (기존: 1=긴급, 2=주의, 3=정상)
-            // 변환: 1 -> 90, 2 -> 50, 3 -> 20 (또는 원하는 점수로 조정 가능)
-            let score = 50; // 기본값
-            if (item.score !== undefined) {
-                if (item.score === 1) score = 90; // 긴급
-                else if (item.score === 2) score = 50; // 주의
-                else if (item.score === 3) score = 20; // 정상
-                else score = item.score; // 이미 0-100 범위인 경우
-            } else if (item.emotion) {
-                // emotion 값으로 변환
-                if (item.emotion === 'urgent') score = 90;
-                else if (item.emotion === 'caution') score = 50;
-                else if (item.emotion === 'normal') score = 20;
-            }
-
+        ? emotionData.map((item, index) => {
+            // enrichedEmotionData는 이미 {score, date, time} 형식으로 정규화됨
             return {
-                date: item.date || item.callDate || '',
-                score: score,
-                time: item.time || item.callTime || '',
+                date: item.date || `기록 ${index + 1}`,
+                score: typeof item.score === 'number' ? item.score : 0,
+                time: item.time || '',
             };
         })
         : [];
@@ -378,7 +449,7 @@ export default function UserDetail() {
                             borderRadius="full"
                             fontSize="md"
                         >
-                            {getEmotionText(lastEmotion?.emotion || 'new')}
+                            {lastEmotion ? lastEmotion.description : '신규'}
                         </Badge>
                         <Button
                             colorScheme="blue"
@@ -429,38 +500,75 @@ export default function UserDetail() {
                             <CardHeader>
                                 <HStack>
                                     <ChatIcon color="green.500" />
-                                    <Heading size="md">AI 대화 히스토리</Heading>
+                                    <Heading size="md">AI 대화 요약</Heading>
                                 </HStack>
                             </CardHeader>
                             <CardBody>
                                 {callData.length > 0 ? (
                                     <Box maxH="400px" overflowY="auto" pr={2}>
                                         <VStack spacing={4} align="stretch">
-                                            {callData.map((conv, index) => (
-                                                <Box key={index} p={4} bg="gray.50" borderRadius="lg">
-                                                    <HStack justify="space-between" mb={2}>
-                                                        <Text fontWeight="bold" color="gray.700">
-                                                            {conv.date}
-                                                        </Text>
-                                                        <HStack spacing={2}>
-                                                            <Badge bg={getEmotionColor(conv.emotion)} color="white" size="sm">
-                                                                {getEmotionText(conv.emotion)}
-                                                            </Badge>
-                                                            <Text fontSize="sm" color="gray.500">
-                                                                {conv.duration}
+                                            {callData.map((conv, index) => {
+                                                // CallRecordResponse 필드명 처리
+                                                const callDate = conv.callDate || conv.date || conv.createdAt || conv.callDateTime;
+                                                const emotion = conv.emotion;
+                                                const duration = conv.duration || conv.callDuration;
+                                                const summary = conv.summary || conv.callSummary || conv.detail || '';
+                                                
+                                                // 날짜 포맷팅
+                                                let formattedDate = '';
+                                                if (callDate) {
+                                                    try {
+                                                        const date = new Date(callDate);
+                                                        if (!isNaN(date.getTime())) {
+                                                            formattedDate = date.toLocaleDateString('ko-KR', {
+                                                                year: 'numeric',
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                            });
+                                                        } else {
+                                                            formattedDate = String(callDate);
+                                                        }
+                                                    } catch (e) {
+                                                        formattedDate = String(callDate);
+                                                    }
+                                                }
+                                                
+                                                // 감정 점수를 감정 상태로 변환
+                                                let emotionStatus = 'new';
+                                                if (typeof emotion === 'number') {
+                                                    // 40 이하: 정상, 40~80: 주의, 80 이상: 긴급
+                                                    if (emotion >= 80) emotionStatus = 'urgent';
+                                                    else if (emotion >= 40) emotionStatus = 'caution';
+                                                    else emotionStatus = 'normal';
+                                                } else if (typeof emotion === 'string') {
+                                                    emotionStatus = emotion;
+                                                }
+                                                
+                                                return (
+                                                    <Box key={conv.id || conv.callId || index} p={4} bg="gray.50" borderRadius="lg">
+                                                        <HStack justify="space-between" mb={2}>
+                                                            <Text fontWeight="bold" color="gray.700">
+                                                                {formattedDate || '날짜 정보 없음'}
                                                             </Text>
+                                                            {duration && (
+                                                                <Text fontSize="sm" color="gray.500">
+                                                                    {duration}
+                                                                </Text>
+                                                            )}
                                                         </HStack>
-                                                    </HStack>
-                                                    <Text color="gray.600">{conv.summary}</Text>
-                                                </Box>
-                                            ))}
+                                                        {summary && (
+                                                            <Text color="gray.600">{summary}</Text>
+                                                        )}
+                                                    </Box>
+                                                );
+                                            })}
                                         </VStack>
                                     </Box>
                                 ) : (
                                     <Box display="flex" alignItems="center" justifyContent="center" h="200px">
-                                        <Text color="gray.500" fontSize="lg">
-                                            기록 없음
-                                        </Text>
+                                        <Badge bg="gray.200" color="gray.700" fontSize="lg" px={4} py={2} borderRadius="md">
+                                            신규
+                                        </Badge>
                                     </Box>
                                 )}
                             </CardBody>

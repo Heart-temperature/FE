@@ -20,3 +20,6 @@ export {
     getUserMemos,
 } from './adminPageAPI.js';
 
+// 통화 요약 관련 API
+export { saveCallSummary } from './callSummaryAPI.js';
+

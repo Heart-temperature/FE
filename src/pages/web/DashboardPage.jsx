@@ -55,7 +55,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import dajungIcon from '../../assets/image.png';
-import { fetchUserList, deleteUser, addUserMemo, getLastEmotion, getLastCall } from '../../api';
+import { fetchUserList, deleteUser, addUserMemo, getLastCall, getLastEmotion } from '../../api';
 import { calculateAge } from '../../utils/dateUtils';
 import {
     SearchIcon,
@@ -352,40 +352,74 @@ export default function Dashboard() {
             // DB 데이터를 MOCK 형식으로 변환하고 감정상태, 통화 정보 조회
             const userList = await Promise.all(
                 dbUsers.map(async (user) => {
-                    // 감정상태 조회 (에러 발생 시 null 반환)
-                    // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
-                    let emotionData = null;
+                    // 마지막 통화 시간 조회 (에러 발생 시 null 반환)
+                    let lastCallDateTime = null;
                     try {
-                        emotionData = await getLastEmotion(user.loginId || user.phoneNum);
+                        lastCallDateTime = await getLastCall(user.id);
                     } catch (error) {
-                        emotionData = null;
+                        lastCallDateTime = null;
                     }
 
-                    // 통화 정보 조회 (에러 발생 시 null 반환)
-                    // 백엔드가 user_login_id (String)를 기대하므로 user.loginId 사용
-                    let callData = null;
-                    try {
-                        callData = await getLastCall(user.loginId || user.phoneNum);
-                    } catch (error) {
-                        callData = null;
-                    }
-
-                    // 감정상태 결정 (API 데이터 있으면 사용, 없으면 'new')
+                    // call 기록이 없으면 신규 회원으로 처리
                     let emotion = 'new';
                     let desc = '신규 회원';
-                    if (emotionData) {
-                        emotion = emotionData.emotion || 'new';
-                        desc = emotionData.description || '신규 회원';
+                    
+                    // call 기록이 있는 경우에만 감정상태 조회
+                    if (lastCallDateTime) {
+                        try {
+                            const emotionScore = await getLastEmotion(user.id);
+                            if (emotionScore !== null && !isNaN(emotionScore)) {
+                                // 40 이하: 정상, 40~80: 주의, 80 이상: 긴급
+                                if (emotionScore >= 80) {
+                                    emotion = 'urgent';
+                                    desc = '긴급';
+                                } else if (emotionScore >= 40) {
+                                    emotion = 'caution';
+                                    desc = '주의';
+                                } else {
+                                    emotion = 'normal';
+                                    desc = '정상';
+                                }
+                            }
+                        } catch (error) {
+                            // API 호출 실패 시 'new'로 유지
+                            emotion = 'new';
+                            desc = '신규 회원';
+                        }
                     }
+                    // call 기록이 없으면 emotion과 desc는 이미 'new'와 '신규 회원'으로 설정됨
 
-                    // 통화 정보 결정 (API 데이터 있으면 사용, 없으면 '신규')
+                    // 통화 정보 결정 (LocalDateTime 문자열을 날짜 형식으로 변환)
                     let lastCall = '신규';
                     let callDuration = '-';
                     let callSummary = user.memo || '메모 없음';
-                    if (callData) {
-                        lastCall = callData.lastCall || '신규';
-                        callDuration = callData.duration || '-';
-                        callSummary = callData.summary || user.memo || '메모 없음';
+                    
+                    if (lastCallDateTime) {
+                        try {
+                            // LocalDateTime 문자열을 Date 객체로 변환
+                            const date = new Date(lastCallDateTime);
+                            if (!isNaN(date.getTime())) {
+                                // 날짜 형식으로 변환 (예: "2025. 11. 17.") - 년, 월, 일만
+                                const dateStr = date.toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                });
+                                // 마지막 점이 이미 있으면 제거하고 다시 추가 (중복 방지)
+                                lastCall = dateStr.replace(/\.$/, '') + '.';
+                                
+                                // 시간 형식으로 변환 (예: "14:30") - 시, 분만
+                                callDuration = date.toLocaleTimeString('ko-KR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false,
+                                });
+                            }
+                        } catch (e) {
+                            // 파싱 실패 시 원본 문자열 사용
+                            lastCall = lastCallDateTime;
+                            callDuration = '-';
+                        }
                     }
 
                     // 생년월일로부터 나이 계산
@@ -956,7 +990,7 @@ export default function Dashboard() {
                                                     {user.lastCall}
                                                 </Text>
                                                 <Text fontSize="md" color="gray.500">
-                                                    통화시간: {user.callDuration}
+                                                    통화시각: {user.callDuration}
                                                 </Text>
                                             </VStack>
                                         </Td>

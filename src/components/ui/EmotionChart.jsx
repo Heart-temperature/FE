@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, VStack, Heading } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
 // 점수에 따른 색상 반환 (긴급, 주의, 정상 3단계)
 const getScoreColor = (score) => {
@@ -32,14 +32,9 @@ export const EmotionChart = ({
   if (!data || data.length === 0) {
     return (
       <Box w="100%" p={6} bg="white" borderRadius="lg" boxShadow="sm">
-        <VStack spacing={4} align="stretch">
-          <Heading size="md" textAlign="center" color="gray.700">
-            {title}
-          </Heading>
-          <Box h={height} display="flex" alignItems="center" justifyContent="center">
-            <Box color="gray.500" fontSize="lg">기록 없음</Box>
-          </Box>
-        </VStack>
+        <Box h={height} display="flex" alignItems="center" justifyContent="center">
+          <Box color="gray.500" fontSize="lg">기록 없음</Box>
+        </Box>
       </Box>
     );
   }
@@ -47,24 +42,44 @@ export const EmotionChart = ({
   // 데이터 정규화 (다양한 형식 지원)
   const normalizedData = data.map((item, index) => {
     // date가 Date 객체인 경우 문자열로 변환
-    let dateStr = item.date;
+    let dateStr = item.date || '';
+    
+    // 다양한 날짜 필드명 시도
+    if (!dateStr) {
+      dateStr = item.callDate || item.createdAt || item.callDateTime || '';
+    }
+    
     if (dateStr instanceof Date) {
       dateStr = dateStr.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
-    } else if (typeof dateStr === 'string' && dateStr.includes('-')) {
-      // YYYY-MM-DD 형식을 M월 D일 형식으로 변환
-      const date = new Date(dateStr);
-      if (!isNaN(date.getTime())) {
-        dateStr = date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+    } else if (typeof dateStr === 'string' && dateStr.trim()) {
+      // 날짜 문자열 파싱 시도
+      if (dateStr.includes('-') || dateStr.includes('T')) {
+        const date = new Date(dateStr);
+        if (!isNaN(date.getTime())) {
+          dateStr = date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+        }
       }
+    }
+    
+    // date가 여전히 없으면 기본값 설정
+    if (!dateStr || dateStr.trim() === '') {
+      dateStr = `${index + 1}번째 기록`;
     }
 
     // time이 없으면 빈 문자열 또는 기본값
-    let timeStr = item.time || '';
-    if (!timeStr && item.date) {
-      // date에서 시간 정보 추출 시도
-      const dateObj = new Date(item.date);
-      if (!isNaN(dateObj.getTime())) {
-        timeStr = dateObj.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    let timeStr = item.time || item.callTime || '';
+    if (!timeStr) {
+      // date 필드에서 시간 정보 추출 시도
+      const dateField = item.date || item.callDate || item.createdAt || item.callDateTime;
+      if (dateField) {
+        try {
+          const dateObj = new Date(dateField);
+          if (!isNaN(dateObj.getTime())) {
+            timeStr = dateObj.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+          }
+        } catch (e) {
+          // 시간 추출 실패 시 빈 문자열 유지
+        }
       }
     }
 
@@ -102,12 +117,7 @@ export const EmotionChart = ({
   
   return (
     <Box w="100%" p={6} bg="white" borderRadius="lg" boxShadow="sm">
-      <VStack spacing={4} align="stretch">
-        <Heading size="md" textAlign="center" color="gray.700">
-          {title}
-        </Heading>
-        
-        <Box position="relative" w="100%" overflow="visible">
+      <Box position="relative" w="100%" overflow="visible">
           <svg width={width} height={height} style={{ overflow: 'visible' }}>
             {/* 그라데이션 정의 */}
             <defs>
@@ -193,27 +203,30 @@ export const EmotionChart = ({
             {normalizedData.map((d, i) => {
               const interval = normalizedData.length <= 10 ? 1 : 5;
               if (i % interval === 0 || i === normalizedData.length - 1) {
-                return (
-                  <g key={i}>
-                    <line 
-                      x1={getX(i)} 
-                      y1={padding.top + chartHeight} 
-                      x2={getX(i)} 
-                      y2={padding.top + chartHeight + 5} 
-                      stroke="#9CA3AF" 
-                      strokeWidth="1"
-                    />
-                    <text 
-                      x={getX(i)} 
-                      y={padding.top + chartHeight + 20} 
-                      textAnchor="middle" 
-                      fontSize="10" 
-                      fill="#6B7280"
-                    >
-                      {d.date}
-                    </text>
-                  </g>
-                );
+                // date가 있을 때만 표시
+                if (d.date && d.date.trim() !== '') {
+                  return (
+                    <g key={i}>
+                      <line 
+                        x1={getX(i)} 
+                        y1={padding.top + chartHeight} 
+                        x2={getX(i)} 
+                        y2={padding.top + chartHeight + 5} 
+                        stroke="#9CA3AF" 
+                        strokeWidth="1"
+                      />
+                      <text 
+                        x={getX(i)} 
+                        y={padding.top + chartHeight + 20} 
+                        textAnchor="middle" 
+                        fontSize="10" 
+                        fill="#6B7280"
+                      >
+                        {d.date}
+                      </text>
+                    </g>
+                  );
+                }
               }
               return null;
             })}
@@ -221,8 +234,12 @@ export const EmotionChart = ({
             {/* 툴팁 - 가장 마지막에 렌더링하여 최상단에 표시 */}
             {hoveredIndex !== null && (() => {
               const d = normalizedData[hoveredIndex];
-              const tooltipWidth = 80;
-              const tooltipHeight = d.time ? 40 : 20;
+              if (!d) return null;
+              
+              const hasTime = d.time && d.time.trim() !== '';
+              const tooltipWidth = Math.max(80, (d.date ? d.date.length * 7 : 60));
+              const tooltipHeight = hasTime ? 40 : 20;
+              
               return (
                 <g>
                   {/* 툴팁 배경 */}
@@ -243,15 +260,14 @@ export const EmotionChart = ({
                     fill="white"
                     fontWeight="500"
                   >
-                    <tspan x={getX(hoveredIndex)} dy="0">{d.date}</tspan>
-                    {d.time && <tspan x={getX(hoveredIndex)} dy="16">{d.time}</tspan>}
+                    <tspan x={getX(hoveredIndex)} dy="0">{d.date || `기록 ${hoveredIndex + 1}`}</tspan>
+                    {hasTime && <tspan x={getX(hoveredIndex)} dy="16">{d.time}</tspan>}
                   </text>
                 </g>
               );
             })()}
           </svg>
         </Box>
-      </VStack>
     </Box>
   );
 };
