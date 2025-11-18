@@ -98,16 +98,16 @@ export default function UserDetail() {
                         getLastEmotion(id),
                     ]);
 
-                    // CallRecord를 날짜순으로 정렬 (최신순)
+                    // CallRecord를 날짜순으로 정렬 (오래된 순서: 왼쪽이 옛날, 오른쪽이 최신)
                     const sortedCallRecords = [...callRecords].sort((a, b) => {
                         const dateA = new Date(a.callDate || a.date || a.createdAt || a.callDateTime || 0);
                         const dateB = new Date(b.callDate || b.date || b.createdAt || b.callDateTime || 0);
-                        return dateB - dateA; // 최신순
+                        return dateA - dateB; // 오래된 순서 (왼쪽이 옛날, 오른쪽이 최신)
                     });
                     
                     // emotion-graph 데이터에 날짜 정보가 없을 수 있으므로 CallRecord와 매칭
                     const enrichedEmotionData = emotionGraph.map((emotionItem, index) => {
-                        // CallRecord에서 해당 인덱스의 기록 찾기 (최신순으로 정렬된 것 기준)
+                        // CallRecord에서 해당 인덱스의 기록 찾기 (오래된 순서로 정렬된 것 기준)
                         const matchingRecord = sortedCallRecords[index];
                         
                         if (matchingRecord) {
@@ -145,6 +145,7 @@ export default function UserDetail() {
                                 score: score,
                                 date: dateStr,
                                 time: timeStr,
+                                originalDate: dateField ? new Date(dateField) : null, // 정렬용 원본 날짜
                             };
                         }
                         
@@ -154,14 +155,39 @@ export default function UserDetail() {
                                 score: emotionItem,
                                 date: '',
                                 time: '',
+                                originalDate: null,
                             };
+                        }
+                        
+                        // emotionItem에서 원본 날짜 추출 시도
+                        const itemDateField = emotionItem?.date || emotionItem?.callDate || emotionItem?.createdAt || emotionItem?.callDateTime;
+                        let itemOriginalDate = null;
+                        if (itemDateField) {
+                            try {
+                                const parsed = new Date(itemDateField);
+                                if (!isNaN(parsed.getTime())) {
+                                    itemOriginalDate = parsed;
+                                }
+                            } catch (e) {
+                                // 날짜 파싱 실패
+                            }
                         }
                         
                         return {
                             score: emotionItem?.score || emotionItem?.emotion || 0,
                             date: emotionItem?.date || '',
                             time: emotionItem?.time || '',
+                            originalDate: itemOriginalDate,
                         };
+                    }).sort((a, b) => {
+                        // 날짜순으로 정렬 (오래된 것부터 최신 순서로: 왼쪽이 옛날, 오른쪽이 최신)
+                        if (a.originalDate && b.originalDate) {
+                            return a.originalDate.getTime() - b.originalDate.getTime();
+                        }
+                        if (a.originalDate) return -1;
+                        if (b.originalDate) return 1;
+                        // 날짜가 없으면 원래 순서 유지
+                        return 0;
                     });
 
                     setEmotionData(enrichedEmotionData || []);
@@ -513,6 +539,7 @@ export default function UserDetail() {
                                                 const emotion = conv.emotion;
                                                 const duration = conv.duration || conv.callDuration;
                                                 const summary = conv.summary || conv.callSummary || conv.detail || '';
+                                                const isNormalFinish = conv.is_normal_finish || conv.isNormalFinish || conv.normalFinish;
                                                 
                                                 // 날짜 포맷팅
                                                 let formattedDate = '';
@@ -544,17 +571,27 @@ export default function UserDetail() {
                                                     emotionStatus = emotion;
                                                 }
                                                 
+                                                // is_normal_finish가 1(true)이면 비정상 종료
+                                                const isAbnormalFinish = isNormalFinish === 1 || isNormalFinish === true;
+                                                
                                                 return (
                                                     <Box key={conv.id || conv.callId || index} p={4} bg="gray.50" borderRadius="lg">
                                                         <HStack justify="space-between" mb={2}>
                                                             <Text fontWeight="bold" color="gray.700">
                                                                 {formattedDate || '날짜 정보 없음'}
                                                             </Text>
-                                                            {duration && (
-                                                                <Text fontSize="sm" color="gray.500">
-                                                                    {duration}
-                                                                </Text>
-                                                            )}
+                                                            <HStack spacing={2}>
+                                                                {isAbnormalFinish && (
+                                                                    <Badge bg="red.500" color="white" size="sm">
+                                                                        비정상 종료
+                                                                    </Badge>
+                                                                )}
+                                                                {duration && (
+                                                                    <Text fontSize="sm" color="gray.500">
+                                                                        {duration}
+                                                                    </Text>
+                                                                )}
+                                                            </HStack>
                                                         </HStack>
                                                         {summary && (
                                                             <Text color="gray.600">{summary}</Text>

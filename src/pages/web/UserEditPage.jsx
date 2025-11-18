@@ -202,16 +202,24 @@ export default function UserEditPage() {
                 null;
             
             // API 요청 데이터 구성 (메모 제외)
+            const sexualityValue = sexualityMap[formData.sexuality] || formData.sexuality;
+            
+            // 백엔드가 기대하는 필드명에 맞춰 전송 (sexuality와 gender 둘 다 전송)
             const apiData = {
                 user_loginId: formData.phoneNum,
                 name: formData.name,
-                sexuality: sexualityMap[formData.sexuality] || formData.sexuality, // "남성"/"여성" -> "M"/"F"
+                sexuality: sexualityValue, // "남성"/"여성" -> "M"/"F"
+                gender: sexualityValue, // 일부 백엔드가 gender 필드를 기대할 수 있음
                 birthDate: birthDateFormatted, // ISO 8601 형식
                 address: formData.address,
                 phoneNum: formData.phoneNum,
                 user_loginPw: formData.user_loginPw || '',
                 extra_phoneNum: formData.extra_phoneNum || '',
             };
+            
+            // 디버깅: 전송되는 데이터 확인
+            console.log('업데이트 요청 데이터:', apiData);
+            console.log('성별 변환:', formData.sexuality, '->', sexualityValue);
 
             // 사용자 정보 업데이트 API 호출
             await updateUser(id, apiData);
