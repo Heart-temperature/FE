@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
 import MainPage from './pages/app/MainPage';
 import CallPage from './pages/app/CallPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // 라우트 경로 상수 정의
 export const ROUTES = {
@@ -65,10 +66,6 @@ export const ROUTE_META = {
         title: '로그인 - 다정이',
         description: '사용자 로그인',
     },
-    [ROUTES.FIRST_LOGIN]: {
-        title: '초기 비밀번호 변경 - 다정이',
-        description: '최초 로그인 시 비밀번호 변경',
-    },
     [ROUTES.USER_ADD]: {
         title: '사용자 추가 - 다정이',
         description: '새 사용자 등록',
@@ -114,7 +111,9 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: ROUTES.HOME,
-                element: <UserLoginPage />,
+                element: localStorage.getItem("userToken")
+                    ? <Navigate to={ROUTES.USER_APP_HOME} replace />
+                    : <UserLoginPage />,
                 handle: ROUTE_META[ROUTES.HOME],
             },
             {
@@ -157,12 +156,20 @@ export const router = createBrowserRouter([
             },
             {
                 path: ROUTES.USER_APP_HOME,
-                element: <MainPage />,
+                element: (
+                    <ProtectedRoute>
+                        <MainPage />
+                    </ProtectedRoute>
+                ),
                 handle: ROUTE_META[ROUTES.USER_APP_HOME],
             },
             {
                 path: ROUTES.USER_APP_CALL,
-                element: <CallPage />,
+                element: (
+                    <ProtectedRoute>
+                        <CallPage />
+                    </ProtectedRoute>
+                ),
                 handle: ROUTE_META[ROUTES.USER_APP_CALL],
             },
             {
