@@ -39,8 +39,23 @@ export const EmotionChart = ({
     );
   }
 
-  // 데이터 정규화 (다양한 형식 지원)
+  // 데이터 정규화 및 날짜순 정렬 (다양한 형식 지원)
   const normalizedData = data.map((item, index) => {
+    // 원본 날짜 필드 추출 (정렬용)
+    const dateField = item.date || item.callDate || item.createdAt || item.callDateTime;
+    let originalDate = null;
+    
+    if (dateField) {
+      if (dateField instanceof Date) {
+        originalDate = dateField;
+      } else if (typeof dateField === 'string') {
+        const parsedDate = new Date(dateField);
+        if (!isNaN(parsedDate.getTime())) {
+          originalDate = parsedDate;
+        }
+      }
+    }
+    
     // date가 Date 객체인 경우 문자열로 변환
     let dateStr = item.date || '';
     
@@ -57,6 +72,7 @@ export const EmotionChart = ({
         const date = new Date(dateStr);
         if (!isNaN(date.getTime())) {
           dateStr = date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+          if (!originalDate) originalDate = date;
         }
       }
     }
@@ -70,10 +86,10 @@ export const EmotionChart = ({
     let timeStr = item.time || item.callTime || '';
     if (!timeStr) {
       // date 필드에서 시간 정보 추출 시도
-      const dateField = item.date || item.callDate || item.createdAt || item.callDateTime;
-      if (dateField) {
+      const timeField = item.date || item.callDate || item.createdAt || item.callDateTime;
+      if (timeField) {
         try {
-          const dateObj = new Date(dateField);
+          const dateObj = new Date(timeField);
           if (!isNaN(dateObj.getTime())) {
             timeStr = dateObj.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
           }
@@ -88,7 +104,17 @@ export const EmotionChart = ({
       time: timeStr,
       score: typeof item.score === 'number' ? item.score : 0,
       count: item.count || index + 1,
+      originalDate: originalDate, // 정렬용 원본 날짜
     };
+  }).sort((a, b) => {
+    // 날짜순으로 정렬 (오래된 것부터 최신 순서로: 왼쪽이 옛날, 오른쪽이 최신)
+    if (a.originalDate && b.originalDate) {
+      return a.originalDate.getTime() - b.originalDate.getTime();
+    }
+    if (a.originalDate) return -1;
+    if (b.originalDate) return 1;
+    // 날짜가 없으면 원래 순서 유지
+    return 0;
   });
 
   const padding = { top: 40, right: 120, bottom: 60, left: 60 };
