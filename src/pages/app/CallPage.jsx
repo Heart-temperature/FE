@@ -62,16 +62,9 @@ const AIThinkingProgress = ({ isHighContrast, characterName }) => {
         <VStack spacing={3} w="100%" py={2}>
             <Text fontSize="2xl" fontWeight="bold" textAlign="center" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                 {thinkingText}
+                {thinkingText}
             </Text>
-            <Progress
-                value={progress}
-                size="lg"
-                colorScheme="blue"
-                borderRadius="full"
-                w="100%"
-                hasStripe
-                isAnimated
-            />
+            <Progress value={progress} size="lg" colorScheme="blue" borderRadius="full" w="100%" hasStripe isAnimated />
         </VStack>
     );
 };
@@ -132,7 +125,7 @@ export default function CallPage() {
         console.log('📄 CallPage 마운트/업데이트');
         console.log('   location.state:', location.state);
         console.log('   location.pathname:', location.pathname);
-        
+
         // 중복 실행 방지 (초기화 중이거나 이미 시작된 경우, 또는 이미 실행 중인 Promise가 있는 경우)
         if (isInitializingRef.current || isCallStartedRef.current || initCallPromiseRef.current) {
             console.log('⚠️ 통화 초기화 중이거나 이미 시작되었습니다. 중복 호출 방지');
@@ -150,20 +143,20 @@ export default function CallPage() {
             // location.state가 없으면 여러 번 확인 (navigate 완료 대기)
             if (!location.state || !location.state.character) {
                 console.log('⏳ location.state 대기 중... (navigate 완료 대기)');
-                
+
                 // 최대 1초 동안 100ms 간격으로 확인 (총 10번)
                 for (let i = 0; i < 10; i++) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await new Promise((resolve) => setTimeout(resolve, 100));
                     if (isCancelled) return; // 취소되었으면 중단
                     if (location.state && location.state.character) {
                         console.log(`✅ location.state 확인됨 (${(i + 1) * 100}ms 후)`);
                         break;
                     }
                 }
-                
+
                 // 취소되었으면 중단
                 if (isCancelled) return;
-                
+
                 // 다시 확인해도 없으면 홈으로 리다이렉션
                 if (!location.state || !location.state.character) {
                     console.warn('⚠️ location.state가 없습니다. 홈으로 이동합니다.');
@@ -183,7 +176,7 @@ export default function CallPage() {
             console.log('='.repeat(50));
             console.log('🎬 통화 초기화 시작 (상태 초기화)');
             console.log('='.repeat(50));
-            
+
             // 모든 상태 초기화 (startCallExecutedRef는 리셋하지 않음 - 중복 방지용)
             isCallStartedRef.current = false; // 통화 시작 플래그 리셋
             isRecordingRef.current = false;
@@ -220,13 +213,13 @@ export default function CallPage() {
 
                     // 통화 재시작 시 기존 WebSocket을 완전히 끊고 새로 연결
                     console.log('🔌 WebSocket 완전히 재연결 중...');
-                    
+
                     // 기존 소켓 완전히 정리
                     let aiSocket = getAiSocket();
                     if (aiSocket) {
                         console.log('   기존 소켓 정리 중...');
                         console.log('   기존 소켓 상태:', aiSocket.readyState);
-                        
+
                         try {
                             // 핸들러 완전히 제거
                             if (aiSocket._handlerRegistered) {
@@ -238,9 +231,12 @@ export default function CallPage() {
                             aiSocket.onerror = null;
                             aiSocket.onclose = null;
                             aiSocket.onopen = null;
-                            
+
                             // 소켓 닫기
-                            if (aiSocket.readyState === WebSocket.OPEN || aiSocket.readyState === WebSocket.CONNECTING) {
+                            if (
+                                aiSocket.readyState === WebSocket.OPEN ||
+                                aiSocket.readyState === WebSocket.CONNECTING
+                            ) {
                                 console.log('   기존 소켓 닫기 중...');
                                 aiSocket.close();
                             }
@@ -248,24 +244,24 @@ export default function CallPage() {
                             console.warn('   기존 소켓 정리 중 오류:', e);
                         }
                     }
-                    
+
                     // aiSocket.js의 전역 변수도 초기화 (완전히 끊기)
                     closeAiSocket();
                     // 소켓이 완전히 닫힐 때까지 잠시 대기
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                    
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+
                     // 새로 연결 (무조건 새 연결)
                     console.log('   새 WebSocket 연결 시도...');
                     await connectAiSocket();
                     console.log('   ✅ WebSocket 새 연결 완료');
-                    
+
                     // 연결 확인
                     aiSocket = getAiSocket();
                     if (!aiSocket || aiSocket.readyState !== WebSocket.OPEN) {
                         throw new Error('WebSocket 연결 실패');
                     }
                     console.log('   ✅ WebSocket 연결 상태 확인:', aiSocket.readyState);
-                    
+
                     // 취소되었으면 중단 (하지만 startCall은 호출해야 함)
                     if (isCancelled) {
                         console.log('⚠️ WebSocket 연결 후 취소됨 - 하지만 startCall은 호출');
@@ -281,10 +277,10 @@ export default function CallPage() {
                         }
                         return;
                     }
-                    
+
                     console.log('📞 startCall 호출 시작...');
                     startCallExecutedRef.current = true; // 실행 플래그 설정 (전역적으로 설정)
-                    
+
                     try {
                         await startCall(character, politeness);
                         console.log('✅ startCall 호출 완료');
@@ -293,14 +289,14 @@ export default function CallPage() {
                         // 에러 발생 시에도 플래그는 유지 (중복 호출 방지)
                         throw error;
                     }
-                    
+
                     // startCall 후에는 반드시 마이크와 핸들러를 설정해야 함 (AI 서버가 TTS를 보내기 때문)
                     // 취소되었어도 통화는 시작되었으므로 핸들러와 마이크는 설정해야 함
-                    
+
                     // 통화 시작 성공 후 플래그 설정
                     isCallStartedRef.current = true;
                     isInitializingRef.current = false; // 초기화 완료
-                    
+
                     // WebSocket 연결이 성공한 후에만 핸들러 설정 (TTS 수신을 위해 필수)
                     aiSocket = getAiSocket();
                     if (aiSocket && aiSocket.readyState === WebSocket.OPEN) {
@@ -311,7 +307,7 @@ export default function CallPage() {
                         console.error('❌ WebSocket이 연결되지 않아 핸들러 설정 실패');
                         throw new Error('WebSocket 연결이 없습니다');
                     }
-                    
+
                     // 마이크 시작 (사용자 음성 입력을 위해 필수)
                     console.log('🎤 마이크 시작 중...');
                     startMicrophone();
@@ -337,7 +333,7 @@ export default function CallPage() {
                     navigate('/app/home');
                 }
             }
-            
+
             // Promise 추적 종료
             initCallPromiseRef.current = null;
             // startCallExecutedRef는 cleanup에서만 리셋 (React StrictMode 대응)
@@ -350,17 +346,17 @@ export default function CallPage() {
         return () => {
             console.log('🧹 CallPage cleanup 시작');
             isCancelled = true; // 취소 플래그 설정
-            
+
             // cleanup 시 상태 리셋 (다음 통화 시작을 위해)
             // React StrictMode의 double-invoke는 isCancelled 플래그로 처리
             // 하지만 실제 언마운트가 아닌 경우(StrictMode)에는 플래그를 유지해야 함
             // 따라서 cleanup에서는 마이크만 중지하고, 플래그는 다음 마운트에서 체크
-            
+
             // 마이크만 중지
             if (isRecordingRef.current) {
                 stopMicrophone();
             }
-            
+
             // 실제 언마운트인 경우에만 플래그 리셋 (location.pathname 변경 감지)
             // React StrictMode의 cleanup은 무시하고, 실제 언마운트 시에만 리셋
             // 이는 다음 useEffect 실행에서 location.pathname이 변경되었는지로 판단
@@ -409,7 +405,6 @@ export default function CallPage() {
                 }
                 const rms = Math.sqrt(sum / inputData.length);
 
-
                 if (aiSpeakingRef.current) {
                     if (vadStateRef.current !== 'idle') {
                         console.log('🤖 AI 말하는 중 - VAD 비활성화 및 녹음 중지');
@@ -450,9 +445,10 @@ export default function CallPage() {
                     // 음성 감지 시작 (idle 상태에서만, 그리고 충분히 강한 음성이 연속으로 감지될 때)
                     if (vadStateRef.current === 'idle') {
                         // 평균 RMS 계산 (일시적 노이즈 필터링)
-                        const avgRms = rmsHistoryRef.current.length > 0
-                            ? rmsHistoryRef.current.reduce((a, b) => a + b, 0) / rmsHistoryRef.current.length
-                            : 0;
+                        const avgRms =
+                            rmsHistoryRef.current.length > 0
+                                ? rmsHistoryRef.current.reduce((a, b) => a + b, 0) / rmsHistoryRef.current.length
+                                : 0;
 
                         // 최소 RMS 값, 연속 프레임, 평균 RMS 체크로 노이즈 필터링 강화
                         if (
@@ -529,7 +525,7 @@ export default function CallPage() {
                     // 침묵 감지 (RMS가 임계값 이하)
                     consecutiveVoiceFramesRef.current = 0; // 침묵 시 리셋
                     rmsHistoryRef.current = []; // RMS 히스토리도 리셋
-                    
+
                     if (vadStateRef.current === 'speaking') {
                         if (silenceStartTimeRef.current === null) {
                             silenceStartTimeRef.current = now;
@@ -575,8 +571,9 @@ export default function CallPage() {
                                 audioChunkCountRef.current >= MIN_AUDIO_CHUNKS
                             ) {
                                 console.log('✅ 모든 조건 만족 - 녹음 종료, 서버로 전송');
-                                // "응답 생성 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
-                                setVadStatus('응답 생성 중');
+                                // 캐릭터별 "생각 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
+                                const thinkingMessage = `${character.name}가 생각 중이에요`;
+                                setVadStatus(thinkingMessage);
                                 sendStopMessage();
                             } else {
                                 console.log('⚠️ 조건 미충족 - 녹음이 너무 짧거나 데이터 없음');
@@ -599,7 +596,7 @@ export default function CallPage() {
                             recordingStartTimeRef.current = null;
                             consecutiveVoiceFramesRef.current = 0; // 리셋
                             rmsHistoryRef.current = []; // RMS 히스토리 리셋
-                            // "응답 생성 중" 프로그레스 바는 유지 (AI 오디오 수신 전까지)
+                            // 캐릭터별 "생각 중" 프로그레스 바는 유지 (AI 오디오 수신 전까지)
                             // setVadStatus('')는 하지 않음
                         }
                     }
@@ -769,20 +766,20 @@ export default function CallPage() {
     // WebSocket 핸들러 훅
     const { setupWebSocketHandler, setNormalFinish, hasReceivedCallSummary, startEndingCall } = useWebSocketHandler({
         onAudioReceived: () => {
-            // AI 오디오 수신 시 "응답 생성 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
-            if (vadStatus.includes('응답 생성 중')) {
+            // AI 오디오 수신 시 "생각 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
+            if (vadStatus.includes('가 생각 중이에요')) {
                 setVadStatus('');
             }
         },
         onTtsAudioStart: () => {
             setIsTalking(true);
             aiSpeakingRef.current = true;
-            
-            // TTS 재생 시작 시 "응답 생성 중" 프로그레스 바 숨김 (TTS가 재생 중이면 프로그레스 바 표시 안 함)
-            if (vadStatus.includes('응답 생성 중')) {
+
+            // TTS 재생 시작 시 "생각 중" 프로그레스 바 숨김 (TTS가 재생 중이면 프로그레스 바 표시 안 함)
+            if (vadStatus.includes('가 생각 중이에요')) {
                 setVadStatus('');
             }
-            
+
             // 첫 TTS 오디오가 실제로 재생될 때만 자막 업데이트 (TTS 오디오 재생 전까지 "통화 거는 중..." 유지)
             if (isFirstTtsRef.current) {
                 console.log('🎬 첫 TTS 오디오 재생 시작 - 자막은 TTS 텍스트로 업데이트 (pendingTranscriptionRef에서)');
@@ -793,7 +790,7 @@ export default function CallPage() {
                     pendingTranscriptionRef.current = null;
                 }
             }
-            
+
             // TTS 재생 시작 시 진행 중인 녹음이 있으면 중지하고 버퍼 비우기
             if (isRecordingRef.current) {
                 console.log('🛑 TTS 재생 시작 - 진행 중인 녹음 중지');
@@ -810,20 +807,20 @@ export default function CallPage() {
             setIsTalking(false);
             aiSpeakingRef.current = false;
             setVadStatus(''); // AI 말 끝나면 상태 초기화 (사용자가 말하기 시작할 때까지 표시 안 함)
-            
+
             // TTS 재생 완료 후 대기 중인 transcription 자막 업데이트
             if (pendingTranscriptionRef.current) {
                 const { assistantText } = pendingTranscriptionRef.current;
                 setAiSubtitle(assistantText || '');
                 pendingTranscriptionRef.current = null;
             }
-            
+
             // 통화 종료 TTS가 끝났으면 홈으로 이동
             if (isWaitingForEndTtsRef.current) {
                 console.log('✅ 통화 종료 TTS 재생 완료 - 홈으로 이동');
                 isWaitingForEndTtsRef.current = false;
                 isCallStartedRef.current = false; // 상태 초기화
-                
+
                 // 통화 요약을 아직 받지 못한 경우 잠시 대기 후 이동
                 if (!hasReceivedCallSummary()) {
                     console.log('⏳ 통화 요약 대기 중...');
@@ -846,13 +843,13 @@ export default function CallPage() {
             setIsTalking(false);
             aiSpeakingRef.current = false;
             setVadStatus(''); // 에러 시 상태 초기화
-            
+
             // 통화 종료 중 오디오 에러 발생 시에도 이동
             if (isWaitingForEndTtsRef.current) {
                 console.warn('⚠️ 통화 종료 TTS 오디오 에러 - 홈으로 이동');
                 isWaitingForEndTtsRef.current = false;
                 isCallStartedRef.current = false; // 상태 초기화
-                
+
                 if (!hasReceivedCallSummary()) {
                     console.log('⏳ 통화 요약 대기 중...');
                     setTimeout(() => {
@@ -887,7 +884,7 @@ export default function CallPage() {
         },
         onTranscription: ({ userText, assistantText }) => {
             // transcription은 TTS 생성 전에 보내지므로, TTS 재생 중이면 나중에 업데이트
-            // "응답 생성 중" 프로그레스 바는 TTS 재생 시작 전까지 유지 (onTtsAudioStart에서 숨김)
+            // 캐릭터별 "생각 중" 프로그레스 바는 TTS 재생 시작 전까지 유지 (onTtsAudioStart에서 숨김)
             if (aiSpeakingRef.current) {
                 // TTS 재생 중이면 대기
                 pendingTranscriptionRef.current = { userText, assistantText };
@@ -983,34 +980,34 @@ export default function CallPage() {
     const handleEndCall = () => {
         console.log('📞 통화 종료 요청 (정상 종료)');
         setNormalFinish(true); // 사용자가 직접 종료 버튼을 누른 경우 정상 종료
-        
+
         // 통화 종료 상태 설정
         setIsCallEnded(true);
-        
+
         // 모든 오디오 중지 및 통화 종료 플래그 설정 (현재 재생 중인 TTS 모두 중지)
         startEndingCall(); // 이 함수에서 stopAllAudios() 호출됨
-        
+
         stopMicrophone();
         endCall();
         setIsTalking(false);
-        
+
         // 통화 종료 시 모든 플래그 리셋 (다음 통화 시작을 위해)
         isCallStartedRef.current = false;
         isInitializingRef.current = false;
         initCallPromiseRef.current = null;
         startCallExecutedRef.current = false; // startCall 실행 플래그 리셋
-        
+
         // 통화 종료 TTS 대기 플래그 설정 (마지막 TTS 재생 후 리다이렉션)
         isWaitingForEndTtsRef.current = true;
         console.log('⏳ 통화 종료 TTS 재생 대기 중... (현재 재생 중인 TTS 모두 중지됨)');
-        
+
         // 최대 대기 시간 설정 (10초 후 강제 이동 - 안전장치)
         setTimeout(() => {
             if (isWaitingForEndTtsRef.current) {
                 console.warn('⚠️ 통화 종료 TTS 대기 시간 초과 - 강제 이동');
                 isWaitingForEndTtsRef.current = false;
                 isCallStartedRef.current = false; // 상태 초기화
-                
+
                 if (!hasReceivedCallSummary()) {
                     console.log('⏳ 통화 요약 대기 중...');
                     setTimeout(() => {
@@ -1164,4 +1161,3 @@ export default function CallPage() {
         </Flex>
     );
 }
-
