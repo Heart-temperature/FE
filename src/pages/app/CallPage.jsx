@@ -105,7 +105,21 @@ export default function CallPage() {
     const [_aiMessages, setAiMessages] = useState([]);
     const [vadStatus, setVadStatus] = useState(''); // 빈 문자열로 시작 (음성 인식 시작 전에는 표시 안 함)
     const [isCallEnded, setIsCallEnded] = useState(false); // 통화 종료 상태
-    const [userName, setUserName] = useState('사용자'); // 사용자 이름 (기본값: "사용자")
+    // 사용자 이름 초기화 (localStorage에서 먼저 확인)
+    const [userName, setUserName] = useState(() => {
+        const storedName = localStorage.getItem('userName');
+        return storedName || '사용자';
+    });
+    // userName을 ref로도 저장하여 콜백에서 최신 값 참조
+    const userNameRef = useRef((() => {
+        const storedName = localStorage.getItem('userName');
+        return storedName || '사용자';
+    })());
+    // userName이 변경될 때마다 ref 업데이트
+    useEffect(() => {
+        userNameRef.current = userName;
+        console.log('✅ userName ref 업데이트:', userName);
+    }, [userName]);
     const isFirstTtsRef = useRef(true); // 첫 TTS인지 추적
 
     const videoRef = useRef(null);
@@ -313,12 +327,35 @@ export default function CallPage() {
                             });
                             const data = response.data;
                             if (data.user_info && data.user_info.name) {
-                                setUserName(data.user_info.name);
-                                console.log('✅ 사용자 이름 설정:', data.user_info.name);
+                                const userName = data.user_info.name;
+                                setUserName(userName);
+                                console.log('✅ 사용자 이름 설정:', userName);
+                                // localStorage에도 저장 (다음에 빠르게 사용)
+                                localStorage.setItem('userName', userName);
+                            } else {
+                                // API 응답에 이름이 없으면 localStorage에서 확인
+                                const storedName = localStorage.getItem('userName');
+                                if (storedName) {
+                                    setUserName(storedName);
+                                    console.log('✅ localStorage에서 사용자 이름 가져옴:', storedName);
+                                }
+                            }
+                        } else {
+                            // 토큰이 없으면 localStorage에서 확인
+                            const storedName = localStorage.getItem('userName');
+                            if (storedName) {
+                                setUserName(storedName);
+                                console.log('✅ localStorage에서 사용자 이름 가져옴:', storedName);
                             }
                         }
                     } catch (error) {
-                        console.warn('⚠️ 사용자 정보 가져오기 실패 (기본값 사용):', error);
+                        console.warn('⚠️ 사용자 정보 가져오기 실패, localStorage 확인:', error);
+                        // API 호출 실패 시 localStorage에서 확인
+                        const storedName = localStorage.getItem('userName');
+                        if (storedName) {
+                            setUserName(storedName);
+                            console.log('✅ localStorage에서 사용자 이름 가져옴:', storedName);
+                        }
                     }
                     
                     console.log('📞 startCall 호출 시작...');
@@ -514,8 +551,10 @@ export default function CallPage() {
                             vadStateRef.current = 'speaking';
                             setIsUserSpeaking(true);
                             // 한국어 조사 처리
-                            const particle = getKoreanParticle(userName);
-                            setVadStatus(`${userName}${particle} 말하는 중`); // 음성 인식 시작 시에만 상태 표시
+                            // ref에서 최신 userName 값 가져오기
+                            const currentUserName = userNameRef.current || localStorage.getItem('userName') || '사용자';
+                            const particle = getKoreanParticle(currentUserName);
+                            setVadStatus(`${currentUserName}${particle} 말하는 중`); // 음성 인식 시작 시에만 상태 표시
                             audioBufferRef.current = [];
                             audioChunkCountRef.current = 0;
                             recordingStartTimeRef.current = now;
@@ -534,8 +573,10 @@ export default function CallPage() {
                             console.log(`🎤 침묵 중단 (${interruptedSilenceDuration}ms 만에) - 계속 녹음`);
                             vadStateRef.current = 'speaking';
                             // 한국어 조사 처리
-                            const particle = getKoreanParticle(userName);
-                            setVadStatus(`${userName}${particle} 말하는 중`); // 사용자가 다시 말하기 시작
+                            // ref에서 최신 userName 값 가져오기
+                            const currentUserName = userNameRef.current || localStorage.getItem('userName') || '사용자';
+                            const particle = getKoreanParticle(currentUserName);
+                            setVadStatus(`${currentUserName}${particle} 말하는 중`); // 사용자가 다시 말하기 시작
                         }
                     }
 
@@ -941,13 +982,17 @@ export default function CallPage() {
             }
             // 사용자 말한 내용은 디버깅용으로 하단에 표시
             if (userText) {
-                setUserSubtitle(`👤 ${userName}: ${userText}`);
+                // ref에서 최신 userName 값 가져오기
+                const currentUserName = userNameRef.current || localStorage.getItem('userName') || '사용자';
+                setUserSubtitle(`👤 ${currentUserName}: ${userText}`);
             }
         },
         onSttStatus: (message) => {
             // STT 상태는 사용자 말한 내용으로 표시 (디버깅용)
             if (message && !message.includes('음성 인식 중') && !message.includes('너무 짧')) {
-                setUserSubtitle(`👤 ${userName}: ${message}`);
+                // ref에서 최신 userName 값 가져오기
+                const currentUserName = userNameRef.current || localStorage.getItem('userName') || '사용자';
+                setUserSubtitle(`👤 ${currentUserName}: ${message}`);
             }
         },
         onStatus: (message) => {
