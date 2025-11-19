@@ -37,8 +37,8 @@ const AnimatedSpeakingText = () => {
     );
 };
 
-// AI 응답 생성 중 프로그레스 바 컴포넌트
-const AIThinkingProgress = ({ isHighContrast }) => {
+// AI 답변 생성 중 프로그레스 바 컴포넌트
+const AIThinkingProgress = ({ isHighContrast, characterName }) => {
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -55,10 +55,12 @@ const AIThinkingProgress = ({ isHighContrast }) => {
         return () => clearInterval(interval);
     }, []);
 
+    const thinkingText = characterName ? `${characterName}가 생각 중이에요...` : '답변을 만들고 있어요...';
+
     return (
         <VStack spacing={3} w="100%" py={2}>
             <Text fontSize="2xl" fontWeight="bold" textAlign="center" color={isHighContrast ? '#FFFFFF' : '#000000'}>
-                응답 생성 중...
+                {thinkingText}
             </Text>
             <Progress
                 value={progress}
@@ -572,8 +574,9 @@ export default function CallPage() {
                                 audioChunkCountRef.current >= MIN_AUDIO_CHUNKS
                             ) {
                                 console.log('✅ 모든 조건 만족 - 녹음 종료, 서버로 전송');
-                                // "응답 생성 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
-                                setVadStatus('응답 생성 중');
+                                // 캐릭터별 "생각 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
+                                const thinkingMessage = `${character.name}가 생각 중이에요`;
+                                setVadStatus(thinkingMessage);
                                 sendStopMessage();
                             } else {
                                 console.log('⚠️ 조건 미충족 - 녹음이 너무 짧거나 데이터 없음');
@@ -596,7 +599,7 @@ export default function CallPage() {
                             recordingStartTimeRef.current = null;
                             consecutiveVoiceFramesRef.current = 0; // 리셋
                             rmsHistoryRef.current = []; // RMS 히스토리 리셋
-                            // "응답 생성 중" 프로그레스 바는 유지 (AI 오디오 수신 전까지)
+                            // 캐릭터별 "생각 중" 프로그레스 바는 유지 (AI 오디오 수신 전까지)
                             // setVadStatus('')는 하지 않음
                         }
                     }
@@ -766,8 +769,8 @@ export default function CallPage() {
     // WebSocket 핸들러 훅
     const { setupWebSocketHandler, setNormalFinish, hasReceivedCallSummary, startEndingCall } = useWebSocketHandler({
         onAudioReceived: () => {
-            // AI 오디오 수신 시 "응답 생성 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
-            if (vadStatus.includes('응답 생성 중')) {
+            // AI 오디오 수신 시 "생각 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
+            if (vadStatus.includes('가 생각 중이에요')) {
                 setVadStatus('');
             }
         },
@@ -775,8 +778,8 @@ export default function CallPage() {
             setIsTalking(true);
             aiSpeakingRef.current = true;
             
-            // TTS 재생 시작 시 "응답 생성 중" 프로그레스 바 숨김 (TTS가 재생 중이면 프로그레스 바 표시 안 함)
-            if (vadStatus.includes('응답 생성 중')) {
+            // TTS 재생 시작 시 "생각 중" 프로그레스 바 숨김 (TTS가 재생 중이면 프로그레스 바 표시 안 함)
+            if (vadStatus.includes('가 생각 중이에요')) {
                 setVadStatus('');
             }
             
@@ -884,7 +887,7 @@ export default function CallPage() {
         },
         onTranscription: ({ userText, assistantText }) => {
             // transcription은 TTS 생성 전에 보내지므로, TTS 재생 중이면 나중에 업데이트
-            // "응답 생성 중" 프로그레스 바는 TTS 재생 시작 전까지 유지 (onTtsAudioStart에서 숨김)
+            // 캐릭터별 "생각 중" 프로그레스 바는 TTS 재생 시작 전까지 유지 (onTtsAudioStart에서 숨김)
             if (aiSpeakingRef.current) {
                 // TTS 재생 중이면 대기
                 pendingTranscriptionRef.current = { userText, assistantText };
@@ -1052,8 +1055,8 @@ export default function CallPage() {
                     {/* 음성 감지 상태 표시 (음성 인식 중일 때만 표시) */}
                     {vadStatus && (
                         <Box textAlign="center">
-                            {vadStatus.includes('AI 생각') || vadStatus.includes('응답 생성') ? (
-                                <AIThinkingProgress isHighContrast={isHighContrast} />
+                            {vadStatus.includes('AI 생각') || vadStatus.includes('가 생각 중이에요') ? (
+                                <AIThinkingProgress isHighContrast={isHighContrast} characterName={character.name} />
                             ) : vadStatus.includes('사용자가 말하는 중') ? (
                                 <Text fontSize="2xl" fontWeight="bold" color={isHighContrast ? '#FFFFFF' : '#000000'}>
                                     <AnimatedSpeakingText />
