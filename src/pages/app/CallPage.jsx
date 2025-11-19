@@ -37,7 +37,7 @@ const AnimatedSpeakingText = () => {
     );
 };
 
-// AI 응답 생성 중 프로그레스 바 컴포넌트
+// AI 답변 생성 중 프로그레스 바 컴포넌트
 const AIThinkingProgress = ({ isHighContrast, characterName }) => {
     const [progress, setProgress] = useState(0);
 
@@ -55,13 +55,11 @@ const AIThinkingProgress = ({ isHighContrast, characterName }) => {
         return () => clearInterval(interval);
     }, []);
 
-    // 캐릭터 이름에 따른 텍스트 생성
-    const thinkingText = characterName ? `${characterName}가 생각하는 중...` : '응답 생성 중...';
+    const thinkingText = characterName ? `${characterName}가 생각 중이에요...` : '답변을 만들고 있어요...';
 
     return (
         <VStack spacing={3} w="100%" py={2}>
             <Text fontSize="2xl" fontWeight="bold" textAlign="center" color={isHighContrast ? '#FFFFFF' : '#000000'}>
-                {thinkingText}
                 {thinkingText}
             </Text>
             <Progress value={progress} size="lg" colorScheme="blue" borderRadius="full" w="100%" hasStripe isAnimated />
@@ -1052,7 +1050,7 @@ export default function CallPage() {
                     {/* 음성 감지 상태 표시 (음성 인식 중일 때만 표시) */}
                     {vadStatus && (
                         <Box textAlign="center">
-                            {vadStatus.includes('AI 생각') || vadStatus.includes('응답 생성') ? (
+                            {vadStatus.includes('AI 생각') || vadStatus.includes('가 생각 중이에요') ? (
                                 <AIThinkingProgress isHighContrast={isHighContrast} characterName={character.name} />
                             ) : vadStatus.includes('사용자가 말하는 중') ? (
                                 <Text fontSize="2xl" fontWeight="bold" color={isHighContrast ? '#FFFFFF' : '#000000'}>
