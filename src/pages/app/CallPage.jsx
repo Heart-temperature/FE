@@ -1144,7 +1144,8 @@ export default function CallPage() {
                     {/* 음성 감지 상태 표시 (음성 인식 중일 때만 표시) */}
                     {vadStatus && (
                         <Box textAlign="center">
-                            {vadStatus.includes('AI 생각') || vadStatus.includes('가 생각 중이에요') ? (
+                            {/* AI가 말하는 중이 아닐 때만 프로그레스 바 표시 (답변 생성 중일 때만) */}
+                            {(vadStatus.includes('AI 생각') || vadStatus.includes('가 생각 중이에요')) && !isTalking ? (
                                 <AIThinkingProgress isHighContrast={isHighContrast} characterName={character.name} />
                             ) : vadStatus.includes('이 말하는 중') || vadStatus.includes('가 말하는 중') ? (
                                 <Text fontSize="2xl" fontWeight="bold" color={isHighContrast ? '#FFFFFF' : '#000000'}>
