@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Flex, Text, VStack, Box, Progress } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 import DabokVideo from '../../video/dabok.webm';
 import DajeongVideo from '../../video/dajeung.webm';
@@ -14,8 +15,21 @@ import useWebSocketHandler from '../../hooks/useWebSocketHandler';
 const MotionBox = motion(Flex);
 const MotionText = motion(Text);
 
+// 한국어 조사 처리 헬퍼 함수: 이름 끝에 받침이 있으면 "이", 없으면 "가"
+const getKoreanParticle = (name) => {
+    if (!name || name === '사용자') return '가';
+    const lastChar = name[name.length - 1];
+    const lastCharCode = lastChar.charCodeAt(0);
+    // 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
+    if (lastCharCode >= 0xAC00 && lastCharCode <= 0xD7A3) {
+        const hasFinalConsonant = (lastCharCode - 0xAC00) % 28 !== 0;
+        return hasFinalConsonant ? '이' : '가';
+    }
+    return '가'; // 한글이 아니면 기본값
+};
+
 // 사용자가 말하는 중 애니메이션 컴포넌트
-const AnimatedSpeakingText = () => {
+const AnimatedSpeakingText = ({ userName }) => {
     const [dots, setDots] = useState('.');
 
     useEffect(() => {
@@ -30,9 +44,12 @@ const AnimatedSpeakingText = () => {
         return () => clearInterval(interval);
     }, []);
 
+    const particle = getKoreanParticle(userName);
+    const displayName = userName || '사용자';
+
     return (
         <Box as="span" display="inline-block" textAlign="center" w="100%">
-            사용자가 말하는 중{dots}
+            {displayName}{particle} 말하는 중{dots}
         </Box>
     );
 };
@@ -88,6 +105,7 @@ export default function CallPage() {
     const [_aiMessages, setAiMessages] = useState([]);
     const [vadStatus, setVadStatus] = useState(''); // 빈 문자열로 시작 (음성 인식 시작 전에는 표시 안 함)
     const [isCallEnded, setIsCallEnded] = useState(false); // 통화 종료 상태
+    const [userName, setUserName] = useState('사용자'); // 사용자 이름 (기본값: "사용자")
     const isFirstTtsRef = useRef(true); // 첫 TTS인지 추적
 
     const videoRef = useRef(null);
@@ -279,6 +297,28 @@ export default function CallPage() {
                             isInitializingRef.current = false;
                         }
                         return;
+                    }
+                    
+                    // 사용자 정보 가져오기 (callInfo API 호출)
+                    try {
+                        const token = localStorage.getItem('userToken');
+                        if (token) {
+                            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/webkit';
+                            const response = await axios.get(`${API_BASE_URL}/call/callInfo`, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                    'ngrok-skip-browser-warning': 'true',
+                                },
+                            });
+                            const data = response.data;
+                            if (data.user_info && data.user_info.name) {
+                                setUserName(data.user_info.name);
+                                console.log('✅ 사용자 이름 설정:', data.user_info.name);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('⚠️ 사용자 정보 가져오기 실패 (기본값 사용):', error);
                     }
                     
                     console.log('📞 startCall 호출 시작...');
@@ -473,7 +513,9 @@ export default function CallPage() {
 
                             vadStateRef.current = 'speaking';
                             setIsUserSpeaking(true);
-                            setVadStatus('사용자가 말하는 중'); // 음성 인식 시작 시에만 상태 표시
+                            // 한국어 조사 처리
+                            const particle = getKoreanParticle(userName);
+                            setVadStatus(`${userName}${particle} 말하는 중`); // 음성 인식 시작 시에만 상태 표시
                             audioBufferRef.current = [];
                             audioChunkCountRef.current = 0;
                             recordingStartTimeRef.current = now;
@@ -491,7 +533,9 @@ export default function CallPage() {
                         if (wasSilent) {
                             console.log(`🎤 침묵 중단 (${interruptedSilenceDuration}ms 만에) - 계속 녹음`);
                             vadStateRef.current = 'speaking';
-                            setVadStatus('사용자가 말하는 중'); // 사용자가 다시 말하기 시작
+                            // 한국어 조사 처리
+                            const particle = getKoreanParticle(userName);
+                            setVadStatus(`${userName}${particle} 말하는 중`); // 사용자가 다시 말하기 시작
                         }
                     }
 
@@ -897,13 +941,13 @@ export default function CallPage() {
             }
             // 사용자 말한 내용은 디버깅용으로 하단에 표시
             if (userText) {
-                setUserSubtitle(`👤 사용자: ${userText}`);
+                setUserSubtitle(`👤 ${userName}: ${userText}`);
             }
         },
         onSttStatus: (message) => {
             // STT 상태는 사용자 말한 내용으로 표시 (디버깅용)
             if (message && !message.includes('음성 인식 중') && !message.includes('너무 짧')) {
-                setUserSubtitle(`👤 사용자: ${message}`);
+                setUserSubtitle(`👤 ${userName}: ${message}`);
             }
         },
         onStatus: (message) => {
@@ -1057,9 +1101,9 @@ export default function CallPage() {
                         <Box textAlign="center">
                             {vadStatus.includes('AI 생각') || vadStatus.includes('가 생각 중이에요') ? (
                                 <AIThinkingProgress isHighContrast={isHighContrast} characterName={character.name} />
-                            ) : vadStatus.includes('사용자가 말하는 중') ? (
+                            ) : vadStatus.includes('이 말하는 중') || vadStatus.includes('가 말하는 중') ? (
                                 <Text fontSize="2xl" fontWeight="bold" color={isHighContrast ? '#FFFFFF' : '#000000'}>
-                                    <AnimatedSpeakingText />
+                                    <AnimatedSpeakingText userName={userName} />
                                 </Text>
                             ) : (
                                 // "말 안하는 중"은 표시하지 않음, 다른 상태만 표시
