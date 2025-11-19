@@ -1113,7 +1113,7 @@ export default function CallPage() {
     };
 
     return (
-        <Flex minH="100vh" align="center" justify="center" bg={isHighContrast ? '#000000' : 'white'} px={3}>
+        <Flex minH="100vh" align="center" justify="center" px={3}>
             <Box p={{ base: 5, md: 14 }} w="full" maxW="530px">
                 <VStack spacing={6} align="stretch">
                     <MotionBox
