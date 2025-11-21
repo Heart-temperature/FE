@@ -143,6 +143,8 @@ export default function CallPage() {
     const isInitializingRef = useRef(false); // 통화 초기화 중인지 추적 (중복 실행 방지)
     const initCallPromiseRef = useRef(null); // initCall Promise 추적 (중복 실행 방지)
     const startCallExecutedRef = useRef(false); // startCall 실행 여부 추적 (중복 방지)
+    const responseRequestTimeRef = useRef(null); // 응답 요청 시작 시간 (응답 속도 측정용)
+    const callStartTimeRef = useRef(null); // 통화 시작 시점 (이번 통화의 응답만 계산하기 위함)
 
     // VAD 설정 (사람 음성만 감지하도록 엄격한 조건)
     const VAD_THRESHOLD = 0.005; // 노이즈 필터링을 위해 임계값 대폭 상향 (기존: 0.002)
@@ -364,6 +366,10 @@ export default function CallPage() {
                     try {
                         await startCall(character, politeness);
                         console.log('✅ startCall 호출 완료');
+                        
+                        // 통화 시작 시점 기록 (응답 속도 통계 계산용)
+                        callStartTimeRef.current = Date.now();
+                        console.log('📅 통화 시작 시점 기록:', new Date(callStartTimeRef.current).toLocaleString());
                     } catch (error) {
                         console.error('❌ startCall 호출 실패:', error);
                         // 에러 발생 시에도 플래그는 유지 (중복 호출 방지)
@@ -659,6 +665,8 @@ export default function CallPage() {
                                 audioChunkCountRef.current >= MIN_AUDIO_CHUNKS
                             ) {
                                 console.log('✅ 모든 조건 만족 - 녹음 종료, 서버로 전송');
+                                // 응답 속도 측정 시작: 요청 시간 기록
+                                responseRequestTimeRef.current = Date.now();
                                 // 캐릭터별 "생각 중" 프로그레스 바 표시 (오디오 전송 전에 표시)
                                 const thinkingMessage = `${character.name}가 생각 중이에요`;
                                 setVadStatus(thinkingMessage);
@@ -851,12 +859,120 @@ export default function CallPage() {
         console.log('='.repeat(50));
     };
 
+    // 응답 속도 데이터 저장 함수
+    const saveResponseTime = (responseTimeMs) => {
+        try {
+            const storageKey = 'responseTimeData';
+            const existingData = localStorage.getItem(storageKey);
+            const data = existingData ? JSON.parse(existingData) : { conversations: [], totalConversations: 0 };
+            
+            // 새 응답 속도 추가
+            data.conversations.push({
+                timestamp: Date.now(),
+                responseTimeMs: responseTimeMs,
+                responseTimeSec: (responseTimeMs / 1000).toFixed(2),
+            });
+            data.totalConversations = data.conversations.length;
+            
+            // 최근 100개만 유지 (성능 고려)
+            if (data.conversations.length > 100) {
+                data.conversations = data.conversations.slice(-100);
+            }
+            
+            localStorage.setItem(storageKey, JSON.stringify(data));
+            console.log('✅ 응답 속도 저장:', responseTimeMs, 'ms');
+        } catch (error) {
+            console.error('❌ 응답 속도 저장 실패:', error);
+        }
+    };
+
+    // 통화 종료 시 응답 속도 통계 출력 함수
+    const printResponseTimeStats = () => {
+        try {
+            const storageKey = 'responseTimeData';
+            const data = localStorage.getItem(storageKey);
+            
+            if (!data) {
+                console.log('='.repeat(60));
+                console.log('📊 통화 종료 - 응답 속도 통계');
+                console.log('='.repeat(60));
+                console.log('   총 응답 횟수: 0회');
+                console.log('   평균 응답 속도: 데이터 없음');
+                console.log('='.repeat(60));
+                return;
+            }
+
+            const parsed = JSON.parse(data);
+            const { conversations } = parsed;
+            
+            if (conversations.length === 0) {
+                console.log('='.repeat(60));
+                console.log('📊 통화 종료 - 응답 속도 통계');
+                console.log('='.repeat(60));
+                console.log('   총 응답 횟수: 0회');
+                console.log('   평균 응답 속도: 데이터 없음');
+                console.log('='.repeat(60));
+                return;
+            }
+
+            // 이번 통화의 응답 속도만 계산 (통화 시작 시간 이후의 데이터만)
+            const callStartTime = callStartTimeRef.current;
+            let thisCallResponses = [];
+            
+            if (callStartTime) {
+                // 통화 시작 시점 이후의 응답만 필터링
+                thisCallResponses = conversations.filter(conv => conv.timestamp >= callStartTime);
+            } else {
+                // 통화 시작 시점이 없으면 전체 데이터 사용 (fallback)
+                thisCallResponses = conversations;
+            }
+            
+            if (thisCallResponses.length === 0) {
+                console.log('='.repeat(60));
+                console.log('📊 통화 종료 - 응답 속도 통계');
+                console.log('='.repeat(60));
+                console.log('   총 응답 횟수: 0회');
+                console.log('   평균 응답 속도: 데이터 없음');
+                console.log('='.repeat(60));
+                return;
+            }
+            
+            // 평균 응답 속도 계산 (초 단위)
+            const totalResponseTime = thisCallResponses.reduce((sum, conv) => sum + conv.responseTimeMs, 0);
+            const averageResponseTime = (totalResponseTime / thisCallResponses.length / 1000).toFixed(2);
+            
+            // 최소/최대 응답 속도
+            const responseTimes = thisCallResponses.map(conv => conv.responseTimeMs / 1000);
+            const minResponseTime = Math.min(...responseTimes).toFixed(2);
+            const maxResponseTime = Math.max(...responseTimes).toFixed(2);
+
+            console.log('='.repeat(60));
+            console.log('📊 통화 종료 - 응답 속도 통계');
+            console.log('='.repeat(60));
+            console.log(`   총 응답 횟수: ${thisCallResponses.length}회`);
+            console.log(`   평균 응답 속도: ${averageResponseTime}초`);
+            console.log(`   최소 응답 속도: ${minResponseTime}초`);
+            console.log(`   최대 응답 속도: ${maxResponseTime}초`);
+            console.log('='.repeat(60));
+        } catch (error) {
+            console.error('❌ 응답 속도 통계 출력 실패:', error);
+        }
+    };
+
     // WebSocket 핸들러 훅
     const { setupWebSocketHandler, setNormalFinish, hasReceivedCallSummary, startEndingCall } = useWebSocketHandler({
         onAudioReceived: () => {
             // AI 오디오 수신 시 "생각 중" 프로그레스 바 숨김 (오디오 수신 전까지 프로그레스 바 표시)
             if (vadStatus.includes('가 생각 중이에요')) {
                 setVadStatus('');
+            }
+            
+            // 응답 속도 측정 및 저장
+            if (responseRequestTimeRef.current !== null) {
+                const responseTime = Date.now() - responseRequestTimeRef.current;
+                console.log(`⏱️ 응답 속도: ${responseTime}ms (${(responseTime / 1000).toFixed(2)}초)`);
+                saveResponseTime(responseTime);
+                responseRequestTimeRef.current = null; // 리셋
             }
         },
         onTtsAudioStart: () => {
@@ -906,6 +1022,10 @@ export default function CallPage() {
             // 통화 종료 TTS가 끝났으면 홈으로 이동
             if (isWaitingForEndTtsRef.current) {
                 console.log('✅ 통화 종료 TTS 재생 완료 - 홈으로 이동');
+                
+                // 통화 종료 시 응답 속도 통계 출력
+                printResponseTimeStats();
+                
                 isWaitingForEndTtsRef.current = false;
                 isCallStartedRef.current = false; // 상태 초기화
                 
@@ -1013,6 +1133,10 @@ export default function CallPage() {
         },
         onAutoDisconnect: () => {
             console.log('⚠️ 30초 침묵으로 인한 자동 종료 - 즉시 홈으로 이동');
+            
+            // 통화 종료 시 응답 속도 통계 출력
+            printResponseTimeStats();
+            
             // 강제 종료이므로 즉시 홈으로 리다이렉션
             stopMicrophone(); // 마이크 중지
             isCallStartedRef.current = false;
@@ -1028,6 +1152,10 @@ export default function CallPage() {
         },
         onClose: () => {
             console.log('🔌 WebSocket 연결 종료 감지 - 즉시 홈으로 이동');
+            
+            // 통화 종료 시 응답 속도 통계 출력
+            printResponseTimeStats();
+            
             // WebSocket 연결이 끊겼을 때 즉시 홈으로 이동
             stopMicrophone(); // 마이크 중지
             // 상태 초기화
@@ -1040,6 +1168,10 @@ export default function CallPage() {
         },
         onSocketError: (error) => {
             console.error('❌ WebSocket 오류 발생 - 즉시 홈으로 이동:', error);
+            
+            // 통화 종료 시 응답 속도 통계 출력
+            printResponseTimeStats();
+            
             // WebSocket 오류 발생 시 즉시 홈으로 이동
             stopMicrophone(); // 마이크 중지
             // 상태 초기화

@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import UserLoginPage from './pages/app/UserLoginPage';
 import MainPage from './pages/app/MainPage';
 import CallPage from './pages/app/CallPage';
+import ResponseTimeReport from './pages/app/ResponseTimeReport';
 
 // 라우트 경로 상수 정의
 export const ROUTES = {
@@ -28,6 +29,7 @@ export const ROUTES = {
     USER_APP_LOGIN: '/app/login',
     USER_APP_HOME: '/app/home',
     USER_APP_CALL: '/app/call',
+    USER_APP_REPORT: '/app/report',
 
     // 404
     NOT_FOUND: '*',
@@ -92,6 +94,10 @@ export const ROUTE_META = {
     [ROUTES.USER_APP_CALL]: {
         title: '통화 중 - 다정이',
         description: 'AI 상담 통화 화면',
+    },
+    [ROUTES.USER_APP_REPORT]: {
+        title: '응답 속도 보고서 - 다정이',
+        description: '응답 속도 통계 및 보고서',
     },
     [ROUTES.NOT_FOUND]: {
         title: '페이지를 찾을 수 없습니다',
@@ -164,6 +170,11 @@ export const router = createBrowserRouter([
                 path: ROUTES.USER_APP_CALL,
                 element: <CallPage />,
                 handle: ROUTE_META[ROUTES.USER_APP_CALL],
+            },
+            {
+                path: ROUTES.USER_APP_REPORT,
+                element: <ResponseTimeReport />,
+                handle: ROUTE_META[ROUTES.USER_APP_REPORT],
             },
             {
                 // 404 Not Found (일치하는 경로가 없을 때)

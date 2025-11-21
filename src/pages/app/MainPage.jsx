@@ -356,6 +356,35 @@ export default function MainPage() {
                         통화 시작
                     </Button>
 
+                    {/* 응답 속도 보고서 버튼 */}
+                    <Button
+                        bg={isHighContrast ? '#FFFFFF' : '#2196F3'}
+                        color={isHighContrast ? '#000000' : 'white'}
+                        w="100%"
+                        mx="auto"
+                        height={inputH}
+                        fontSize={fs}
+                        fontWeight="700"
+                        borderRadius="15px"
+                        border="3px solid"
+                        borderColor={isHighContrast ? '#FFFFFF' : '#90CAF9'}
+                        onClick={() => navigate(ROUTES.USER_APP_REPORT)}
+                        _hover={{
+                            bg: isHighContrast ? '#FFD700' : '#1976D2',
+                            transform: 'translateY(-2px)',
+                            boxShadow: isHighContrast
+                                ? '0 6px 20px rgba(255, 215, 0, 0.4)'
+                                : '0 6px 20px rgba(33, 150, 243, 0.4)',
+                        }}
+                        _active={{
+                            bg: isHighContrast ? '#FFC107' : '#1565C0',
+                            transform: 'translateY(0)',
+                        }}
+                        transition="all 0.2s"
+                    >
+                        📊 응답 속도 보고서
+                    </Button>
+
                     <Box my={5} pt={7} borderTop="2px solid" borderColor={isHighContrast ? '#FFFFFF' : '#2196F3'}>
                         {/* 글자 크기 조절 */}
                         <Text
